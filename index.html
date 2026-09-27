@@ -194,11 +194,134 @@ button{font:inherit;}
 .search:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,110,165,.12);}
 
 /* ============================================================
+   BOOK LIBRARY
+   ============================================================ */
+.book-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(224px,1fr));
+  gap:20px;
+  margin-bottom:26px;
+}
+.book-card{
+  position:relative;
+  display:flex;flex-direction:column;
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:transform .13s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.book-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(28,27,25,.13);border-color:#d8d2c4;}
+.book-cover{
+  position:relative;
+  aspect-ratio:3/4;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#eef3f9,#e2e8f0);
+  border-bottom:1px solid var(--rule);
+  cursor:pointer;overflow:hidden;
+}
+.book-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+.book-cover .cover-placeholder{
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:#9db0c4;
+}
+.book-cover .cover-placeholder .glyph{font-size:2.6rem;line-height:1;}
+.book-cover .cover-placeholder small{
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.16em;font-weight:800;color:var(--muted);
+}
+.book-cover .cover-flag{
+  position:absolute;top:8px;left:8px;
+  background:rgba(28,27,25,.72);color:#fff;
+  font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;
+}
+.book-body{padding:13px 15px 14px;display:flex;flex-direction:column;gap:8px;flex:1;}
+.book-title{font-family:var(--serif);font-size:1.02rem;font-weight:600;line-height:1.3;}
+.book-sub{font-size:.76rem;color:var(--muted);min-height:1em;}
+.book-stats{font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+.book-foot{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px;}
+
+.add-book-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+  min-height:300px;padding:24px;
+  border:1.5px dashed var(--rule-strong);border-radius:var(--radius);
+  background:#fdfcf8;color:var(--muted);cursor:pointer;text-align:center;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.add-book-card:hover{background:#f7f4ec;border-color:var(--accent-2);color:var(--accent);}
+.add-book-card .plus{font-size:2rem;line-height:1;}
+.add-book-card .ab-title{font-family:var(--serif);font-size:1.02rem;font-weight:600;color:var(--ink);}
+.add-book-card .ab-sub{font-size:.78rem;max-width:24ch;line-height:1.5;}
+
+.sec-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:22px;}
+.sec-tools{display:flex;gap:5px;align-items:center;}
+
+.icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:5px;
+  border:1px solid var(--rule-strong);background:#fff;color:var(--muted);
+  font-size:.8rem;line-height:1;cursor:pointer;padding:0;
+  transition:background .12s,color .12s,border-color .12s;
+}
+.icon-btn:hover{background:#f4f1ea;color:var(--ink);border-color:#c6bfae;}
+.icon-btn.danger:hover{background:var(--err-soft);color:var(--err);border-color:#e7b3ad;}
+
+.topic-tools{
+  position:absolute;top:8px;right:8px;
+  display:flex;gap:4px;opacity:0;transition:opacity .15s;
+}
+.topic-card:hover .topic-tools,
+.topic-card:focus-within .topic-tools{opacity:1;}
+
+.empty-section{
+  border:1px dashed var(--rule-strong);border-radius:var(--radius);
+  padding:16px 18px;color:var(--muted);font-size:.84rem;background:#fdfcf8;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+
+/* ---- form fields (modals) ---- */
+.field{margin-bottom:15px;}
+.field > label{
+  display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:800;color:var(--muted);margin-bottom:6px;
+}
+.field input[type="text"],
+.field input[type="number"],
+.field textarea{
+  width:100%;padding:9px 12px;
+  font:inherit;font-size:.9rem;color:var(--ink);
+  border:1px solid var(--rule-strong);border-radius:6px;background:#fff;
+  outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.field textarea{resize:vertical;min-height:76px;line-height:1.5;}
+.field input:focus,.field textarea:focus{
+  border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,110,165,.12);
+}
+.form-actions{
+  display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;
+  margin-top:20px;padding-top:16px;border-top:1px solid var(--rule);
+}
+.cover-drop{
+  display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;
+  padding:14px;border:1px dashed var(--rule-strong);border-radius:8px;background:#fbfaf6;
+}
+.cover-preview{
+  width:104px;aspect-ratio:3/4;flex:0 0 auto;
+  border:1px solid var(--rule);border-radius:6px;overflow:hidden;
+  background:linear-gradient(160deg,#eef3f9,#e2e8f0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;
+  color:var(--muted);text-align:center;padding:6px;
+}
+.cover-preview img{width:100%;height:100%;object-fit:cover;display:block;}
+.cover-actions{display:flex;flex-direction:column;gap:8px;}
+
+/* ============================================================
    BOOK SECTIONS + TOPIC CARDS
    ============================================================ */
 .book-section{margin-bottom:34px;}
 .sec-head{
-  display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
   padding-bottom:10px;margin-bottom:16px;
   border-bottom:1px solid var(--rule-strong);
 }
@@ -209,7 +332,7 @@ button{font:inherit;}
 .sec-head h3::before{
   content:"";width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;
 }
-.sec-progress{display:flex;align-items:center;gap:12px;min-width:230px;flex:1;max-width:340px;}
+.sec-progress{display:flex;align-items:center;gap:12px;min-width:200px;flex:1;max-width:320px;}
 .sec-progress .pbar{flex:1;}
 .sec-meta{font-size:.75rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
 
@@ -737,6 +860,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   box-shadow:0 30px 70px rgba(0,0,0,.3);
   animation:pop .2s cubic-bezier(.2,.9,.3,1);
 }
+.modal.narrow{max-width:540px;}
 @keyframes pop{from{transform:translateY(10px) scale(.99);opacity:.6}to{transform:none;opacity:1}}
 .modal-head{
   display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
@@ -752,6 +876,9 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .modal-body{
   padding:22px 26px 28px;overflow:auto;flex:1 1 auto;
   font-family:var(--serif);font-size:1.05rem;line-height:1.85;color:#26231d;
+}
+.modal-body.form-body{
+  font-family:var(--sans);font-size:.92rem;line-height:1.6;color:var(--ink);
 }
 .modal-body .lit-passage{border-left-color:var(--accent-2);}
 .modal-context{font-family:var(--sans);font-size:.85rem;color:var(--muted);margin-bottom:16px;}
@@ -796,6 +923,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .sec-progress-list li .pbar{grid-column:1 / -1;}
   .match-row{grid-template-columns:1fr;gap:6px;}
   .font-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .sec-progress{max-width:none;min-width:160px;}
 }
 @media (max-width:560px){
   .topbar{padding:11px 16px;gap:10px;}
@@ -809,6 +937,8 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .lesson-nav .mid{order:-1;}
   .font-grid{grid-template-columns:1fr 1fr;}
   .size-slider{max-width:none;}
+  .book-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+  .add-book-card{min-height:220px;}
 }
 </style>
 </head>
@@ -835,7 +965,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   <main class="main" id="view"></main>
 </div>
 
-<!-- ===================== MODAL ===================== -->
+<!-- ===================== MODAL (reading passage) ===================== -->
 <div class="modal-overlay" id="modal" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-head">
@@ -849,29 +979,48 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   </div>
 </div>
 
+<!-- ===================== MODAL (forms) ===================== -->
+<div class="modal-overlay" id="formModal" hidden>
+  <div class="modal narrow" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="formModalTitle"></div>
+        <div class="modal-sub" id="formModalSub"></div>
+      </div>
+      <button class="modal-close" data-action="close-form-modal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body form-body" id="formModalBody"></div>
+  </div>
+</div>
+
+<!-- hidden file inputs -->
+<input type="file" id="coverInput" accept="image/*" hidden>
+<input type="file" id="bookFileQuick" accept=".json,application/json" multiple hidden>
+
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 /* ============================================================================
-   ENGLISH GRAMMAR BOOK ENGINE
+   ENGLISH GRAMMAR BOOK ENGINE  —  multi-book library edition
    ----------------------------------------------------------------------------
    Content-independent. Everything the viewer renders comes from JSON:
 
-     • GRAMMAR BOOK file  -> sections + topics + order
-     • LESSON files       -> explanations, examples, literary passages,
-                             comparisons, summary tables
+     • BOOK files         -> one library entry each: title, cover, sections, topics
+     • LESSON files       -> explanations, examples, literary passages, tables
      • EXERCISE files     -> per-topic exercise banks
 
-   Plus a READING OPTIONS feature: 15 font families and an adjustable size,
-   persisted in localStorage and applied to every lesson.
+   Books can also be created, edited and deleted entirely inside the app, with
+   an uploaded cover image (downscaled and stored as a data URL).
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
    1. STORAGE KEYS
    --------------------------------------------------------------------------- */
 const LS = {
-  BOOK:      "egb:book:v2",
+  BOOKS:     "egb:books:v3",
+  BOOK:      "egb:book:v2",        // legacy single-book key (migrated)
+  CURRENT:   "egb:current-book:v1",
   LESSONS:   "egb:lessons:v2",
   EXERCISES: "egb:exercises:v2",
   PROGRESS:  "egb:progress:v2",
@@ -894,7 +1043,7 @@ const READER_FONTS = [
   { id:"arial",     name:"Arial",           stack:"Arial, Helvetica, 'Liberation Sans', sans-serif" },
   { id:"helvetica", name:"Helvetica",       stack:"Helvetica, Arial, 'Liberation Sans', sans-serif" },
   { id:"verdana",   name:"Verdana",         stack:"Verdana, Geneva, Tahoma, sans-serif" },
-  { id:"tahoma",    name:"Tahoma",          stack:"Tahoma, Verdana, Geneva, sans-serif" },
+  { id:"tahoma",    name:"Tahoma",          stack:"Verdana, Geneva, sans-serif" },
   { id:"trebuchet", name:"Trebuchet MS",    stack:"'Trebuchet MS', Tahoma, Verdana, sans-serif" },
   { id:"courier",   name:"Courier New",     stack:"'Courier New', Courier, 'Liberation Mono', monospace" }
 ];
@@ -910,6 +1059,7 @@ const GRAMMAR_BOOK_TEMPLATE = {
   book: {
     title: "English Grammar",
     subtitle: "Grammar Reference & Practice",
+    author: "",
     version: "1.0"
   },
   sections: [
@@ -1151,7 +1301,8 @@ function exerciseTemplateForTopic(topicId){
    4. STATE
    --------------------------------------------------------------------------- */
 const state = {
-  book: null,
+  books: [],             // library of book objects
+  currentBookId: null,
   lessons: {},
   exercises: {},
   progress: {},
@@ -1165,6 +1316,11 @@ const state = {
 
 const passageStore = new Map();
 const matchOrders  = {};
+
+/* form-modal scratch state */
+let formSubmitHandler = null;
+let editingBookId = null;
+let pendingCover = null;
 
 /* ---------------------------------------------------------------------------
    5. UTILITIES
@@ -1233,8 +1389,87 @@ function downloadJSON(obj, filename){
   URL.revokeObjectURL(url);
 }
 
+function slugify(s){
+  const out = String(s == null ? "" : s)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return out || "item";
+}
+
 /* ---------------------------------------------------------------------------
-   6. READING OPTIONS — helpers
+   6. BOOK HELPERS
+   --------------------------------------------------------------------------- */
+function currentBook(){
+  return state.books.find(b => b.id === state.currentBookId) || state.books[0] || null;
+}
+function hasBooks(){ return state.books.length > 0; }
+function hasBook(){ return !!currentBook(); }
+
+function bookTitle(b){ return (b && b.book && b.book.title) || "Untitled book"; }
+function bookSubtitle(b){ return (b && b.book && b.book.subtitle) || ""; }
+function bookAuthor(b){ return (b && b.book && b.book.author) || ""; }
+
+function uniqueBookId(base){
+  let id = slugify(base), n = 2;
+  while (state.books.some(b => b.id === id)) { id = slugify(base) + "_" + (n++); }
+  return id;
+}
+
+function ensureBookShape(b){
+  if (!b || typeof b !== "object") b = {};
+  if (!b.book || typeof b.book !== "object") b.book = {};
+  if (!b.book.title) b.book.title = "Untitled book";
+  if (typeof b.book.subtitle !== "string") b.book.subtitle = b.book.subtitle || "";
+  if (typeof b.book.author   !== "string") b.book.author   = b.book.author || "";
+  if (!b.id) b.id = uniqueBookId(b.book.title);
+  if (typeof b.cover !== "string") b.cover = null;
+  if (!Array.isArray(b.sections)) b.sections = [];
+  b.sections.forEach(s => {
+    if (!s.id) s.id = slugify(s.title || "section");
+    if (!Array.isArray(s.topics)) s.topics = [];
+    s.topics.forEach(t => { if (!t.id) t.id = slugify(t.title || "topic"); });
+  });
+  return b;
+}
+
+function bookTopics(book){
+  const out = [];
+  ((book && book.sections) || []).forEach(s => (s.topics || []).forEach(t => out.push(t)));
+  return out;
+}
+
+function bookStats(book){
+  const topics = bookTopics(book);
+  const total = topics.length;
+  const completed = topics.filter(t => statusOf(t.id) === "completed").length;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+  return { total, completed, pct };
+}
+
+function uniqueSectionId(book, title){
+  let id = slugify(title), n = 2;
+  while ((book.sections || []).some(s => s.id === id)) { id = slugify(title) + "_" + (n++); }
+  return id;
+}
+
+function uniqueTopicId(book, title){
+  let id = slugify(title), n = 2;
+  const taken = () => ((book.sections || []).some(s => (s.topics || []).some(t => t.id === id)));
+  while (taken()) { id = slugify(title) + "_" + (n++); }
+  return id;
+}
+
+function ensureCurrentBook(){
+  if (!state.books.length){ state.currentBookId = null; return; }
+  if (!state.books.some(b => b.id === state.currentBookId)){
+    state.currentBookId = state.books[0].id;
+    saveCurrentBook();
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   7. READING OPTIONS — helpers
    --------------------------------------------------------------------------- */
 function readerFont(){
   return READER_FONTS.find(f => f.id === state.reader.fontId) || READER_FONTS[0];
@@ -1346,12 +1581,32 @@ function readerPanelHTML(open){
 }
 
 /* ---------------------------------------------------------------------------
-   7. PERSISTENCE
+   8. PERSISTENCE
    --------------------------------------------------------------------------- */
 function loadState(){
-  try { state.book = JSON.parse(localStorage.getItem(LS.BOOK)); }
-  catch (e) { state.book = null; }
+  /* --- books --- */
+  try { state.books = JSON.parse(localStorage.getItem(LS.BOOKS)) || []; }
+  catch (e) { state.books = []; }
+  if (!Array.isArray(state.books)) state.books = [];
 
+  /* migrate a legacy single book */
+  if (!state.books.length){
+    try {
+      const legacy = JSON.parse(localStorage.getItem(LS.BOOK));
+      if (legacy && Array.isArray(legacy.sections)){
+        state.books = [ensureBookShape(legacy)];
+        saveBooks();
+        try { localStorage.removeItem(LS.BOOK); } catch (e){}
+      }
+    } catch (e){ /* nothing to migrate */ }
+  }
+
+  state.books.forEach(b => ensureBookShape(b));
+
+  try { state.currentBookId = localStorage.getItem(LS.CURRENT) || null; }
+  catch (e){ state.currentBookId = null; }
+
+  /* --- lessons / exercises / progress --- */
   try { state.lessons = JSON.parse(localStorage.getItem(LS.LESSONS)) || {}; }
   catch (e) { state.lessons = {}; }
 
@@ -1362,24 +1617,33 @@ function loadState(){
   catch (e) { state.progress = {}; }
 
   loadReader();
+  ensureCurrentBook();
 }
 
-function saveBook(){ try{ localStorage.setItem(LS.BOOK, JSON.stringify(state.book)); }catch(e){} }
+function saveBooks(){
+  try { localStorage.setItem(LS.BOOKS, JSON.stringify(state.books)); }
+  catch (e){
+    toast("Could not save: browser storage is full. Try smaller cover images.", "err");
+  }
+}
+function saveCurrentBook(){
+  try {
+    if (state.currentBookId) localStorage.setItem(LS.CURRENT, state.currentBookId);
+    else localStorage.removeItem(LS.CURRENT);
+  } catch (e){}
+}
 function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(state.lessons)); }catch(e){} }
 function saveExercises(){ try{ localStorage.setItem(LS.EXERCISES, JSON.stringify(state.exercises)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
-   8. BOOK / TOPIC HELPERS
+   9. TOPIC LOOKUP (within the current book)
    --------------------------------------------------------------------------- */
-function hasBook(){
-  return !!(state.book && Array.isArray(state.book.sections) && state.book.sections.length);
-}
-
 function allTopics(){
-  if (!hasBook()) return [];
+  const b = currentBook();
+  if (!b) return [];
   const out = [];
-  state.book.sections.forEach(section => {
+  (b.sections || []).forEach(section => {
     (section.topics || []).forEach(topic => out.push({ topic, section }));
   });
   return out;
@@ -1387,6 +1651,18 @@ function allTopics(){
 
 function findTopic(id){
   return allTopics().find(x => x.topic.id === id) || null;
+}
+
+function findTopicAnywhere(id){
+  const local = findTopic(id);
+  if (local) return local;
+  for (const b of state.books){
+    for (const s of (b.sections || [])){
+      const t = (s.topics || []).find(x => x.id === id);
+      if (t) return { topic: t, section: s, book: b };
+    }
+  }
+  return null;
 }
 
 function topicCount(){ return allTopics().length; }
@@ -1401,7 +1677,7 @@ function neighborTopics(id){
 }
 
 /* ---------------------------------------------------------------------------
-   9. EXERCISE HELPERS
+   10. EXERCISE HELPERS
    --------------------------------------------------------------------------- */
 function getExercisesFor(topicId){
   const lesson = state.lessons[topicId];
@@ -1424,7 +1700,7 @@ function totalExerciseCount(){
 }
 
 /* ---------------------------------------------------------------------------
-   10. PROGRESS
+   11. PROGRESS
    --------------------------------------------------------------------------- */
 function statusOf(id){
   const p = state.progress[id];
@@ -1464,12 +1740,12 @@ function sectionStats(section){
 }
 
 /* ---------------------------------------------------------------------------
-   11. HEADER + NAV
+   12. HEADER + NAV
    --------------------------------------------------------------------------- */
 function updateHeader(){
-  const meta = (state.book && state.book.book) || {};
-  $("bookTitle").textContent = meta.title || "English Grammar";
-  $("bookSubtitle").textContent = meta.subtitle || "Grammar Reference & Practice";
+  const b = currentBook();
+  $("bookTitle").textContent = "English Grammar";
+  $("bookSubtitle").textContent = b ? bookTitle(b) : "Grammar Reference & Practice";
 
   const st = progressStats();
   $("hdrPct").textContent = st.pct + "%";
@@ -1480,35 +1756,39 @@ function updateHeader(){
 function updateNav(){
   const items = [
     { id: "dashboard", label: "Dashboard",    icon: "▦" },
-    { id: "book",      label: "Grammar Book", icon: "▤" },
+    { id: "book",      label: "Books",        icon: "▤" },
     { id: "completed", label: "Completed",    icon: "✓" },
     { id: "settings",  label: "Settings",     icon: "⚙" }
   ];
-  const active = state.view === "lesson" ? "book" : state.view;
+  const active = (state.view === "lesson" || state.view === "book-detail") ? "book" : state.view;
   $("nav").innerHTML = items.map(it =>
     `<button data-action="nav" data-view="${it.id}" class="${active === it.id ? "active" : ""}">
        <span class="ic">${it.icon}</span><span>${it.label}</span>
      </button>`
   ).join("") +
   `<div class="nav-sep"></div>
-   <p class="side-note">${topicCount()} topics · ${Object.keys(state.lessons).length} lessons · ${totalExerciseCount()} imported exercises</p>`;
+   <p class="side-note">${state.books.length} book${state.books.length === 1 ? "" : "s"} ·
+   ${topicCount()} topics · ${Object.keys(state.lessons).length} lessons ·
+   ${totalExerciseCount()} imported exercises</p>`;
 }
 
 /* ---------------------------------------------------------------------------
-   12. RENDER ROUTER
+   13. RENDER ROUTER
    --------------------------------------------------------------------------- */
 function render(){
+  ensureCurrentBook();
   updateHeader();
   updateNav();
   const view = $("view");
 
-  if (state.view === "settings")       view.innerHTML = settingsHTML();
-  else if (!hasBook())                 view.innerHTML = noBookHTML();
-  else if (state.view === "dashboard") view.innerHTML = dashboardHTML();
-  else if (state.view === "book")      view.innerHTML = bookHTML();
-  else if (state.view === "completed") view.innerHTML = completedHTML();
-  else if (state.view === "lesson")    view.innerHTML = lessonHTML(state.currentTopicId);
-  else                                 view.innerHTML = dashboardHTML();
+  if (state.view === "settings")          view.innerHTML = settingsHTML();
+  else if (!hasBooks())                   view.innerHTML = noBookHTML();
+  else if (state.view === "dashboard")    view.innerHTML = dashboardHTML();
+  else if (state.view === "book")         view.innerHTML = libraryHTML();
+  else if (state.view === "book-detail")  view.innerHTML = bookDetailHTML();
+  else if (state.view === "completed")    view.innerHTML = completedHTML();
+  else if (state.view === "lesson")       view.innerHTML = lessonHTML(state.currentTopicId);
+  else                                    view.innerHTML = dashboardHTML();
 
   applyReader();
   bindDynamicInputs();
@@ -1526,28 +1806,41 @@ function openTopic(id){
   go("lesson", id);
 }
 
+function openBook(id){
+  state.currentBookId = id;
+  saveCurrentBook();
+  state.query = "";
+  go("book-detail");
+}
+
 /* ---------------------------------------------------------------------------
-   13. NO BOOK VIEW
+   14. NO BOOKS VIEW
    --------------------------------------------------------------------------- */
 function noBookHTML(){
   return `
   <div class="page-head">
     <h2 class="page-title">Welcome</h2>
-    <p class="page-sub">Import a grammar book to begin.</p>
+    <p class="page-sub">Create a book or import one to begin.</p>
   </div>
 
   <div class="empty">
-    <h3>No grammar book loaded</h3>
-    <p>This application is an engine — it does not include any grammar content by default.
-       Import a grammar book JSON file to create the sections and topics, then import lesson
-       JSON files (and optional exercise JSON files) to add the content for each topic.</p>
-    <button class="btn primary" data-action="nav" data-view="settings">Go to Settings →</button>
+    <h3>Your library is empty</h3>
+    <p>This application is an engine — it ships without grammar content.
+       Create a book and add sections and topics inside it, or import a grammar
+       book JSON file. Then add lesson JSON files (and optional exercise files)
+       for each topic.</p>
+    <div class="sec-toolbar" style="justify-content:center;margin-top:18px;margin-bottom:0;">
+      <button class="btn primary" data-action="add-book">＋ Create a book</button>
+      <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings →</button>
+    </div>
   </div>
 
   <section class="card">
     <h3>What you need</h3>
     <ol class="muted" style="padding-left:20px;line-height:2;">
-      <li>A <strong>grammar book JSON</strong> file — defines sections and topics.</li>
+      <li>A <strong>book</strong> — created in the app, or imported from a grammar book JSON file.</li>
+      <li><strong>Sections and topics</strong> inside that book — add them in the app or define them in the JSON.</li>
       <li>One or more <strong>lesson JSON</strong> files — content for individual topics.</li>
       <li>Optional <strong>exercise JSON</strong> files — one per topic, importable from each lesson page.</li>
     </ol>
@@ -1559,9 +1852,12 @@ function noBookHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   14. DASHBOARD VIEW
+   15. DASHBOARD VIEW
    --------------------------------------------------------------------------- */
 function dashboardHTML(){
+  const b = currentBook();
+  if (!b) return noBookHTML();
+
   const st = progressStats();
   const topics = allTopics();
 
@@ -1569,7 +1865,7 @@ function dashboardHTML(){
     topics.find(x => statusOf(x.topic.id) === "in_progress") ||
     topics.find(x => statusOf(x.topic.id) === "not_started");
 
-  const sectionRows = ((state.book && state.book.sections) || []).map(sec => {
+  const sectionRows = ((b.sections) || []).map(sec => {
     const s = sectionStats(sec);
     return `<li>
       <div class="sp-name">${esc(sec.title)}</div>
@@ -1581,13 +1877,13 @@ function dashboardHTML(){
   return `
   <div class="page-head">
     <h2 class="page-title">Dashboard</h2>
-    <p class="page-sub">Your grammar book at a glance.</p>
+    <p class="page-sub">${esc(bookTitle(b))}${bookSubtitle(b) ? " · " + esc(bookSubtitle(b)) : ""}</p>
   </div>
 
   <section class="card hero">
     <div>
       <div class="hero-pct">${st.pct}%</div>
-      <div class="hero-label">of the grammar book completed</div>
+      <div class="hero-label">of this book completed</div>
       <div class="pbar"><span style="width:${st.pct}%"></span></div>
     </div>
     <div class="hero-stats">
@@ -1606,27 +1902,113 @@ function dashboardHTML(){
       <div class="cc-sub">${esc(nextItem.section.title)}</div>
     </div>
     <button class="btn primary" data-action="open-topic" data-id="${esc(nextItem.topic.id)}">Open lesson →</button>
-  </section>` : ""}
+  </section>` : `
+  <section class="card continue-card">
+    <div>
+      <div class="cc-sub">No topics in this book yet</div>
+      <div class="cc-title">Add a section to get started</div>
+      <div class="cc-sub">${esc(bookTitle(b))}</div>
+    </div>
+    <button class="btn primary" data-action="nav" data-view="book-detail">Open book →</button>
+  </section>`}
 
   <section class="card">
     <h3>Section progress</h3>
-    <ul class="sec-progress-list">${sectionRows || '<li class="muted">No sections in the grammar book.</li>'}</ul>
+    <ul class="sec-progress-list">${sectionRows || '<li class="muted">No sections in this book.</li>'}</ul>
   </section>`;
 }
 
 /* ---------------------------------------------------------------------------
-   15. GRAMMAR BOOK VIEW
+   16. LIBRARY VIEW (grid of books)
    --------------------------------------------------------------------------- */
-function bookHTML(){
+function libraryHTML(){
+  const n = state.books.length;
   return `
   <div class="page-head">
-    <h2 class="page-title">Grammar Book</h2>
-    <p class="page-sub">Browse the topics in textbook order, or search for a form, a title or a description.</p>
+    <h2 class="page-title">Grammar Books</h2>
+    <p class="page-sub">${n} book${n === 1 ? "" : "s"} in your library. Open a book to browse its topics.</p>
+    <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
+      <button class="btn primary" data-action="add-book">＋ New book</button>
+      <button class="btn" data-action="import-book">Import book JSON</button>
+    </div>
   </div>
+
+  <div class="book-grid">
+    ${state.books.map(bookCardHTML).join("")}
+    ${addBookCardHTML()}
+  </div>`;
+}
+
+function bookCardHTML(b){
+  const s = bookStats(b);
+  const isCurrent = b.id === state.currentBookId;
+  const cover = b.cover
+    ? `<img src="${esc(b.cover)}" alt="Cover of ${esc(bookTitle(b))}">`
+    : `<div class="cover-placeholder"><span class="glyph">📖</span><small>No cover</small></div>`;
+
+  return `
+  <article class="book-card">
+    <div class="book-cover" data-action="open-book" data-id="${esc(b.id)}"
+         title="Open ${esc(bookTitle(b))}">
+      ${cover}
+      ${isCurrent ? `<span class="cover-flag">Current</span>` : ""}
+    </div>
+    <div class="book-body">
+      <h4 class="book-title">${esc(bookTitle(b))}</h4>
+      <div class="book-sub">${esc(bookSubtitle(b) || (s.total ? s.total + " topics" : "Empty book"))}</div>
+      <div class="book-stats">${s.completed} / ${s.total} completed</div>
+      <div class="pbar small"><span style="width:${s.pct}%"></span></div>
+      <div class="book-foot">
+        <button class="btn primary tiny" data-action="open-book" data-id="${esc(b.id)}">Open</button>
+        <button class="btn ghost tiny" data-action="upload-cover" data-id="${esc(b.id)}">
+          ${b.cover ? "Cover" : "Add cover"}
+        </button>
+        <button class="btn ghost tiny" data-action="edit-book" data-id="${esc(b.id)}">Edit</button>
+        <button class="btn ghost tiny" data-action="delete-book" data-id="${esc(b.id)}">Delete</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function addBookCardHTML(){
+  return `
+  <button type="button" class="add-book-card" data-action="add-book">
+    <span class="plus">＋</span>
+    <span class="ab-title">New book</span>
+    <span class="ab-sub">Start empty and add sections and topics inside, or upload a cover and build it up.</span>
+  </button>`;
+}
+
+/* ---------------------------------------------------------------------------
+   17. BOOK DETAIL VIEW (sections + topics inside one book)
+   --------------------------------------------------------------------------- */
+function bookDetailHTML(){
+  const b = currentBook();
+  if (!b) return noBookHTML();
+  const s = bookStats(b);
+
+  return `
+  <div class="page-head">
+    <button class="btn ghost tiny" data-action="nav" data-view="book">← All books</button>
+    <h2 class="page-title" style="margin-top:12px;">${esc(bookTitle(b))}</h2>
+    <p class="page-sub">
+      ${esc(bookSubtitle(b) || "Browse the topics in textbook order, or search for a form, a title or a description.")}
+      ${s.total ? ` · ${s.completed} / ${s.total} completed` : ""}
+    </p>
+    <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
+      <button class="btn primary" data-action="add-section">＋ Add section</button>
+      <button class="btn" data-action="edit-book" data-id="${esc(b.id)}">Edit book details</button>
+      <button class="btn ghost" data-action="upload-cover" data-id="${esc(b.id)}">
+        ${b.cover ? "Change cover" : "Upload cover"}
+      </button>
+    </div>
+  </div>
+
   <div class="search-wrap">
-    <input id="searchInput" class="search" type="search" placeholder="Search grammar..."
+    <input id="searchInput" class="search" type="search" placeholder="Search this book..."
            value="${esc(state.query)}" autocomplete="off" spellcheck="false" aria-label="Search grammar">
   </div>
+
   <div id="bookResults"></div>`;
 }
 
@@ -1653,28 +2035,56 @@ function renderBookResults(){
   const container = $("bookResults");
   if (!container) return;
   const q = norm(state.query);
-  const items = searchIndex().filter(it => !q || q.split(" ").every(term => it.hay.includes(term)));
+
+  if (!q){
+    container.innerHTML = sectionsHTML(allTopics(), true);
+    return;
+  }
+
+  const items = searchIndex().filter(it => q.split(" ").every(term => it.hay.includes(term)));
 
   if (!items.length){
     container.innerHTML = `<div class="empty"><h3>No topics found</h3><p>Try a different word, or clear the search box.</p></div>`;
     return;
   }
-  container.innerHTML = sectionsHTML(items);
+  container.innerHTML = sectionsHTML(items, false);
 }
 
-function sectionsHTML(items){
-  const order = ((state.book && state.book.sections) || []).map(s => s.id);
+function sectionsHTML(items, includeEmptySections){
+  const b = currentBook();
   const groups = new Map();
   items.forEach(it => {
     if (!groups.has(it.section.id)) groups.set(it.section.id, { section: it.section, topics: [] });
     groups.get(it.section.id).topics.push(it.topic);
   });
-  const sorted = [...groups.values()].sort((a, b) =>
-    order.indexOf(a.section.id) - order.indexOf(b.section.id));
 
-  return sorted.map(({ section, topics }) => {
+  const list = [];
+  ((b && b.sections) || []).forEach(sec => {
+    const g = groups.get(sec.id);
+    if (g) list.push(g);
+    else if (includeEmptySections) list.push({ section: sec, topics: [] });
+  });
+  groups.forEach((g, id) => {
+    if (!list.some(x => x.section.id === id)) list.push(g);
+  });
+
+  if (!list.length){
+    return `<div class="empty">
+      <h3>No sections yet</h3>
+      <p>This book is empty. Add a section, then add topics inside it.</p>
+      <button class="btn primary" data-action="add-section">＋ Add section</button>
+    </div>`;
+  }
+
+  return list.map(({ section, topics }) => {
     const s = sectionStats(section);
-    const cards = topics.map(t => topicCardHTML(t)).join("");
+    const cards = topics.length
+      ? `<div class="topic-grid">${topics.map(t => topicCardHTML(t, section.id)).join("")}</div>`
+      : `<div class="empty-section">
+           <span>No topics in this section yet.</span>
+           <button class="btn tiny" data-action="add-topic" data-section="${esc(section.id)}">＋ Add topic</button>
+         </div>`;
+
     return `
     <section class="book-section">
       <div class="sec-head">
@@ -1683,13 +2093,18 @@ function sectionsHTML(items){
           <div class="pbar small"><span style="width:${s.pct}%"></span></div>
           <span class="sec-meta">${s.completed} / ${s.total} topics completed</span>
         </div>
+        <div class="sec-tools">
+          <button class="icon-btn" data-action="add-topic" data-section="${esc(section.id)}" title="Add topic">＋</button>
+          <button class="icon-btn" data-action="rename-section" data-section="${esc(section.id)}" title="Rename section">✎</button>
+          <button class="icon-btn danger" data-action="delete-section" data-section="${esc(section.id)}" title="Delete section">✕</button>
+        </div>
       </div>
-      <div class="topic-grid">${cards}</div>
+      ${cards}
     </section>`;
   }).join("");
 }
 
-function topicCardHTML(topic){
+function topicCardHTML(topic, sectionId){
   const status = statusOf(topic.id);
   const lesson = state.lessons[topic.id];
   const exCount = getExercisesFor(topic.id).length;
@@ -1703,6 +2118,12 @@ function topicCardHTML(topic){
   <article class="topic-card ${status}" tabindex="0" role="button"
            data-action="open-topic" data-id="${esc(topic.id)}"
            aria-label="Open ${esc(topic.title)}">
+    <div class="topic-tools">
+      <button class="icon-btn" data-action="edit-topic" data-id="${esc(topic.id)}"
+              title="Edit topic" aria-label="Edit topic">✎</button>
+      <button class="icon-btn danger" data-action="delete-topic" data-id="${esc(topic.id)}"
+              data-section="${esc(sectionId || "")}" title="Delete topic" aria-label="Delete topic">✕</button>
+    </div>
     <div class="topic-unit">Unit ${esc(topic.number != null ? topic.number : "—")}</div>
     <h4 class="topic-title">${esc(topic.title)}</h4>
     <p class="topic-desc">${esc(topic.description || (lesson && lesson.description) || "")}</p>
@@ -1714,7 +2135,7 @@ function topicCardHTML(topic){
 }
 
 /* ---------------------------------------------------------------------------
-   16. COMPLETED VIEW
+   18. COMPLETED VIEW
    --------------------------------------------------------------------------- */
 function completedHTML(){
   const done = allTopics().filter(x => statusOf(x.topic.id) === "completed");
@@ -1730,20 +2151,20 @@ function completedHTML(){
   return `
   <div class="page-head">
     <h2 class="page-title">Completed</h2>
-    <p class="page-sub">${done.length} topic${done.length === 1 ? "" : "s"} finished.</p>
+    <p class="page-sub">${done.length} topic${done.length === 1 ? "" : "s"} finished in ${esc(bookTitle(currentBook()))}.</p>
   </div>
-  ${sectionsHTML(items)}`;
+  ${sectionsHTML(items, false)}`;
 }
 
 /* ---------------------------------------------------------------------------
-   17. LESSON VIEW
+   19. LESSON VIEW
    --------------------------------------------------------------------------- */
 function lessonHTML(id){
   const found = findTopic(id);
   if (!found){
     return `<div class="empty"><h3>Topic not found</h3>
-      <p>This topic is not part of the current grammar book.</p>
-      <button class="btn" data-action="nav" data-view="book">Back to Grammar Book</button></div>`;
+      <p>This topic is not part of the current book.</p>
+      <button class="btn" data-action="nav" data-view="book">Back to Books</button></div>`;
   }
   const { topic, section } = found;
   const lesson = state.lessons[id];
@@ -1779,7 +2200,7 @@ function lessonHTML(id){
         ← ${nav.prev ? esc(shortTitle(nav.prev.title)) : "Previous Topic"}
       </button>
       <span class="mid">
-        <button class="btn" data-action="nav" data-view="book">Back to Grammar Book</button>
+        <button class="btn" data-action="nav" data-view="book-detail">Back to book</button>
       </span>
       <button class="btn ghost" data-action="next-topic" data-id="${esc(id)}" ${nav.next ? "" : "disabled"}>
         ${nav.next ? esc(shortTitle(nav.next.title)) : "Next Topic"} →
@@ -1798,7 +2219,7 @@ function noLessonHTML(topic){
   return `
   <div class="card empty-lesson">
     <h3>Lesson content not loaded</h3>
-    <p class="muted">The grammar book lists this topic, but its lesson JSON has not been imported yet.</p>
+    <p class="muted">The book lists this topic, but its lesson JSON has not been imported yet.</p>
     <p class="muted">Expected file name: <code>${esc(topic.id)}.json</code></p>
     <div class="file-row">
       <label class="btn primary">
@@ -1953,7 +2374,7 @@ function summaryHTML(summary){
 }
 
 /* ---------------------------------------------------------------------------
-   18. EXERCISES BLOCK
+   20. EXERCISES BLOCK
    --------------------------------------------------------------------------- */
 function exercisesBlockHTML(topicId){
   const exercises = getExercisesFor(topicId);
@@ -2006,7 +2427,7 @@ function exercisesBlockHTML(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   19. EXERCISES RENDERERS
+   21. EXERCISES RENDERERS
    --------------------------------------------------------------------------- */
 function exerciseHTML(ex, i, lessonId){
   const type = ex.type || "multiple_choice";
@@ -2181,7 +2602,7 @@ function checkExercise(card){
 }
 
 /* ---------------------------------------------------------------------------
-   20. PASSAGE MODAL
+   22. PASSAGE MODAL
    --------------------------------------------------------------------------- */
 function openPassage(key){
   const data = passageStore.get(key);
@@ -2208,7 +2629,345 @@ function closeModal(){
 }
 
 /* ---------------------------------------------------------------------------
-   21. SETTINGS VIEW
+   23. FORM MODAL
+   --------------------------------------------------------------------------- */
+function openFormModal({ title, sub, body, onSubmit }){
+  $("formModalTitle").textContent = title || "";
+  $("formModalSub").textContent = sub || "";
+  $("formModalBody").innerHTML = body || "";
+  formSubmitHandler = onSubmit || null;
+  $("formModal").hidden = false;
+  document.body.style.overflow = "hidden";
+  const first = $("formModalBody").querySelector("input, textarea, select");
+  if (first) first.focus();
+}
+
+function closeFormModal(){
+  $("formModal").hidden = true;
+  $("formModalBody").innerHTML = "";
+  formSubmitHandler = null;
+  document.body.style.overflow = "";
+}
+
+function coverPreviewHTML(src){
+  return src ? `<img src="${esc(src)}" alt="Cover preview">` : `<span>No cover</span>`;
+}
+
+function pickCover(target){
+  const input = $("coverInput");
+  input.dataset.target = target;
+  input.click();
+}
+
+/** Downscale an image file and return a JPEG data URL. */
+function readImageFile(file, maxW, quality){
+  maxW = maxW || 700;
+  quality = quality || 0.82;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the image file."));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("That file is not a valid image."));
+      img.onload = () => {
+        try {
+          const scale = Math.min(1, maxW / img.width);
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        } catch (e){
+          resolve(reader.result);
+        }
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ---- book create / edit ---- */
+function openBookForm(bookId){
+  const b = bookId ? state.books.find(x => x.id === bookId) : null;
+  editingBookId = b ? b.id : null;
+  pendingCover = b ? (b.cover || null) : null;
+  const isNew = !b;
+
+  openFormModal({
+    title: isNew ? "New book" : "Edit book",
+    sub: isNew ? "Create a book, then add sections and topics inside it." : bookTitle(b),
+    body: `
+      <div class="field">
+        <label for="bfTitle">Title</label>
+        <input type="text" id="bfTitle" value="${esc(b ? bookTitle(b) : "")}"
+               placeholder="e.g. English Grammar in Use" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="bfSubtitle">Subtitle</label>
+        <input type="text" id="bfSubtitle" value="${esc(b ? bookSubtitle(b) : "")}"
+               placeholder="e.g. Grammar Reference &amp; Practice" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="bfAuthor">Author</label>
+        <input type="text" id="bfAuthor" value="${esc(b ? bookAuthor(b) : "")}"
+               placeholder="Optional" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Cover image</label>
+        <div class="cover-drop">
+          <div class="cover-preview" id="bfCoverPreview">${coverPreviewHTML(pendingCover)}</div>
+          <div class="cover-actions">
+            <button type="button" class="btn tiny" data-action="pick-cover">Choose image</button>
+            <button type="button" class="btn tiny ghost" data-action="remove-cover">Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">
+          ${isNew ? "Create book" : "Save changes"}
+        </button>
+      </div>`,
+    onSubmit: saveBookForm
+  });
+}
+
+function saveBookForm(){
+  const title = ($("bfTitle") ? $("bfTitle").value : "").trim();
+  if (!title){ toast("Please enter a book title.", "err"); return; }
+  const subtitle = ($("bfSubtitle") ? $("bfSubtitle").value : "").trim();
+  const author   = ($("bfAuthor") ? $("bfAuthor").value : "").trim();
+
+  if (editingBookId){
+    const b = state.books.find(x => x.id === editingBookId);
+    if (!b) return;
+    b.book.title = title;
+    b.book.subtitle = subtitle;
+    b.book.author = author;
+    b.cover = pendingCover || null;
+    saveBooks();
+    closeFormModal();
+    render();
+    toast("Book updated.");
+  } else {
+    const b = ensureBookShape({
+      id: uniqueBookId(title),
+      cover: pendingCover || null,
+      book: { title, subtitle, author, version: "1.0" },
+      sections: []
+    });
+    state.books.push(b);
+    state.currentBookId = b.id;
+    saveBooks();
+    saveCurrentBook();
+    closeFormModal();
+    state.view = "book-detail";
+    render();
+    toast("Book created. Add a section to get started.");
+  }
+}
+
+function deleteBook(id){
+  const b = state.books.find(x => x.id === id);
+  if (!b) return;
+  if (!confirm(`Delete "${bookTitle(b)}" and all of its topics?\n\nLessons, exercises and progress that were imported stay in the library and will reappear if a book with the same topic ids is loaded.`)) return;
+  state.books = state.books.filter(x => x.id !== id);
+  ensureCurrentBook();
+  saveBooks();
+  saveCurrentBook();
+  if (state.view === "book-detail") state.view = "book";
+  render();
+  toast("Book deleted.");
+}
+
+/* ---- sections ---- */
+function addSection(){
+  const b = currentBook();
+  if (!b) return;
+  openFormModal({
+    title: "New section",
+    sub: bookTitle(b),
+    body: `
+      <div class="field">
+        <label for="sfTitle">Section title</label>
+        <input type="text" id="sfTitle" placeholder="e.g. Present and Past" autocomplete="off">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Add section</button>
+      </div>`,
+    onSubmit: () => {
+      const t = ($("sfTitle") ? $("sfTitle").value : "").trim();
+      if (!t){ toast("Enter a section title.", "err"); return; }
+      b.sections.push({ id: uniqueSectionId(b, t), title: t, topics: [] });
+      saveBooks();
+      closeFormModal();
+      render();
+      toast("Section added.");
+    }
+  });
+}
+
+function renameSection(sectionId){
+  const b = currentBook();
+  const sec = b && (b.sections || []).find(s => s.id === sectionId);
+  if (!sec) return;
+  openFormModal({
+    title: "Rename section",
+    sub: esc(sec.title),
+    body: `
+      <div class="field">
+        <label for="sfTitle">Section title</label>
+        <input type="text" id="sfTitle" value="${esc(sec.title)}" autocomplete="off">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Save</button>
+      </div>`,
+    onSubmit: () => {
+      const t = ($("sfTitle") ? $("sfTitle").value : "").trim();
+      if (!t){ toast("Enter a section title.", "err"); return; }
+      sec.title = t;
+      saveBooks();
+      closeFormModal();
+      render();
+      toast("Section renamed.");
+    }
+  });
+}
+
+function deleteSection(sectionId){
+  const b = currentBook();
+  if (!b) return;
+  const sec = (b.sections || []).find(s => s.id === sectionId);
+  if (!sec) return;
+  const n = (sec.topics || []).length;
+  if (!confirm(`Delete the section "${sec.title}"${n ? ` and its ${n} topic${n === 1 ? "" : "s"}` : ""}?`)) return;
+  b.sections = b.sections.filter(s => s.id !== sectionId);
+  saveBooks();
+  render();
+  toast("Section deleted.");
+}
+
+/* ---- topics ---- */
+function addTopic(sectionId){
+  const b = currentBook();
+  const sec = b && (b.sections || []).find(s => s.id === sectionId);
+  if (!sec) return;
+  const nextNum = (sec.topics || []).reduce((m, t) => Math.max(m, Number(t.number) || 0), 0) + 1;
+
+  openFormModal({
+    title: "New topic",
+    sub: sec.title,
+    body: `
+      <div class="field">
+        <label for="tfTitle">Topic title</label>
+        <input type="text" id="tfTitle" placeholder="e.g. Present Simple" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="tfNumber">Unit number</label>
+        <input type="number" id="tfNumber" min="1" value="${nextNum}">
+      </div>
+      <div class="field">
+        <label for="tfDesc">Description</label>
+        <textarea id="tfDesc" placeholder="Habits, routines, general truths..."></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Add topic</button>
+      </div>`,
+    onSubmit: () => {
+      const t = ($("tfTitle") ? $("tfTitle").value : "").trim();
+      if (!t){ toast("Enter a topic title.", "err"); return; }
+      const num = Number($("tfNumber") ? $("tfNumber").value : nextNum) || nextNum;
+      const desc = ($("tfDesc") ? $("tfDesc").value : "").trim();
+      sec.topics.push({
+        id: uniqueTopicId(b, t),
+        number: num,
+        title: t,
+        description: desc,
+        status: "not_started"
+      });
+      saveBooks();
+      closeFormModal();
+      render();
+      toast("Topic added.");
+    }
+  });
+}
+
+function findTopicInCurrentBook(topicId){
+  const b = currentBook();
+  if (!b) return null;
+  for (const s of (b.sections || [])){
+    const t = (s.topics || []).find(x => x.id === topicId);
+    if (t) return { book: b, section: s, topic: t };
+  }
+  return null;
+}
+
+function editTopic(topicId){
+  const found = findTopicInCurrentBook(topicId);
+  if (!found) return;
+  const { topic } = found;
+
+  openFormModal({
+    title: "Edit topic",
+    sub: esc(found.section.title),
+    body: `
+      <div class="field">
+        <label for="tfTitle">Topic title</label>
+        <input type="text" id="tfTitle" value="${esc(topic.title)}" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="tfNumber">Unit number</label>
+        <input type="number" id="tfNumber" min="1" value="${esc(topic.number != null ? topic.number : "")}">
+      </div>
+      <div class="field">
+        <label for="tfDesc">Description</label>
+        <textarea id="tfDesc">${esc(topic.description || "")}</textarea>
+      </div>
+      <div class="field">
+        <label>Topic id (used by lesson &amp; exercise files)</label>
+        <div class="muted"><code>${esc(topic.id)}</code></div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Save changes</button>
+      </div>`,
+    onSubmit: () => {
+      const t = ($("tfTitle") ? $("tfTitle").value : "").trim();
+      if (!t){ toast("Enter a topic title.", "err"); return; }
+      topic.title = t;
+      const num = Number($("tfNumber") ? $("tfNumber").value : topic.number);
+      if (isFinite(num) && num > 0) topic.number = num;
+      topic.description = ($("tfDesc") ? $("tfDesc").value : "").trim();
+      saveBooks();
+      closeFormModal();
+      render();
+      toast("Topic updated.");
+    }
+  });
+}
+
+function deleteTopic(topicId){
+  const found = findTopicInCurrentBook(topicId);
+  if (!found) return;
+  if (!confirm(`Delete the topic "${found.topic.title}"?`)) return;
+  found.section.topics = found.section.topics.filter(t => t.id !== topicId);
+  saveBooks();
+  render();
+  toast("Topic deleted.");
+}
+
+/* ---------------------------------------------------------------------------
+   24. SETTINGS VIEW
    --------------------------------------------------------------------------- */
 function settingsHTML(){
   const messages = state.importMessages.map(m =>
@@ -2216,25 +2975,47 @@ function settingsHTML(){
 
   const topicIds = allTopics().map(t => t.topic.id);
   const loadedIds = Object.keys(state.lessons);
-  const orphanLessons = loadedIds.filter(id => topicIds.indexOf(id) === -1);
+  const orphanLessons = loadedIds.filter(id => !findTopicAnywhere(id));
 
   const exTopicIds = Object.keys(state.exercises);
-  const orphanExercises = exTopicIds.filter(id => topicIds.indexOf(id) === -1);
+  const orphanExercises = exTopicIds.filter(id => !findTopicAnywhere(id));
 
-  const bookTitle = (state.book && state.book.book && state.book.book.title) || "—";
+  const bookList = state.books.length
+    ? state.books.map(b => {
+        const s = bookStats(b);
+        const current = b.id === state.currentBookId;
+        return `<li style="margin-bottom:8px;">
+          <strong>${esc(bookTitle(b))}</strong>${current ? " <span class=\"pill completed\">Current</span>" : ""}
+          <span class="muted"> — ${s.total} topics · ${s.completed} completed${b.cover ? " · cover ✓" : ""}</span>
+        </li>`;
+      }).join("")
+    : '<li class="muted">No books in the library.</li>';
 
   return `
   <div class="page-head">
     <h2 class="page-title">Settings</h2>
-    <p class="page-sub">Import content, view JSON templates, adjust reading options. Everything is stored locally in your browser.</p>
+    <p class="page-sub">Manage books, import content, view JSON templates, adjust reading options. Everything is stored locally in your browser.</p>
   </div>
 
   ${messages}
 
+  <!-- ===================== LIBRARY ===================== -->
+  <section class="card">
+    <h3>Library</h3>
+    <p class="muted">Create books here, or import them as JSON. A book holds sections, and each section holds topics.</p>
+    <ul style="list-style:none;padding:0;margin:12px 0 0;font-size:.88rem;">${bookList}</ul>
+    <div class="file-row">
+      <button class="btn primary" data-action="add-book">＋ New book</button>
+      <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn ghost" data-action="nav" data-view="book">Open library →</button>
+    </div>
+  </section>
+
   <!-- ===================== GRAMMAR BOOK ===================== -->
   <section class="card">
     <h3>Grammar Book JSON</h3>
-    <p class="muted">Defines the sections and topics of the book. Import this file first — it creates the table of contents for the whole application.</p>
+    <p class="muted">Defines one book: its title, sections and topics. Importing adds it to the library
+      (or replaces the existing book with the same <code>id</code>).</p>
     <div class="file-row">
       <input type="file" id="bookFile" accept=".json,application/json" multiple>
       <button class="btn" data-action="download-template" data-kind="book">Download template</button>
@@ -2249,7 +3030,7 @@ function settingsHTML(){
   <!-- ===================== LESSON ===================== -->
   <section class="card">
     <h3>Lesson JSON</h3>
-    <p class="muted">One file per topic. The lesson <code>id</code> must match a topic <code>id</code> in the grammar book. You can select several files at once.</p>
+    <p class="muted">One file per topic. The lesson <code>id</code> must match a topic <code>id</code> in a book. You can select several files at once.</p>
     <div class="file-row">
       <input type="file" id="lessonFile" accept=".json,application/json" multiple>
       <button class="btn" data-action="download-template" data-kind="lesson">Download template</button>
@@ -2294,18 +3075,19 @@ function settingsHTML(){
     ${readerPanelHTML("inline")}
   </section>
 
-  <!-- ===================== LIBRARY ===================== -->
+  <!-- ===================== STORAGE ===================== -->
   <section class="card">
-    <h3>Library</h3>
-    <p class="muted">Grammar book: <strong>${esc(bookTitle)}</strong>
-      · ${topicCount()} topics
+    <h3>Storage &amp; data</h3>
+    <p class="muted">${state.books.length} book${state.books.length === 1 ? "" : "s"}
+      · ${topicCount()} topics in the current book
       · ${loadedIds.length} lesson${loadedIds.length === 1 ? "" : "s"} loaded
       · ${exTopicIds.length} exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)</p>
-    ${orphanLessons.length ? `<div class="alert info">Lessons loaded without a matching topic in the grammar book:
+    ${orphanLessons.length ? `<div class="alert info">Lessons loaded without a matching topic in any book:
       <code>${esc(orphanLessons.join(", "))}</code></div>` : ""}
-    ${orphanExercises.length ? `<div class="alert info">Exercise banks loaded without a matching topic in the grammar book:
+    ${orphanExercises.length ? `<div class="alert info">Exercise banks loaded without a matching topic in any book:
       <code>${esc(orphanExercises.join(", "))}</code></div>` : ""}
     <div class="file-row">
+      <button class="btn" data-action="export-library">Export library</button>
       <button class="btn" data-action="export-progress">Export progress</button>
       <button class="btn" data-action="reset-progress">Reset all progress</button>
       <button class="btn" data-action="clear-all">Clear all data</button>
@@ -2316,18 +3098,20 @@ function settingsHTML(){
   <section class="card">
     <h3>How to add a topic</h3>
     <ol class="muted" style="padding-left:20px;line-height:2;">
-      <li>Download the <strong>Grammar Book template</strong>. Add a section and topic entry with a new <code>id</code>.</li>
+      <li>In <strong>Books</strong>, press <em>New book</em> (or import a grammar book JSON file).</li>
+      <li>Open the book and press <em>Add section</em>, then <em>Add topic</em> inside that section —
+        or edit the book JSON directly.</li>
       <li>Download the <strong>Lesson template</strong> (or open any topic's page and use its
         <em>Download lesson template</em> button, which pre-fills the id).</li>
       <li>Fill in the lesson: sections, examples, literary examples, comparisons, summary.</li>
       <li>Optionally download the <strong>Exercise template</strong> for that topic's id and add exercises.</li>
-      <li>Import all three files here — or import the lesson/exercise files directly from the topic's page.</li>
+      <li>Import the lesson/exercise files in Settings — or directly from the topic's page.</li>
     </ol>
   </section>`;
 }
 
 /* ---------------------------------------------------------------------------
-   22. JSON IMPORT VALIDATION + APPLY
+   25. JSON IMPORT VALIDATION + APPLY
    --------------------------------------------------------------------------- */
 function validateBook(obj){
   const errors = [];
@@ -2396,20 +3180,36 @@ function validateExerciseFile(obj){
 }
 
 function applyJSON(obj){
+  /* --- grammar book --- */
   if (obj && typeof obj === "object" && obj.book && Array.isArray(obj.sections)){
     const v = validateBook(obj);
     if (!v.ok) return { ok: false, message: "Invalid grammar book JSON — " + v.errors.join("; ") };
-    state.book = obj;
-    saveBook();
-    return { ok: true, message: `Grammar book "${(obj.book.title || "untitled")}" imported — ${topicCount()} topics.` };
+
+    const nb = ensureBookShape(deepClone(obj));
+    const idx = state.books.findIndex(b => b.id === nb.id);
+    if (idx >= 0){
+      nb.cover = nb.cover || state.books[idx].cover || null;
+      state.books[idx] = nb;
+    } else {
+      state.books.push(nb);
+    }
+    state.currentBookId = nb.id;
+    saveBooks();
+    saveCurrentBook();
+    return {
+      ok: true,
+      message: `Book "${bookTitle(nb)}" imported — ${bookTopics(nb).length} topics` +
+               (idx >= 0 ? " (replaced existing book)." : ".")
+    };
   }
 
+  /* --- exercise bank --- */
   if (obj && typeof obj === "object" && obj.topic_id && Array.isArray(obj.exercises)){
     const v = validateExerciseFile(obj);
     if (!v.ok) return { ok: false, message: "Invalid exercise JSON — " + v.errors.join("; ") };
     state.exercises[obj.topic_id] = obj;
     saveExercises();
-    const known = allTopics().some(t => t.topic.id === obj.topic_id);
+    const known = !!findTopicAnywhere(obj.topic_id);
     const n = obj.exercises.length;
     return {
       ok: true,
@@ -2417,12 +3217,13 @@ function applyJSON(obj){
     };
   }
 
+  /* --- lesson --- */
   if (obj && typeof obj === "object" && obj.id && obj.title && Array.isArray(obj.sections)){
     const v = validateLesson(obj);
     if (!v.ok) return { ok: false, message: "Invalid lesson JSON — " + v.errors.join("; ") };
     state.lessons[obj.id] = obj;
     saveLessons();
-    const known = allTopics().some(t => t.topic.id === obj.id);
+    const known = !!findTopicAnywhere(obj.id);
     return {
       ok: true,
       message: `Lesson "${obj.title}" imported${known ? "" : " (warning: no matching topic id)"}.`
@@ -2466,7 +3267,7 @@ async function handleFiles(fileList){
 }
 
 /* ---------------------------------------------------------------------------
-   23. EVENTS
+   26. EVENTS
    --------------------------------------------------------------------------- */
 document.addEventListener("click", (ev) => {
 
@@ -2479,6 +3280,7 @@ document.addEventListener("click", (ev) => {
   }
 
   if (ev.target.id === "modal"){ closeModal(); return; }
+  if (ev.target.id === "formModal"){ closeFormModal(); return; }
 
   const el = ev.target.closest("[data-action]");
   if (!el) return;
@@ -2491,10 +3293,84 @@ document.addEventListener("click", (ev) => {
       go(el.dataset.view);
       break;
 
+    /* ---------------- BOOKS ---------------- */
+    case "add-book":
+      openBookForm(null);
+      break;
+
+    case "edit-book":
+      openBookForm(el.dataset.id);
+      break;
+
+    case "delete-book":
+      deleteBook(el.dataset.id);
+      break;
+
+    case "open-book":
+      openBook(el.dataset.id);
+      break;
+
+    case "upload-cover":
+      pickCover(el.dataset.id);
+      break;
+
+    case "import-book": {
+      const input = $("bookFileQuick");
+      input.value = "";
+      input.click();
+      break;
+    }
+
+    /* ---------------- SECTIONS / TOPICS ---------------- */
+    case "add-section":
+      addSection();
+      break;
+
+    case "rename-section":
+      renameSection(el.dataset.section);
+      break;
+
+    case "delete-section":
+      deleteSection(el.dataset.section);
+      break;
+
+    case "add-topic":
+      addTopic(el.dataset.section);
+      break;
+
+    case "edit-topic":
+      editTopic(el.dataset.id);
+      break;
+
+    case "delete-topic":
+      deleteTopic(el.dataset.id);
+      break;
+
     case "open-topic":
       openTopic(el.dataset.id);
       break;
 
+    /* ---------------- FORM MODAL ---------------- */
+    case "form-submit":
+      if (typeof formSubmitHandler === "function") formSubmitHandler();
+      break;
+
+    case "close-form-modal":
+      closeFormModal();
+      break;
+
+    case "pick-cover":
+      pickCover("modal");
+      break;
+
+    case "remove-cover": {
+      pendingCover = null;
+      const prev = $("bfCoverPreview");
+      if (prev) prev.innerHTML = coverPreviewHTML(null);
+      break;
+    }
+
+    /* ---------------- LESSON ---------------- */
     case "toggle-complete": {
       const id = el.dataset.id;
       const next = statusOf(id) === "completed" ? "not_started" : "completed";
@@ -2551,10 +3427,9 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
-    case "set-reader-font": {
+    case "set-reader-font":
       setReaderFont(el.dataset.font);
       break;
-    }
 
     case "reader-size-step": {
       const step = Number(el.dataset.step) || 0;
@@ -2646,20 +3521,29 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    case "export-library": {
+      downloadJSON({ exportedAt: new Date().toISOString(), books: state.books }, "grammar-library.json");
+      toast("Library exported.");
+      break;
+    }
+
     case "clear-all": {
-      if (!confirm("Clear all data? This removes the grammar book, all lessons, all exercise banks and all progress. Reading options are kept.")) return;
-      state.book = null;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise banks and all progress. Reading options are kept.")) return;
+      state.books = [];
+      state.currentBookId = null;
       state.lessons = {};
       state.exercises = {};
       state.progress = {};
       state.currentTopicId = null;
       try {
+        localStorage.removeItem(LS.BOOKS);
         localStorage.removeItem(LS.BOOK);
+        localStorage.removeItem(LS.CURRENT);
         localStorage.removeItem(LS.LESSONS);
         localStorage.removeItem(LS.EXERCISES);
         localStorage.removeItem(LS.PROGRESS);
       } catch (e){}
-      state.importMessages = [{ type: "ok", text: "All data cleared. Import a grammar book to begin." }];
+      state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
       state.view = "settings";
       render();
       break;
@@ -2679,7 +3563,10 @@ document.addEventListener("click", (ev) => {
 
 /* keyboard */
 document.addEventListener("keydown", (ev) => {
-  if (ev.key === "Escape" && !$("modal").hidden){ closeModal(); return; }
+  if (ev.key === "Escape"){
+    if (!$("formModal").hidden){ closeFormModal(); return; }
+    if (!$("modal").hidden){ closeModal(); return; }
+  }
   if (ev.key === "Enter" || ev.key === " "){
     const card = ev.target.closest && ev.target.closest(".topic-card");
     if (card && ev.target === card){
@@ -2704,7 +3591,7 @@ document.addEventListener("input", (ev) => {
   }
 });
 
-/* save the size when the slider is released */
+/* change events: slider commit + every file input */
 document.addEventListener("change", (ev) => {
   const t = ev.target;
   if (!t) return;
@@ -2714,6 +3601,40 @@ document.addEventListener("change", (ev) => {
     return;
   }
 
+  /* ---- cover image ---- */
+  if (t.id === "coverInput"){
+    const file = t.files && t.files[0];
+    const target = t.dataset.target;
+    t.value = "";
+    if (!file) return;
+
+    readImageFile(file).then(dataUrl => {
+      if (target === "modal"){
+        pendingCover = dataUrl;
+        const prev = $("bfCoverPreview");
+        if (prev) prev.innerHTML = coverPreviewHTML(dataUrl);
+      } else if (target){
+        const b = state.books.find(x => x.id === target);
+        if (b){
+          b.cover = dataUrl;
+          saveBooks();
+          render();
+          toast("Cover updated.");
+        }
+      }
+    }).catch(err => toast(err.message || "Could not read that image.", "err"));
+    return;
+  }
+
+  /* ---- quick book import (library view) ---- */
+  if (t.id === "bookFileQuick"){
+    const files = t.files;
+    t.value = "";
+    handleFiles(files);
+    return;
+  }
+
+  /* ---- settings file inputs ---- */
   if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile"){
     const files = t.files;
     t.value = "";
@@ -2721,6 +3642,7 @@ document.addEventListener("change", (ev) => {
     return;
   }
 
+  /* ---- in-page lesson / exercise imports ---- */
   if (t.classList){
     if (t.classList.contains("lesson-file-input") || t.classList.contains("exercise-file-input")){
       const files = t.files;
@@ -2731,10 +3653,10 @@ document.addEventListener("change", (ev) => {
 });
 
 /* ---------------------------------------------------------------------------
-   24. DYNAMIC INPUT BINDING
+   27. DYNAMIC INPUT BINDING
    --------------------------------------------------------------------------- */
 function bindDynamicInputs(){
-  if (state.view === "book" && hasBook()){
+  if (state.view === "book-detail" && hasBook()){
     renderBookResults();
     const input = $("searchInput");
     if (input){
@@ -2749,7 +3671,7 @@ function bindDynamicInputs(){
 }
 
 /* ---------------------------------------------------------------------------
-   25. INIT
+   28. INIT
    --------------------------------------------------------------------------- */
 (function init(){
   loadState();
