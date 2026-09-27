@@ -491,7 +491,6 @@ button{font:inherit;}
   content:"▸";position:absolute;left:0;top:0;color:var(--rule-strong);font-size:.85rem;
 }
 
-/* FIX 1 — was: font-size: 18px;;color: #076bec;(--muted) — invalid CSS */
 .ex-note{
   display:block;
   font-size:.85em;
@@ -1074,7 +1073,6 @@ html[data-theme="dark"]{
   color-scheme: dark;
 }
 
-/* ---- FIX 2: dark-mode overrides for target highlights & strikethrough ---- */
 html[data-theme="dark"] ::selection{ background:#5b4a12; color:#fff; }
 
 html[data-theme="dark"] .target{
@@ -2617,7 +2615,12 @@ function shortTitle(t){
   return String(t).length > 26 ? String(t).slice(0, 24) + "…" : t;
 }
 
+/* === CHANGED: inline template viewer instead of download-only === */
 function noLessonHTML(topic){
+  const tplId = "lessonTpl-" + slugify(topic.id);
+  const boxId = tplId + "-box";
+  const tplText = JSON.stringify(lessonTemplateForTopic(topic.id), null, 2);
+
   return `
   <div class="card empty-lesson">
     <h3>Lesson content not loaded</h3>
@@ -2628,10 +2631,30 @@ function noLessonHTML(topic){
         Import lesson JSON
         <input type="file" class="lesson-file-input" accept=".json,application/json" multiple hidden>
       </label>
+      <button class="btn" data-action="toggle-template" data-target="${esc(tplId)}"
+              data-label-show="▸ Show lesson template" data-label-hide="▾ Hide lesson template">
+        ▸ Show lesson template
+      </button>
       <button class="btn ghost" data-action="download-template" data-kind="lesson" data-id="${esc(topic.id)}">
-        Download lesson template
+        Download as JSON file
       </button>
       <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings</button>
+    </div>
+
+    <div class="template-wrap" id="${esc(tplId)}" hidden>
+      <p class="muted" style="margin-top:14px;">
+        This template is pre-filled with the <code>id</code>, <code>title</code>,
+        <code>section</code> and <code>number</code> for <strong>${esc(topic.title)}</strong>.
+        Edit it and import the file, or paste it into
+        <em>Settings → Paste JSON</em> to populate this topic.
+      </p>
+      <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
+      <div class="file-row">
+        <button class="btn tiny" data-action="copy-template" data-target="${esc(boxId)}">Copy JSON</button>
+        <button class="btn tiny ghost" data-action="download-template" data-kind="lesson" data-id="${esc(topic.id)}">
+          Download
+        </button>
+      </div>
     </div>
   </div>`;
 }
@@ -4327,7 +4350,46 @@ document.addEventListener("click", (ev) => {
       if (!target) break;
       const isHidden = target.hidden;
       target.hidden = !isHidden;
-      el.textContent = (isHidden ? "▾ Hide structure" : "▸ Show structure");
+      const showLabel = el.dataset.labelShow || "▸ Show structure";
+      const hideLabel = el.dataset.labelHide || "▾ Hide structure";
+      el.textContent = isHidden ? hideLabel : showLabel;
+      break;
+    }
+
+    /* === NEW: copy template JSON to clipboard === */
+    case "copy-template": {
+      const target = $(el.dataset.target);
+      if (!target){ toast("Template not found.", "err"); break; }
+      const text = target.textContent || "";
+
+      const succeed = () => toast("Template JSON copied to clipboard.");
+      const fail = () => toast("Could not copy automatically — select the text and copy it manually.", "err");
+
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(succeed).catch(() => {
+          try {
+            const r = document.createRange();
+            r.selectNodeContents(target);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(r);
+            document.execCommand("copy");
+            sel.removeAllRanges();
+            succeed();
+          } catch (e){ fail(); }
+        });
+      } else {
+        try {
+          const r = document.createRange();
+          r.selectNodeContents(target);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+          document.execCommand("copy");
+          sel.removeAllRanges();
+          succeed();
+        } catch (e){ fail(); }
+      }
       break;
     }
 
