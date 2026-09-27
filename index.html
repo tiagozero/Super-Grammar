@@ -1,0 +1,2760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>English Grammar — Grammar Reference &amp; Practice</title>
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --paper:#faf8f3;
+  --card:#ffffff;
+  --card-soft:#fdfcf9;
+  --ink:#1c1b19;
+  --ink-soft:#4b4842;
+  --muted:#7d776c;
+  --rule:#e6e1d6;
+  --rule-strong:#d3ccbd;
+  --accent:#1f4e79;
+  --accent-2:#2f6ea5;
+  --accent-soft:#eef3f9;
+  --gold:#a97a12;
+  --ok:#1f7a4d;
+  --ok-soft:#e9f5ee;
+  --warn:#a86a12;
+  --warn-soft:#fdf3e0;
+  --err:#a8322a;
+  --err-soft:#fbeeec;
+  --target-bg:#fff0b3;
+  --target-line:#e6c45a;
+  --serif:"Literata","Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:8px;
+  --shadow:0 1px 2px rgba(28,27,25,.05), 0 6px 20px rgba(28,27,25,.05);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;line-height:1.25;}
+p{margin:0 0 .85em;}
+p:last-child{margin-bottom:0;}
+a{color:var(--accent);}
+code{font-family:var(--mono);font-size:.88em;background:#f1ede4;padding:1px 5px;border-radius:4px;}
+button{font:inherit;}
+::selection{background:#ffe9a8;}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;align-items:center;justify-content:space-between;gap:20px 32px;flex-wrap:wrap;
+  padding:13px 26px;
+  background:rgba(250,248,243,.96);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;}
+.brand h1{
+  font-family:var(--serif);
+  font-size:1.3rem;
+  font-weight:600;
+  letter-spacing:.005em;
+}
+.brand .subtitle{
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  color:var(--muted);
+  font-weight:600;
+}
+.hdr-progress{display:flex;align-items:center;gap:14px;flex:1;min-width:260px;max-width:520px;}
+.hdr-pct{font-weight:700;font-variant-numeric:tabular-nums;font-size:.95rem;color:var(--accent);min-width:44px;text-align:right;}
+.hdr-meta{font-size:.76rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+.pbar{
+  position:relative;flex:1;height:8px;border-radius:99px;overflow:hidden;
+  background:#ece7dc;border:1px solid #e2dccf;
+}
+.pbar > span{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,var(--accent-2),var(--accent));
+  transition:width .4s cubic-bezier(.3,.8,.3,1);
+}
+.pbar.small{height:6px;}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.layout{
+  display:grid;
+  grid-template-columns:250px minmax(0,1fr);
+  max-width:1440px;
+  margin:0 auto;
+  align-items:start;
+}
+.sidebar{
+  position:sticky;top:66px;
+  padding:22px 14px 40px;
+  border-right:1px solid var(--rule);
+  max-height:calc(100vh - 66px);
+  overflow:auto;
+}
+.nav{display:flex;flex-direction:column;gap:2px;}
+.nav button{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:9px 12px;
+  background:transparent;border:0;border-left:3px solid transparent;border-radius:5px;
+  color:var(--ink-soft);font-size:.9rem;text-align:left;cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.nav button:hover{background:#f2ede3;color:var(--ink);}
+.nav button.active{background:var(--accent-soft);color:var(--accent);font-weight:650;border-left-color:var(--accent);}
+.nav .ic{width:16px;text-align:center;opacity:.75;font-size:.9rem;}
+.nav-sep{height:1px;background:var(--rule);margin:14px 10px;}
+.side-note{font-size:.72rem;color:var(--muted);padding:0 12px;line-height:1.5;}
+
+.main{padding:28px 34px 90px;min-width:0;}
+
+/* ============================================================
+   PAGE HEADINGS
+   ============================================================ */
+.page-head{margin-bottom:22px;}
+.page-title{font-family:var(--serif);font-size:1.75rem;font-weight:600;letter-spacing:-.01em;}
+.page-sub{color:var(--muted);font-size:.9rem;margin-top:4px;}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:22px 24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.card h3{
+  font-family:var(--serif);font-size:1.05rem;font-weight:600;margin-bottom:10px;
+}
+.muted{color:var(--muted);font-size:.87rem;}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.hero{
+  display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+  gap:30px;align-items:center;padding:26px 28px;
+}
+.hero-pct{font-family:var(--serif);font-size:3.1rem;line-height:1;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums;}
+.hero-label{color:var(--muted);font-size:.85rem;margin:6px 0 14px;letter-spacing:.02em;}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;}
+.stat-num{font-family:var(--serif);font-size:1.5rem;font-weight:600;font-variant-numeric:tabular-nums;}
+.stat-lab{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600;}
+.stat.done .stat-num{color:var(--ok);}
+.stat.prog .stat-num{color:var(--warn);}
+
+.continue-card{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  background:linear-gradient(180deg,#ffffff,#fbfaf6);}
+.continue-card .cc-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;}
+.continue-card .cc-sub{color:var(--muted);font-size:.84rem;}
+
+.sec-progress-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;}
+.sec-progress-list li{display:grid;grid-template-columns:minmax(140px,220px) 1fr auto;gap:16px;align-items:center;}
+.sec-progress-list .sp-name{font-size:.9rem;font-weight:600;}
+.sec-progress-list .sp-meta{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+.search-wrap{margin-bottom:24px;}
+.search{
+  width:100%;
+  padding:12px 16px 12px 42px;
+  font-size:.95rem;
+  border:1px solid var(--rule-strong);
+  border-radius:var(--radius);
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%237d776c' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 14px center;
+  color:var(--ink);
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.search:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,110,165,.12);}
+
+/* ============================================================
+   BOOK SECTIONS + TOPIC CARDS
+   ============================================================ */
+.book-section{margin-bottom:34px;}
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  padding-bottom:10px;margin-bottom:16px;
+  border-bottom:1px solid var(--rule-strong);
+}
+.sec-head h3{
+  font-family:var(--serif);font-size:1.18rem;font-weight:600;letter-spacing:.005em;
+  display:flex;align-items:center;gap:10px;
+}
+.sec-head h3::before{
+  content:"";width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block;
+}
+.sec-progress{display:flex;align-items:center;gap:12px;min-width:230px;flex:1;max-width:340px;}
+.sec-progress .pbar{flex:1;}
+.sec-meta{font-size:.75rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+.topic-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(258px,1fr));
+  gap:14px;
+}
+.topic-card{
+  position:relative;
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--rule-strong);
+  border-radius:var(--radius);
+  padding:16px 18px 14px;
+  cursor:pointer;
+  transition:transform .12s ease,box-shadow .15s ease,border-color .15s ease;
+  display:flex;flex-direction:column;gap:8px;
+  min-height:158px;
+}
+.topic-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(28,27,25,.09);border-color:#d8d2c4;}
+.topic-card:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
+.topic-card.in_progress{border-left-color:var(--warn);background:linear-gradient(180deg,#fffdf8,#fff);}
+.topic-card.completed{border-left-color:var(--ok);background:linear-gradient(180deg,#fbfdfb,#fff);}
+.topic-unit{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.15em;font-weight:700;color:var(--muted);
+}
+.topic-title{font-family:var(--serif);font-size:1.06rem;font-weight:600;line-height:1.3;}
+.topic-desc{font-size:.82rem;color:var(--muted);line-height:1.5;flex:1;}
+.topic-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.topic-flag{font-size:.68rem;color:var(--muted);letter-spacing:.04em;text-align:right;}
+
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;border:1px solid transparent;white-space:nowrap;
+}
+.pill.not_started{background:#f2efe8;color:var(--muted);border-color:#e5e0d4;}
+.pill.in_progress{background:var(--warn-soft);color:var(--warn);border-color:#f0dcb6;}
+.pill.completed{background:var(--ok-soft);color:var(--ok);border-color:#c8e4d4;}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:8px 15px;border-radius:6px;
+  border:1px solid var(--rule-strong);background:#fff;color:var(--ink-soft);
+  font-size:.85rem;font-weight:600;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s,transform .1s;
+  text-decoration:none;
+}
+.btn:hover{background:#f6f3ec;border-color:#c6bfae;color:var(--ink);}
+.btn:active{transform:translateY(1px);}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.primary:hover{background:#1a4468;border-color:#1a4468;color:#fff;}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff;}
+.btn.ok:hover{background:#196340;border-color:#196340;color:#fff;}
+.btn.ghost{background:transparent;border-color:var(--rule-strong);}
+.btn.ghost:hover{background:#f4f1ea;}
+.btn.tiny{padding:5px 10px;font-size:.76rem;border-radius:5px;}
+.btn[disabled]{opacity:.38;cursor:not-allowed;transform:none;}
+
+/* ============================================================
+   LESSON
+   ============================================================ */
+.lesson{max-width:900px;}
+.lesson-head{
+  border-bottom:2px solid var(--rule-strong);
+  padding-bottom:20px;margin-bottom:26px;
+}
+.unit-label{
+  font-size:.7rem;text-transform:uppercase;letter-spacing:.18em;font-weight:700;color:var(--gold);
+  margin-bottom:8px;
+}
+.lesson-title{font-family:var(--serif);font-size:2.1rem;font-weight:600;letter-spacing:-.015em;line-height:1.15;}
+.lesson-desc{color:var(--ink-soft);font-size:1rem;margin-top:10px;max-width:64ch;}
+.lesson-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px;}
+
+.toc{
+  background:var(--card-soft);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 20px;margin-bottom:30px;
+}
+.toc-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;font-weight:700;color:var(--muted);margin-bottom:8px;}
+.toc ol{margin:0;padding-left:20px;font-size:.88rem;color:var(--ink-soft);}
+.toc li{margin:3px 0;}
+.toc a{text-decoration:none;color:var(--ink-soft);}
+.toc a:hover{color:var(--accent);text-decoration:underline;}
+
+.lsection{
+  margin-bottom:38px;
+  scroll-margin-top:90px;
+}
+.lsection-title{
+  display:flex;align-items:baseline;gap:12px;
+  font-family:var(--serif);font-size:1.32rem;font-weight:600;
+  padding-bottom:8px;margin-bottom:16px;
+  border-bottom:1px solid var(--rule);
+}
+.sec-num{
+  flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent);
+  font-family:var(--sans);font-size:.78rem;font-weight:700;
+  transform:translateY(-2px);
+}
+.explanation{font-size:.97rem;color:var(--ink-soft);margin-bottom:18px;max-width:72ch;}
+.explanation p{margin-bottom:.75em;}
+
+.context-box{
+  background:var(--accent-soft);
+  border-left:3px solid var(--accent-2);
+  border-radius:0 6px 6px 0;
+  padding:12px 16px;margin:0 0 18px;
+  font-size:.88rem;color:#24405c;
+}
+.context-label{
+  display:block;font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;
+  font-weight:800;color:var(--accent);margin-bottom:4px;
+}
+
+.example-box{
+  background:var(--card-soft);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 18px 14px;
+  margin-bottom:18px;
+}
+.example-label{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;font-weight:800;
+  color:var(--muted);margin-bottom:10px;
+}
+.example-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
+.example-list li{
+  font-size:.96rem;color:var(--ink);
+  padding-left:18px;position:relative;
+}
+.example-list li::before{
+  content:"▸";position:absolute;left:0;top:0;color:var(--rule-strong);font-size:.85rem;
+}
+.ex-note{display:block;font-size:.78rem;color:var(--muted);margin-top:1px;}
+
+.target{
+  background:var(--target-bg);
+  box-shadow:inset 0 -2px 0 var(--target-line);
+  border-radius:2px;
+  padding:0 .12em;
+  font-weight:650;
+  color:#3a2d00;
+}
+
+.mistakes{
+  border:1px solid #f0dcb6;background:var(--warn-soft);
+  border-radius:var(--radius);padding:14px 18px;margin-bottom:18px;
+}
+.mistakes-label{
+  font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;font-weight:800;
+  color:var(--warn);margin-bottom:9px;
+}
+.mistake-row{font-size:.9rem;margin-bottom:8px;}
+.mistake-row:last-child{margin-bottom:0;}
+.mistake-row .wrong{color:var(--err);text-decoration:line-through;text-decoration-color:rgba(168,50,42,.4);}
+.mistake-row .right{color:var(--ok);font-weight:600;}
+.mistake-row .why{display:block;color:var(--muted);font-size:.79rem;margin-top:2px;}
+
+.literary-card{
+  margin:22px 0 18px;
+  background:#fffdf7;
+  border:1px solid var(--rule-strong);
+  border-radius:var(--radius);
+  padding:20px 22px;
+  box-shadow:var(--shadow);
+}
+.lit-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px;}
+.lit-book{font-family:var(--serif);font-size:1.02rem;font-weight:600;font-style:italic;}
+.lit-author{font-size:.79rem;color:var(--muted);letter-spacing:.03em;}
+.lit-link{font-size:.76rem;font-weight:600;text-decoration:none;white-space:nowrap;}
+.lit-link:hover{text-decoration:underline;}
+.lit-label{
+  display:block;font-size:.63rem;text-transform:uppercase;letter-spacing:.15em;
+  font-weight:800;color:var(--muted);margin-bottom:5px;
+}
+.lit-context{font-size:.85rem;color:var(--ink-soft);margin-bottom:14px;}
+.lit-passage{
+  font-family:var(--serif);
+  font-size:1.05rem;
+  line-height:1.85;
+  color:#26231d;
+  margin:0 0 14px;
+  padding:4px 0 4px 18px;
+  border-left:3px solid var(--rule-strong);
+}
+.lit-passage p{margin:0 0 1em;}
+.lit-passage p:last-child{margin-bottom:0;}
+.lit-analysis{font-size:.85rem;color:var(--ink-soft);margin-bottom:14px;padding-top:12px;border-top:1px dashed var(--rule);}
+.lit-none{
+  font-size:.83rem;color:var(--muted);font-style:italic;
+  border:1px dashed var(--rule-strong);border-radius:var(--radius);
+  padding:12px 16px;margin:16px 0 18px;background:#fbfaf6;
+}
+
+.lesson-block{margin-bottom:38px;}
+.block-title{
+  font-family:var(--serif);font-size:1.32rem;font-weight:600;
+  padding-bottom:8px;margin-bottom:16px;border-bottom:1px solid var(--rule);
+}
+
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px;}
+.tbl th{
+  text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;
+  font-weight:800;color:var(--muted);
+  padding:9px 14px;border-bottom:2px solid var(--rule-strong);background:#fbfaf6;
+  white-space:nowrap;
+}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-soft);}
+.tbl tbody tr:last-child td{border-bottom:0;}
+.tbl tbody tr:hover{background:#fcfbf7;}
+.tbl .feat,.tbl .pat{font-weight:650;color:var(--ink);}
+.tbl .form{font-family:var(--mono);font-size:.82rem;color:var(--accent);white-space:nowrap;}
+.tbl .ex{font-family:var(--serif);font-size:.92rem;color:var(--ink);}
+.cmp-title{font-family:var(--serif);font-size:1.02rem;font-weight:600;margin-bottom:14px;}
+
+/* ============================================================
+   EXERCISES
+   ============================================================ */
+.exercises{display:flex;flex-direction:column;gap:16px;}
+.exercise{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  box-shadow:var(--shadow);
+}
+.ex-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ex-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:.75rem;font-weight:700;flex:0 0 auto;
+  font-family:var(--sans);
+}
+.ex-type{font-size:.66rem;text-transform:uppercase;letter-spacing:.14em;font-weight:800;color:var(--muted);}
+.ex-question{font-size:.95rem;margin-bottom:14px;}
+.fill-sentence{font-size:1rem;line-height:2.1;}
+.ex-actions{margin-top:14px;}
+
+.options{display:flex;flex-direction:column;gap:8px;}
+.option{
+  text-align:left;padding:10px 14px;border-radius:6px;
+  border:1px solid var(--rule-strong);background:#fff;color:var(--ink-soft);
+  cursor:pointer;font-size:.9rem;transition:background .12s,border-color .12s;
+}
+.option:hover:not(.locked){background:#f6f3ec;border-color:#c6bfae;}
+.option.selected{border-color:var(--accent-2);background:var(--accent-soft);color:var(--accent);font-weight:600;}
+.option.correct{border-color:#9ed3b6;background:var(--ok-soft);color:#155e39;font-weight:600;}
+.option.wrong{border-color:#e7b3ad;background:var(--err-soft);color:#8c2820;}
+.option.locked{cursor:default;}
+
+.blank-input{
+  display:inline-block;
+  font:inherit;font-size:.95rem;
+  padding:3px 8px;margin:0 4px;
+  border:0;border-bottom:2px solid var(--accent-2);
+  background:#f7fafd;color:var(--ink);
+  border-radius:3px 3px 0 0;
+  outline:none;min-width:110px;
+  transition:background .15s,border-color .15s;
+}
+.blank-input:focus{background:#eef5fc;box-shadow:0 0 0 3px rgba(47,110,165,.12);}
+.blank-input.correct{border-bottom-color:var(--ok);background:var(--ok-soft);}
+.blank-input.wrong{border-bottom-color:var(--err);background:var(--err-soft);}
+
+.match-grid{display:flex;flex-direction:column;gap:10px;}
+.match-row{display:grid;grid-template-columns:minmax(120px,200px) minmax(0,1fr);gap:14px;align-items:center;}
+.match-term{font-size:.9rem;font-weight:600;color:var(--ink);}
+.match-select{
+  font:inherit;font-size:.85rem;padding:8px 10px;
+  border:1px solid var(--rule-strong);border-radius:6px;background:#fff;color:var(--ink-soft);
+  width:100%;outline:none;
+}
+.match-select:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,110,165,.12);}
+.match-select.correct{border-color:#9ed3b6;background:var(--ok-soft);color:#155e39;}
+.match-select.wrong{border-color:#e7b3ad;background:var(--err-soft);color:#8c2820;}
+
+.ex-feedback{
+  margin-top:14px;padding:11px 14px;border-radius:6px;
+  font-size:.87rem;line-height:1.55;
+  border-left:3px solid transparent;
+}
+.ex-feedback.ok{background:var(--ok-soft);border-left-color:var(--ok);color:#155e39;}
+.ex-feedback.err{background:var(--err-soft);border-left-color:var(--err);color:#8c2820;}
+.ex-feedback.warn{background:var(--warn-soft);border-left-color:var(--warn);color:#7d4f0d;}
+.ex-feedback strong{font-weight:700;}
+
+.exercise-import-bar{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  margin-top:20px;padding:16px 18px;
+  border:1px dashed var(--rule-strong);border-radius:var(--radius);
+  background:#fbfaf6;
+}
+.exercise-import-note{
+  flex:1;min-width:180px;font-size:.8rem;color:var(--muted);
+}
+.exercise-import-note strong{color:var(--ink);font-weight:600;}
+.exercise-import-bar .btn{flex:0 0 auto;}
+.exercise-count{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin-left:10px;
+}
+
+.lesson-nav{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-top:44px;padding-top:22px;border-top:2px solid var(--rule-strong);
+}
+.lesson-nav .mid{flex:1;display:flex;justify-content:center;}
+
+/* ============================================================
+   EMPTY / ALERTS
+   ============================================================ */
+.empty{
+  text-align:center;padding:56px 24px;color:var(--muted);
+  border:1px dashed var(--rule-strong);border-radius:var(--radius);background:#fdfcf8;
+}
+.empty h3{font-family:var(--serif);font-size:1.15rem;color:var(--ink);margin-bottom:8px;}
+.empty .btn{margin-top:14px;}
+
+.alert{
+  padding:11px 16px;border-radius:6px;font-size:.85rem;margin-bottom:12px;
+  border-left:3px solid transparent;
+}
+.alert.ok{background:var(--ok-soft);border-left-color:var(--ok);color:#155e39;}
+.alert.error{background:var(--err-soft);border-left-color:var(--err);color:#8c2820;}
+.alert.info{background:var(--accent-soft);border-left-color:var(--accent-2);color:#24405c;}
+
+.file-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;}
+input[type=file]{font-size:.82rem;color:var(--ink-soft);}
+textarea.paste{
+  width:100%;min-height:130px;margin-top:12px;padding:11px 13px;
+  font-family:var(--mono);font-size:.78rem;line-height:1.55;
+  border:1px solid var(--rule-strong);border-radius:6px;background:#fcfbf7;color:var(--ink);
+  outline:none;resize:vertical;
+}
+textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,110,165,.12);}
+
+.template-box{
+  background:#fcfbf7;
+  border:1px solid var(--rule);
+  border-radius:6px;
+  padding:14px 16px;margin-top:12px;
+  font-family:var(--mono);font-size:.74rem;line-height:1.6;
+  color:var(--ink-soft);white-space:pre;overflow:auto;
+  max-height:380px;
+}
+
+.template-toggle{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:0;padding:0;margin-top:10px;
+  color:var(--accent);font-size:.82rem;font-weight:600;cursor:pointer;
+}
+.template-toggle:hover{text-decoration:underline;}
+.template-wrap[hidden]{display:none;}
+
+/* ============================================================
+   READING OPTIONS  (font family + size for the lesson)
+   ============================================================ */
+.reader-panel{
+  margin-top:18px;
+  background:var(--card-soft);
+  border:1px solid var(--rule);
+  border-radius:var(--radius);
+  padding:16px 18px 18px;
+}
+.reader-panel[hidden]{ display:none; }
+.reader-panel.inline{
+  margin-top:14px;border:0;background:transparent;padding:0;
+}
+
+.reader-row{ margin-bottom:18px; }
+.reader-row:last-child{ margin-bottom:0; }
+
+.reader-label{
+  display:block;
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:800;color:var(--muted);margin-bottom:9px;
+}
+
+.font-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(154px,1fr));
+  gap:7px;
+}
+.font-btn{
+  text-align:left;
+  padding:9px 12px;
+  border-radius:6px;
+  border:1px solid var(--rule-strong);
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:.88rem;
+  line-height:1.35;
+  cursor:pointer;
+  transition:background .12s,border-color .12s,color .12s,box-shadow .12s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.font-btn:hover{ background:#f6f3ec;border-color:#c6bfae;color:var(--ink); }
+.font-btn.active{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-weight:650;
+  box-shadow:inset 0 0 0 1px var(--accent);
+}
+
+.size-row{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.size-btn{
+  width:36px;height:36px;flex:0 0 auto;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:6px;border:1px solid var(--rule-strong);
+  background:#fff;color:var(--ink-soft);cursor:pointer;
+  font-family:var(--sans);font-size:.95rem;font-weight:700;
+  transition:background .12s,border-color .12s;
+}
+.size-btn:hover{ background:#f6f3ec;border-color:#c6bfae; }
+
+.size-slider{
+  flex:1;min-width:140px;max-width:340px;
+  -webkit-appearance:none;appearance:none;
+  height:6px;border-radius:99px;
+  background:#ece7dc;
+  outline:none;cursor:pointer;
+}
+.size-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:18px;height:18px;border-radius:50%;
+  background:#fff;border:2px solid var(--accent);
+  box-shadow:0 1px 3px rgba(0,0,0,.18);
+  cursor:pointer;
+}
+.size-slider::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;border:2px solid var(--accent);
+  box-shadow:0 1px 3px rgba(0,0,0,.18);cursor:pointer;
+}
+.size-readout{
+  font-family:var(--sans);
+  font-size:.82rem;font-weight:700;color:var(--accent);
+  font-variant-numeric:tabular-nums;min-width:54px;
+}
+
+.reader-preview{
+  margin-top:16px;padding:13px 16px;
+  background:#fff;border:1px solid var(--rule);
+  border-radius:6px;color:var(--ink);
+  line-height:1.7;
+}
+.reader-preview .rp-label{
+  display:block;font-family:var(--sans);
+  font-size:.63rem;text-transform:uppercase;letter-spacing:.15em;
+  font-weight:800;color:var(--muted);margin-bottom:7px;
+}
+
+/* ---- Reader font & size variables applied to the lesson ---- */
+.lesson{
+  font-family: var(--reader-font, var(--sans));
+  font-size: var(--reader-size, 17px);
+}
+/* headings follow the reader font */
+.lesson .lesson-title,
+.lesson .lsection-title,
+.lesson .block-title,
+.lesson .cmp-title{
+  font-family: inherit;
+}
+/* sizes scale with --reader-size (em is relative to the lesson base) */
+.lesson .lesson-title   { font-size: 1.98em; }
+.lesson .lesson-desc    { font-size: .94em; }
+.lesson .lsection-title { font-size: 1.24em; }
+.lesson .block-title    { font-size: 1.24em; }
+.lesson .cmp-title      { font-size: .99em; }
+.lesson .explanation    { font-size: .91em; }
+.lesson .example-list li{ font-size: .90em; }
+.lesson .context-box    { font-size: .83em; }
+.lesson .mistake-row    { font-size: .85em; }
+.lesson .lit-context    { font-size: .80em; }
+.lesson .lit-analysis   { font-size: .80em; }
+.lesson .lit-passage    { font-size: .99em; }
+.lesson .toc ol         { font-size: .83em; }
+.lesson .tbl            { font-size: .83em; }
+.lesson .tbl .ex        { font-size: 1.045em; } /* relative to .tbl */
+.lesson .ex-question    { font-size: .89em; }
+.lesson .fill-sentence  { font-size: .94em; }
+.lesson .option         { font-size: .85em; }
+.lesson .match-term     { font-size: .85em; }
+.lesson .ex-feedback    { font-size: .82em; }
+/* keep UI chrome in the interface font */
+.btn{ font-family: var(--sans); }
+.pill{ font-family: var(--sans); }
+.lesson .btn{ font-family: var(--sans); }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  padding:22px;
+  background:rgba(28,26,22,.5);
+  backdrop-filter:blur(3px);
+  animation:fade .18s ease;
+}
+.modal-overlay[hidden]{display:none;}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{
+  background:#fffdf8;
+  width:100%;max-width:780px;max-height:84vh;
+  display:flex;flex-direction:column;
+  border:1px solid var(--rule-strong);
+  border-radius:10px;
+  box-shadow:0 30px 70px rgba(0,0,0,.3);
+  animation:pop .2s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes pop{from{transform:translateY(10px) scale(.99);opacity:.6}to{transform:none;opacity:1}}
+.modal-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
+  padding:18px 22px;border-bottom:1px solid var(--rule);flex:0 0 auto;
+}
+.modal-title{font-family:var(--serif);font-size:1.1rem;font-weight:600;font-style:italic;}
+.modal-sub{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.modal-close{
+  border:0;background:transparent;color:var(--muted);
+  font-size:1.6rem;line-height:1;cursor:pointer;padding:0 4px;border-radius:5px;
+}
+.modal-close:hover{color:var(--ink);background:#f1ede4;}
+.modal-body{
+  padding:22px 26px 28px;overflow:auto;flex:1 1 auto;
+  font-family:var(--serif);font-size:1.05rem;line-height:1.85;color:#26231d;
+}
+.modal-body .lit-passage{border-left-color:var(--accent-2);}
+.modal-context{font-family:var(--sans);font-size:.85rem;color:var(--muted);margin-bottom:16px;}
+.modal-link{font-family:var(--sans);font-size:.8rem;margin-top:18px;display:inline-block;}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+  background:#232019;color:#f7f4ec;
+  padding:11px 20px;border-radius:8px;font-size:.85rem;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  z-index:300;max-width:min(560px,90vw);text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+.toast.err{background:#7d211a;}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{
+    position:sticky;top:0;z-index:50;
+    max-height:none;overflow:visible;
+    border-right:0;border-bottom:1px solid var(--rule);
+    padding:8px 12px;background:rgba(250,248,243,.97);
+    backdrop-filter:blur(8px);
+  }
+  .nav{flex-direction:row;overflow-x:auto;gap:4px;scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav button{width:auto;white-space:nowrap;border-left:0;border-bottom:3px solid transparent;border-radius:5px 5px 0 0;}
+  .nav button.active{border-left:0;border-bottom-color:var(--accent);}
+  .nav-sep,.side-note{display:none;}
+  .main{padding:22px 18px 80px;}
+  .hero{grid-template-columns:1fr;}
+  .hero-pct{font-size:2.5rem;}
+  .lesson-title{font-size:1.7rem;}
+  .sec-progress-list li{grid-template-columns:1fr auto;}
+  .sec-progress-list li .pbar{grid-column:1 / -1;}
+  .match-row{grid-template-columns:1fr;gap:6px;}
+  .font-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+}
+@media (max-width:560px){
+  .topbar{padding:11px 16px;gap:10px;}
+  .brand h1{font-size:1.12rem;}
+  .brand .subtitle{font-size:.62rem;letter-spacing:.12em;}
+  .hdr-progress{min-width:100%;}
+  .card{padding:18px 16px;}
+  .lesson-title{font-size:1.5rem;}
+  .lsection-title{font-size:1.14rem;}
+  .lesson-nav{flex-direction:column;align-items:stretch;}
+  .lesson-nav .mid{order:-1;}
+  .font-grid{grid-template-columns:1fr 1fr;}
+  .size-slider{max-width:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="brand">
+    <h1 id="bookTitle">English Grammar</h1>
+    <span class="subtitle" id="bookSubtitle">Grammar Reference &amp; Practice</span>
+  </div>
+  <div class="hdr-progress">
+    <span class="hdr-pct" id="hdrPct">0%</span>
+    <div class="pbar"><span id="hdrBar"></span></div>
+    <span class="hdr-meta" id="hdrMeta">0 / 0 topics completed</span>
+  </div>
+</header>
+
+<!-- ===================== LAYOUT ===================== -->
+<div class="layout">
+  <aside class="sidebar">
+    <nav class="nav" id="nav"></nav>
+  </aside>
+  <main class="main" id="view"></main>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="modal-overlay" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-sub" id="modalSub"></div>
+      </div>
+      <button class="modal-close" data-action="close-modal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   ENGLISH GRAMMAR BOOK ENGINE
+   ----------------------------------------------------------------------------
+   Content-independent. Everything the viewer renders comes from JSON:
+
+     • GRAMMAR BOOK file  -> sections + topics + order
+     • LESSON files       -> explanations, examples, literary passages,
+                             comparisons, summary tables
+     • EXERCISE files     -> per-topic exercise banks
+
+   Plus a READING OPTIONS feature: 15 font families and an adjustable size,
+   persisted in localStorage and applied to every lesson.
+   ============================================================================ */
+
+/* ---------------------------------------------------------------------------
+   1. STORAGE KEYS
+   --------------------------------------------------------------------------- */
+const LS = {
+  BOOK:      "egb:book:v2",
+  LESSONS:   "egb:lessons:v2",
+  EXERCISES: "egb:exercises:v2",
+  PROGRESS:  "egb:progress:v2",
+  READER:    "egb:reader:v1"
+};
+
+/* ---------------------------------------------------------------------------
+   2. READING FONTS  (15 families — all offline-safe system stacks)
+   --------------------------------------------------------------------------- */
+const READER_FONTS = [
+  { id:"system",    name:"System UI",       stack:"system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
+  { id:"literata",  name:"Literata",        stack:"'Literata', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif" },
+  { id:"georgia",   name:"Georgia",         stack:"Georgia, 'Times New Roman', Times, serif" },
+  { id:"times",     name:"Times New Roman", stack:"'Times New Roman', Times, Georgia, serif" },
+  { id:"palatino",  name:"Palatino",        stack:"'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif" },
+  { id:"garamond",  name:"Garamond",        stack:"Garamond, 'Apple Garamond', 'Times New Roman', Times, serif" },
+  { id:"cambria",   name:"Cambria",         stack:"Cambria, Georgia, 'Times New Roman', serif" },
+  { id:"antiqua",   name:"Book Antiqua",    stack:"'Book Antiqua', Palatino, Georgia, serif" },
+  { id:"iowan",     name:"Iowan Old Style", stack:"'Iowan Old Style', 'Palatino Linotype', Georgia, serif" },
+  { id:"arial",     name:"Arial",           stack:"Arial, Helvetica, 'Liberation Sans', sans-serif" },
+  { id:"helvetica", name:"Helvetica",       stack:"Helvetica, Arial, 'Liberation Sans', sans-serif" },
+  { id:"verdana",   name:"Verdana",         stack:"Verdana, Geneva, Tahoma, sans-serif" },
+  { id:"tahoma",    name:"Tahoma",          stack:"Tahoma, Verdana, Geneva, sans-serif" },
+  { id:"trebuchet", name:"Trebuchet MS",    stack:"'Trebuchet MS', Tahoma, Verdana, sans-serif" },
+  { id:"courier",   name:"Courier New",     stack:"'Courier New', Courier, 'Liberation Mono', monospace" }
+];
+
+const DEFAULT_READER = { fontId: "system", size: 17 };
+const READER_MIN = 14;
+const READER_MAX = 26;
+
+/* ---------------------------------------------------------------------------
+   3. JSON TEMPLATES
+   --------------------------------------------------------------------------- */
+const GRAMMAR_BOOK_TEMPLATE = {
+  book: {
+    title: "English Grammar",
+    subtitle: "Grammar Reference & Practice",
+    version: "1.0"
+  },
+  sections: [
+    {
+      id: "present_past",
+      title: "Present and Past",
+      topics: [
+        {
+          id: "present_simple",
+          number: 1,
+          title: "Present Simple",
+          description: "Habits, routines, general truths and permanent situations.",
+          status: "not_started"
+        },
+        {
+          id: "present_continuous",
+          number: 2,
+          title: "Present Continuous",
+          description: "Actions happening now and temporary situations.",
+          status: "not_started"
+        }
+      ]
+    },
+    {
+      id: "future",
+      title: "Future",
+      topics: [
+        {
+          id: "will",
+          number: 3,
+          title: "Will",
+          description: "Predictions, instant decisions and offers."
+        }
+      ]
+    }
+  ]
+};
+
+const LESSON_TEMPLATE = {
+  id: "topic_id",
+  title: "Lesson Title",
+  section: "Section Title",
+  number: 1,
+  description: "One-line description of the topic.",
+
+  sections: [
+    {
+      id: "form",
+      title: "Form",
+      explanation: [
+        "First paragraph of the grammar explanation.",
+        "Second paragraph: form, structure or rule."
+      ],
+      context: "Optional context note — when this structure is typically used.",
+      examples: [
+        {
+          sentence: "This is an example sentence with the target structure.",
+          target: "target structure",
+          note: "Optional note about the example."
+        },
+        {
+          sentence: "A second example with the same structure.",
+          target: "target structure"
+        }
+      ],
+      mistakes: [
+        {
+          wrong: "An incorrect example.",
+          right: "The corrected example.",
+          why: "Short explanation of why the first is wrong."
+        }
+      ],
+      literary_examples: [
+        {
+          book: "Book Title",
+          author: "Author Name",
+          url: "https://www.gutenberg.org/ebooks/0000",
+          context: "Where in the text this passage appears and why it is relevant.",
+          passage: "The full quoted passage, preserved exactly as written.\n\nAdditional paragraphs are separated by a blank line.",
+          target_instances: [
+            "phrase containing the target grammar",
+            "another instance of the target"
+          ],
+          analysis: "Grammar analysis: which forms appear in the passage, and why the author chose them."
+        }
+      ]
+    },
+    {
+      id: "use_1",
+      title: "Use — first use of the structure",
+      explanation: [
+        "Explanation of a specific use.",
+        "More detail, with time expressions if relevant."
+      ],
+      examples: [
+        { "sentence": "Example for this use.", "target": "target" }
+      ],
+      literary_examples: []
+    }
+  ],
+
+  comparisons: [
+    {
+      title: "Structure A vs Structure B",
+      label_1: "Structure A",
+      label_2: "Structure B",
+      rows: [
+        {
+          feature: "Main focus",
+          structure_1: "What structure A emphasises.",
+          structure_2: "What structure B emphasises."
+        },
+        {
+          feature: "Form",
+          structure_1: "form of structure A",
+          structure_2: "form of structure B"
+        },
+        {
+          feature: "Example",
+          structure_1: "An example using structure A.",
+          structure_2: "An example using structure B.",
+          target_1: "target",
+          target_2: "target"
+        }
+      ]
+    }
+  ],
+
+  summary: [
+    {
+      pattern: "Affirmative",
+      form: "have / has + past participle",
+      use: "Past event connected with the present",
+      example: "I have finished the book.",
+      target: "have finished"
+    },
+    {
+      pattern: "Negative",
+      form: "have / has + not + past participle",
+      use: "Denying a result or an experience",
+      example: "She hasn't arrived yet.",
+      target: "hasn't arrived"
+    }
+  ],
+
+  exercises: [
+    {
+      type: "multiple_choice",
+      question: "Choose the correct sentence.",
+      options: [
+        "Option A",
+        "Option B (correct)",
+        "Option C",
+        "Option D"
+      ],
+      answer: 1,
+      explanation: "Explain why option B is correct."
+    },
+    {
+      type: "fill_blank",
+      sentence: "She {{blank}} in London since 2018. (live)",
+      answer: ["has lived", "'s lived"],
+      explanation: "Use the present perfect with 'since' + a point in time."
+    },
+    {
+      type: "matching_definition",
+      question: "Match each item with its definition.",
+      pairs: [
+        { "term": "for",   "definition": "used with a period of time: for three years" },
+        { "term": "since", "definition": "used with a point in time: since Monday" },
+        { "term": "yet",   "definition": "used in questions and negatives, meaning 'up to now'" }
+      ]
+    }
+  ]
+};
+
+const EXERCISE_TEMPLATE = {
+  topic_id: "TOPIC_ID_HERE",
+  title: "Exercises — TOPIC_ID_HERE",
+  exercises: [
+    {
+      type: "multiple_choice",
+      question: "Choose the correct sentence.",
+      options: [
+        "Option A",
+        "Option B (correct)",
+        "Option C",
+        "Option D"
+      ],
+      answer: 1,
+      explanation: "Explain why option B is correct."
+    },
+    {
+      type: "fill_blank",
+      sentence: "She {{blank}} in London since 2018. (live)",
+      answer: ["has lived", "'s lived"],
+      explanation: "Use the present perfect with 'since' + a point in time."
+    },
+    {
+      type: "matching_definition",
+      question: "Match each item with its definition.",
+      pairs: [
+        { "term": "for",   "definition": "used with a period of time: for three years" },
+        { "term": "since", "definition": "used with a point in time: since Monday" },
+        { "term": "yet",   "definition": "used in questions and negatives, meaning 'up to now'" }
+      ]
+    }
+  ]
+};
+
+function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
+function lessonTemplateString(){ return JSON.stringify(LESSON_TEMPLATE, null, 2); }
+function exerciseTemplateString(){ return JSON.stringify(EXERCISE_TEMPLATE, null, 2); }
+
+function lessonTemplateForTopic(topicId){
+  const tpl = JSON.parse(JSON.stringify(LESSON_TEMPLATE));
+  const found = findTopic(topicId);
+  if (found){
+    tpl.id = found.topic.id;
+    tpl.title = found.topic.title;
+    tpl.section = found.section.title;
+    if (found.topic.number != null) tpl.number = found.topic.number;
+    if (found.topic.description) tpl.description = found.topic.description;
+  } else {
+    tpl.id = topicId;
+    tpl.title = topicId;
+  }
+  return tpl;
+}
+
+function exerciseTemplateForTopic(topicId){
+  const tpl = JSON.parse(JSON.stringify(EXERCISE_TEMPLATE));
+  tpl.topic_id = topicId;
+  tpl.title = "Exercises — " + topicId;
+  return tpl;
+}
+
+/* ---------------------------------------------------------------------------
+   4. STATE
+   --------------------------------------------------------------------------- */
+const state = {
+  book: null,
+  lessons: {},
+  exercises: {},
+  progress: {},
+  reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
+  readerOpen: false,
+  view: "dashboard",
+  currentTopicId: null,
+  query: "",
+  importMessages: []
+};
+
+const passageStore = new Map();
+const matchOrders  = {};
+
+/* ---------------------------------------------------------------------------
+   5. UTILITIES
+   --------------------------------------------------------------------------- */
+const $  = (id) => document.getElementById(id);
+
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+function escapeRegExp(s){
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(text, targets){
+  const safe = esc(text);
+  const list = (Array.isArray(targets) ? targets : [targets])
+    .filter(t => typeof t === "string" && t.length)
+    .map(esc)
+    .sort((a, b) => b.length - a.length);
+  if (!list.length) return safe;
+  const re = new RegExp("(" + list.map(escapeRegExp).join("|") + ")", "g");
+  return safe.replace(re, '<span class="target">$1</span>');
+}
+
+function passageHTML(text, targets){
+  const paras = String(text || "").split(/\n\s*\n/);
+  return paras.map(p => "<p>" + highlight(p, targets) + "</p>").join("");
+}
+
+function paragraphs(value){
+  const arr = Array.isArray(value) ? value : String(value || "").split(/\n\s*\n/);
+  return arr.filter(Boolean).map(p => "<p>" + esc(p) + "</p>").join("");
+}
+
+function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function norm(s){
+  return String(s == null ? "" : s)
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[.,!?;:]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toast(message, type){
+  const t = $("toast");
+  t.textContent = message;
+  t.className = "toast show" + (type === "err" ? " err" : "");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { t.className = "toast"; }, 3400);
+}
+
+function downloadJSON(obj, filename){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------------------------------------------------------------------------
+   6. READING OPTIONS — helpers
+   --------------------------------------------------------------------------- */
+function readerFont(){
+  return READER_FONTS.find(f => f.id === state.reader.fontId) || READER_FONTS[0];
+}
+
+function loadReader(){
+  try {
+    const r = JSON.parse(localStorage.getItem(LS.READER));
+    if (r && typeof r === "object"){
+      if (typeof r.fontId === "string" && READER_FONTS.some(f => f.id === r.fontId)){
+        state.reader.fontId = r.fontId;
+      }
+      if (typeof r.size === "number" && r.size >= READER_MIN && r.size <= READER_MAX){
+        state.reader.size = Math.round(r.size);
+      }
+    }
+  } catch (e){ /* keep defaults */ }
+}
+
+function saveReader(){
+  try { localStorage.setItem(LS.READER, JSON.stringify(state.reader)); } catch (e){}
+}
+
+/** Apply the current reading options to every rendered lesson + panel. */
+function applyReader(){
+  const f = readerFont();
+
+  document.querySelectorAll(".lesson").forEach(el => {
+    el.style.setProperty("--reader-font", f.stack);
+    el.style.setProperty("--reader-size", state.reader.size + "px");
+  });
+
+  document.querySelectorAll(".reader-preview").forEach(el => {
+    el.style.fontFamily = f.stack;
+    el.style.fontSize = state.reader.size + "px";
+  });
+
+  document.querySelectorAll(".size-readout").forEach(el => {
+    el.textContent = state.reader.size + " px";
+  });
+
+  document.querySelectorAll(".size-slider").forEach(el => {
+    if (Number(el.value) !== state.reader.size) el.value = String(state.reader.size);
+  });
+
+  document.querySelectorAll(".font-btn").forEach(el => {
+    el.classList.toggle("active", el.dataset.font === state.reader.fontId);
+  });
+
+  document.querySelectorAll(".reader-font-name").forEach(el => {
+    el.textContent = f.name;
+  });
+}
+
+function setReaderSize(px, persist){
+  let v = Math.round(Number(px));
+  if (!isFinite(v)) v = DEFAULT_READER.size;
+  v = Math.max(READER_MIN, Math.min(READER_MAX, v));
+  state.reader.size = v;
+  if (persist !== false) saveReader();
+  applyReader();
+}
+
+function setReaderFont(id){
+  if (!READER_FONTS.some(f => f.id === id)) return;
+  state.reader.fontId = id;
+  saveReader();
+  applyReader();
+}
+
+/* ---- panel markup (shared by lesson + settings) ---- */
+function readerPanelHTML(open){
+  return `
+  <div class="reader-panel${open === "inline" ? " inline" : ""}" ${open === true || open === "inline" ? "" : "hidden"}>
+    <div class="reader-row">
+      <span class="reader-label">Font family</span>
+      <div class="font-grid">
+        ${READER_FONTS.map(f => `
+          <button type="button"
+                  class="font-btn${f.id === state.reader.fontId ? " active" : ""}"
+                  data-action="set-reader-font"
+                  data-font="${esc(f.id)}"
+                  style="font-family:${f.stack}"
+                  title="${esc(f.name)}">${esc(f.name)}</button>
+        `).join("")}
+      </div>
+    </div>
+
+    <div class="reader-row">
+      <span class="reader-label">Font size</span>
+      <div class="size-row">
+        <button type="button" class="size-btn" data-action="reader-size-step" data-step="-1"
+                aria-label="Decrease font size">A−</button>
+        <input type="range" class="size-slider"
+               min="${READER_MIN}" max="${READER_MAX}" step="1" value="${state.reader.size}"
+               aria-label="Font size">
+        <button type="button" class="size-btn" data-action="reader-size-step" data-step="1"
+                aria-label="Increase font size">A+</button>
+        <span class="size-readout">${state.reader.size} px</span>
+        <button type="button" class="btn ghost tiny" data-action="reset-reader">Reset</button>
+      </div>
+    </div>
+
+    <div class="reader-preview">
+      <span class="rp-label">Preview · <span class="reader-font-name">${esc(readerFont().name)}</span></span>
+      The quick brown fox jumps over the lazy dog. She has been learning English for three years.
+    </div>
+  </div>`;
+}
+
+/* ---------------------------------------------------------------------------
+   7. PERSISTENCE
+   --------------------------------------------------------------------------- */
+function loadState(){
+  try { state.book = JSON.parse(localStorage.getItem(LS.BOOK)); }
+  catch (e) { state.book = null; }
+
+  try { state.lessons = JSON.parse(localStorage.getItem(LS.LESSONS)) || {}; }
+  catch (e) { state.lessons = {}; }
+
+  try { state.exercises = JSON.parse(localStorage.getItem(LS.EXERCISES)) || {}; }
+  catch (e) { state.exercises = {}; }
+
+  try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
+  catch (e) { state.progress = {}; }
+
+  loadReader();
+}
+
+function saveBook(){ try{ localStorage.setItem(LS.BOOK, JSON.stringify(state.book)); }catch(e){} }
+function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(state.lessons)); }catch(e){} }
+function saveExercises(){ try{ localStorage.setItem(LS.EXERCISES, JSON.stringify(state.exercises)); }catch(e){} }
+function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
+
+/* ---------------------------------------------------------------------------
+   8. BOOK / TOPIC HELPERS
+   --------------------------------------------------------------------------- */
+function hasBook(){
+  return !!(state.book && Array.isArray(state.book.sections) && state.book.sections.length);
+}
+
+function allTopics(){
+  if (!hasBook()) return [];
+  const out = [];
+  state.book.sections.forEach(section => {
+    (section.topics || []).forEach(topic => out.push({ topic, section }));
+  });
+  return out;
+}
+
+function findTopic(id){
+  return allTopics().find(x => x.topic.id === id) || null;
+}
+
+function topicCount(){ return allTopics().length; }
+
+function neighborTopics(id){
+  const list = allTopics();
+  const i = list.findIndex(x => x.topic.id === id);
+  return {
+    prev: i > 0 ? list[i - 1].topic : null,
+    next: (i >= 0 && i < list.length - 1) ? list[i + 1].topic : null
+  };
+}
+
+/* ---------------------------------------------------------------------------
+   9. EXERCISE HELPERS
+   --------------------------------------------------------------------------- */
+function getExercisesFor(topicId){
+  const lesson = state.lessons[topicId];
+  const lessonEx = (lesson && Array.isArray(lesson.exercises)) ? lesson.exercises : [];
+
+  const imported = state.exercises[topicId];
+  const importedEx = (imported && Array.isArray(imported.exercises)) ? imported.exercises : [];
+
+  return [...lessonEx, ...importedEx];
+}
+
+function importedExerciseCount(topicId){
+  const imported = state.exercises[topicId];
+  return (imported && Array.isArray(imported.exercises)) ? imported.exercises.length : 0;
+}
+
+function totalExerciseCount(){
+  return Object.keys(state.exercises).reduce(
+    (sum, id) => sum + importedExerciseCount(id), 0);
+}
+
+/* ---------------------------------------------------------------------------
+   10. PROGRESS
+   --------------------------------------------------------------------------- */
+function statusOf(id){
+  const p = state.progress[id];
+  return (p && p.status) || "not_started";
+}
+
+function statusLabel(s){
+  if (s === "completed")   return "✓ Completed";
+  if (s === "in_progress") return "In progress";
+  return "Not started";
+}
+
+function setStatus(id, status, persist){
+  state.progress[id] = { status, updatedAt: Date.now() };
+  if (persist !== false) saveProgress();
+}
+
+function progressStats(){
+  const topics = allTopics();
+  const total = topics.length;
+  let completed = 0, inProgress = 0;
+  topics.forEach(({ topic }) => {
+    const s = statusOf(topic.id);
+    if (s === "completed") completed++;
+    else if (s === "in_progress") inProgress++;
+  });
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+  return { total, completed, inProgress, notStarted: total - completed - inProgress, pct };
+}
+
+function sectionStats(section){
+  const topics = section.topics || [];
+  const total = topics.length;
+  const completed = topics.filter(t => statusOf(t.id) === "completed").length;
+  const pct = total ? Math.round((completed / total) * 100) : 0;
+  return { total, completed, pct };
+}
+
+/* ---------------------------------------------------------------------------
+   11. HEADER + NAV
+   --------------------------------------------------------------------------- */
+function updateHeader(){
+  const meta = (state.book && state.book.book) || {};
+  $("bookTitle").textContent = meta.title || "English Grammar";
+  $("bookSubtitle").textContent = meta.subtitle || "Grammar Reference & Practice";
+
+  const st = progressStats();
+  $("hdrPct").textContent = st.pct + "%";
+  $("hdrBar").style.width = st.pct + "%";
+  $("hdrMeta").textContent = st.completed + " / " + st.total + " topics completed";
+}
+
+function updateNav(){
+  const items = [
+    { id: "dashboard", label: "Dashboard",    icon: "▦" },
+    { id: "book",      label: "Grammar Book", icon: "▤" },
+    { id: "completed", label: "Completed",    icon: "✓" },
+    { id: "settings",  label: "Settings",     icon: "⚙" }
+  ];
+  const active = state.view === "lesson" ? "book" : state.view;
+  $("nav").innerHTML = items.map(it =>
+    `<button data-action="nav" data-view="${it.id}" class="${active === it.id ? "active" : ""}">
+       <span class="ic">${it.icon}</span><span>${it.label}</span>
+     </button>`
+  ).join("") +
+  `<div class="nav-sep"></div>
+   <p class="side-note">${topicCount()} topics · ${Object.keys(state.lessons).length} lessons · ${totalExerciseCount()} imported exercises</p>`;
+}
+
+/* ---------------------------------------------------------------------------
+   12. RENDER ROUTER
+   --------------------------------------------------------------------------- */
+function render(){
+  updateHeader();
+  updateNav();
+  const view = $("view");
+
+  if (state.view === "settings")       view.innerHTML = settingsHTML();
+  else if (!hasBook())                 view.innerHTML = noBookHTML();
+  else if (state.view === "dashboard") view.innerHTML = dashboardHTML();
+  else if (state.view === "book")      view.innerHTML = bookHTML();
+  else if (state.view === "completed") view.innerHTML = completedHTML();
+  else if (state.view === "lesson")    view.innerHTML = lessonHTML(state.currentTopicId);
+  else                                 view.innerHTML = dashboardHTML();
+
+  applyReader();
+  bindDynamicInputs();
+}
+
+function go(view, topicId){
+  state.view = view;
+  if (topicId !== undefined) state.currentTopicId = topicId;
+  render();
+  window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function openTopic(id){
+  if (statusOf(id) === "not_started") setStatus(id, "in_progress");
+  go("lesson", id);
+}
+
+/* ---------------------------------------------------------------------------
+   13. NO BOOK VIEW
+   --------------------------------------------------------------------------- */
+function noBookHTML(){
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Welcome</h2>
+    <p class="page-sub">Import a grammar book to begin.</p>
+  </div>
+
+  <div class="empty">
+    <h3>No grammar book loaded</h3>
+    <p>This application is an engine — it does not include any grammar content by default.
+       Import a grammar book JSON file to create the sections and topics, then import lesson
+       JSON files (and optional exercise JSON files) to add the content for each topic.</p>
+    <button class="btn primary" data-action="nav" data-view="settings">Go to Settings →</button>
+  </div>
+
+  <section class="card">
+    <h3>What you need</h3>
+    <ol class="muted" style="padding-left:20px;line-height:2;">
+      <li>A <strong>grammar book JSON</strong> file — defines sections and topics.</li>
+      <li>One or more <strong>lesson JSON</strong> files — content for individual topics.</li>
+      <li>Optional <strong>exercise JSON</strong> files — one per topic, importable from each lesson page.</li>
+    </ol>
+    <p class="muted" style="margin-top:14px;">
+      Full templates for all three file types are available in
+      <a href="#" data-action="nav" data-view="settings">Settings</a>.
+    </p>
+  </section>`;
+}
+
+/* ---------------------------------------------------------------------------
+   14. DASHBOARD VIEW
+   --------------------------------------------------------------------------- */
+function dashboardHTML(){
+  const st = progressStats();
+  const topics = allTopics();
+
+  const nextItem =
+    topics.find(x => statusOf(x.topic.id) === "in_progress") ||
+    topics.find(x => statusOf(x.topic.id) === "not_started");
+
+  const sectionRows = ((state.book && state.book.sections) || []).map(sec => {
+    const s = sectionStats(sec);
+    return `<li>
+      <div class="sp-name">${esc(sec.title)}</div>
+      <div class="pbar small"><span style="width:${s.pct}%"></span></div>
+      <div class="sp-meta">${s.completed} / ${s.total} completed</div>
+    </li>`;
+  }).join("");
+
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Dashboard</h2>
+    <p class="page-sub">Your grammar book at a glance.</p>
+  </div>
+
+  <section class="card hero">
+    <div>
+      <div class="hero-pct">${st.pct}%</div>
+      <div class="hero-label">of the grammar book completed</div>
+      <div class="pbar"><span style="width:${st.pct}%"></span></div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat done"><div class="stat-num">${st.completed}</div><div class="stat-lab">Completed</div></div>
+      <div class="stat prog"><div class="stat-num">${st.inProgress}</div><div class="stat-lab">In progress</div></div>
+      <div class="stat"><div class="stat-num">${st.notStarted}</div><div class="stat-lab">Not started</div></div>
+      <div class="stat"><div class="stat-num">${st.total}</div><div class="stat-lab">Total topics</div></div>
+    </div>
+  </section>
+
+  ${nextItem ? `
+  <section class="card continue-card">
+    <div>
+      <div class="cc-sub">${statusOf(nextItem.topic.id) === "in_progress" ? "Continue where you left off" : "Start here"}</div>
+      <div class="cc-title">${esc(nextItem.topic.title)}</div>
+      <div class="cc-sub">${esc(nextItem.section.title)}</div>
+    </div>
+    <button class="btn primary" data-action="open-topic" data-id="${esc(nextItem.topic.id)}">Open lesson →</button>
+  </section>` : ""}
+
+  <section class="card">
+    <h3>Section progress</h3>
+    <ul class="sec-progress-list">${sectionRows || '<li class="muted">No sections in the grammar book.</li>'}</ul>
+  </section>`;
+}
+
+/* ---------------------------------------------------------------------------
+   15. GRAMMAR BOOK VIEW
+   --------------------------------------------------------------------------- */
+function bookHTML(){
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Grammar Book</h2>
+    <p class="page-sub">Browse the topics in textbook order, or search for a form, a title or a description.</p>
+  </div>
+  <div class="search-wrap">
+    <input id="searchInput" class="search" type="search" placeholder="Search grammar..."
+           value="${esc(state.query)}" autocomplete="off" spellcheck="false" aria-label="Search grammar">
+  </div>
+  <div id="bookResults"></div>`;
+}
+
+function searchIndex(){
+  return allTopics().map(({ topic, section }) => {
+    const lesson = state.lessons[topic.id];
+    const parts = [
+      topic.title, topic.description || "", topic.id, section.title,
+      lesson ? (lesson.description || "") : ""
+    ];
+    (lesson && lesson.summary ? lesson.summary : []).forEach(r => {
+      parts.push(r.pattern || "", r.form || "", r.use || "", r.example || "");
+    });
+    (lesson && lesson.sections ? lesson.sections : []).forEach(s => {
+      parts.push(s.title || "");
+      parts.push(Array.isArray(s.explanation) ? s.explanation.join(" ") : (s.explanation || ""));
+      (s.examples || []).forEach(e => parts.push(e.sentence || ""));
+    });
+    return { topic, section, hay: parts.join(" ").toLowerCase() };
+  });
+}
+
+function renderBookResults(){
+  const container = $("bookResults");
+  if (!container) return;
+  const q = norm(state.query);
+  const items = searchIndex().filter(it => !q || q.split(" ").every(term => it.hay.includes(term)));
+
+  if (!items.length){
+    container.innerHTML = `<div class="empty"><h3>No topics found</h3><p>Try a different word, or clear the search box.</p></div>`;
+    return;
+  }
+  container.innerHTML = sectionsHTML(items);
+}
+
+function sectionsHTML(items){
+  const order = ((state.book && state.book.sections) || []).map(s => s.id);
+  const groups = new Map();
+  items.forEach(it => {
+    if (!groups.has(it.section.id)) groups.set(it.section.id, { section: it.section, topics: [] });
+    groups.get(it.section.id).topics.push(it.topic);
+  });
+  const sorted = [...groups.values()].sort((a, b) =>
+    order.indexOf(a.section.id) - order.indexOf(b.section.id));
+
+  return sorted.map(({ section, topics }) => {
+    const s = sectionStats(section);
+    const cards = topics.map(t => topicCardHTML(t)).join("");
+    return `
+    <section class="book-section">
+      <div class="sec-head">
+        <h3>${esc(section.title)}</h3>
+        <div class="sec-progress">
+          <div class="pbar small"><span style="width:${s.pct}%"></span></div>
+          <span class="sec-meta">${s.completed} / ${s.total} topics completed</span>
+        </div>
+      </div>
+      <div class="topic-grid">${cards}</div>
+    </section>`;
+  }).join("");
+}
+
+function topicCardHTML(topic){
+  const status = statusOf(topic.id);
+  const lesson = state.lessons[topic.id];
+  const exCount = getExercisesFor(topic.id).length;
+
+  const flags = [];
+  if (lesson) flags.push("Lesson ✓");
+  if (exCount) flags.push(exCount + " ex.");
+  const flagText = flags.length ? flags.join(" · ") : "No content";
+
+  return `
+  <article class="topic-card ${status}" tabindex="0" role="button"
+           data-action="open-topic" data-id="${esc(topic.id)}"
+           aria-label="Open ${esc(topic.title)}">
+    <div class="topic-unit">Unit ${esc(topic.number != null ? topic.number : "—")}</div>
+    <h4 class="topic-title">${esc(topic.title)}</h4>
+    <p class="topic-desc">${esc(topic.description || (lesson && lesson.description) || "")}</p>
+    <div class="topic-foot">
+      <span class="pill ${status}">${statusLabel(status)}</span>
+      <span class="topic-flag">${flagText}</span>
+    </div>
+  </article>`;
+}
+
+/* ---------------------------------------------------------------------------
+   16. COMPLETED VIEW
+   --------------------------------------------------------------------------- */
+function completedHTML(){
+  const done = allTopics().filter(x => statusOf(x.topic.id) === "completed");
+  if (!done.length){
+    return `
+    <div class="page-head"><h2 class="page-title">Completed</h2></div>
+    <div class="empty">
+      <h3>Nothing completed yet</h3>
+      <p>Open a lesson and mark it as completed to see it here.</p>
+    </div>`;
+  }
+  const items = done.map(x => ({ topic: x.topic, section: x.section }));
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Completed</h2>
+    <p class="page-sub">${done.length} topic${done.length === 1 ? "" : "s"} finished.</p>
+  </div>
+  ${sectionsHTML(items)}`;
+}
+
+/* ---------------------------------------------------------------------------
+   17. LESSON VIEW
+   --------------------------------------------------------------------------- */
+function lessonHTML(id){
+  const found = findTopic(id);
+  if (!found){
+    return `<div class="empty"><h3>Topic not found</h3>
+      <p>This topic is not part of the current grammar book.</p>
+      <button class="btn" data-action="nav" data-view="book">Back to Grammar Book</button></div>`;
+  }
+  const { topic, section } = found;
+  const lesson = state.lessons[id];
+  const status = statusOf(id);
+  const nav = neighborTopics(id);
+
+  let html = `
+  <article class="lesson">
+    <div class="lesson-head">
+      <div class="unit-label">Unit ${esc(topic.number != null ? topic.number : "—")} · ${esc(section.title)}</div>
+      <h1 class="lesson-title">${esc(lesson ? lesson.title : topic.title)}</h1>
+      <p class="lesson-desc">${esc((lesson && lesson.description) || topic.description || "")}</p>
+      <div class="lesson-meta">
+        <span class="pill ${status}" id="lessonPill">${statusLabel(status)}</span>
+        <button class="btn ${status === "completed" ? "ok" : "primary"}"
+                data-action="toggle-complete" data-id="${esc(id)}" id="lessonCompleteBtn">
+          ${status === "completed" ? "↺ Mark as not completed" : "✓ Mark as completed"}
+        </button>
+        ${lesson ? `<button class="btn ghost" data-action="export-lesson" data-id="${esc(id)}">Export lesson JSON</button>` : ""}
+        <button class="btn ghost" data-action="toggle-reader">
+          Aa ${state.readerOpen ? "Hide options" : "Reading options"}
+        </button>
+      </div>
+      ${readerPanelHTML(state.readerOpen === true)}
+    </div>`;
+
+  html += lesson ? lessonContentHTML(lesson) : noLessonHTML(topic);
+  html += exercisesBlockHTML(id);
+
+  html += `
+    <nav class="lesson-nav">
+      <button class="btn ghost" data-action="prev-topic" data-id="${esc(id)}" ${nav.prev ? "" : "disabled"}>
+        ← ${nav.prev ? esc(shortTitle(nav.prev.title)) : "Previous Topic"}
+      </button>
+      <span class="mid">
+        <button class="btn" data-action="nav" data-view="book">Back to Grammar Book</button>
+      </span>
+      <button class="btn ghost" data-action="next-topic" data-id="${esc(id)}" ${nav.next ? "" : "disabled"}>
+        ${nav.next ? esc(shortTitle(nav.next.title)) : "Next Topic"} →
+      </button>
+    </nav>
+  </article>`;
+
+  return html;
+}
+
+function shortTitle(t){
+  return String(t).length > 26 ? String(t).slice(0, 24) + "…" : t;
+}
+
+function noLessonHTML(topic){
+  return `
+  <div class="card empty-lesson">
+    <h3>Lesson content not loaded</h3>
+    <p class="muted">The grammar book lists this topic, but its lesson JSON has not been imported yet.</p>
+    <p class="muted">Expected file name: <code>${esc(topic.id)}.json</code></p>
+    <div class="file-row">
+      <label class="btn primary">
+        Import lesson JSON
+        <input type="file" class="lesson-file-input" accept=".json,application/json" multiple hidden>
+      </label>
+      <button class="btn ghost" data-action="download-template" data-kind="lesson" data-id="${esc(topic.id)}">
+        Download lesson template
+      </button>
+      <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings</button>
+    </div>
+  </div>`;
+}
+
+function lessonContentHTML(lesson){
+  let html = "";
+
+  if (lesson.sections && lesson.sections.length){
+    html += `<nav class="toc" aria-label="Lesson contents">
+      <div class="toc-title">Contents</div>
+      <ol>${lesson.sections.map((s, i) =>
+        `<li><a href="#sec-${esc(s.id || i + 1)}">${esc(s.title || "Section " + (i + 1))}</a></li>`).join("")}</ol>
+    </nav>`;
+  }
+
+  (lesson.sections || []).forEach((s, i) => { html += sectionHTML(s, i, lesson); });
+  if (lesson.comparisons && lesson.comparisons.length) html += comparisonsHTML(lesson.comparisons);
+  if (lesson.summary && lesson.summary.length)         html += summaryHTML(lesson.summary);
+
+  return html;
+}
+
+function sectionHTML(s, index, lesson){
+  const num = index + 1;
+  const secId = s.id || ("sec" + num);
+  let h = `<section class="lsection" id="sec-${esc(secId)}">
+    <h2 class="lsection-title"><span class="sec-num">${num}</span>${esc(s.title || "Section " + num)}</h2>`;
+
+  if (s.explanation) h += `<div class="explanation">${paragraphs(s.explanation)}</div>`;
+  if (s.context)     h += `<div class="context-box"><span class="context-label">Context</span>${esc(s.context)}</div>`;
+  if (s.examples && s.examples.length) h += examplesHTML(s.examples);
+  if (s.mistakes && s.mistakes.length) h += mistakesHTML(s.mistakes);
+  h += literaryHTML(s, lesson, index);
+  h += `</section>`;
+  return h;
+}
+
+function examplesHTML(examples){
+  return `<div class="example-box">
+    <div class="example-label">Examples</div>
+    <ul class="example-list">
+      ${examples.map(e => `<li>${highlight(e.sentence, e.target)}
+        ${e.note ? `<span class="ex-note">${esc(e.note)}</span>` : ""}</li>`).join("")}
+    </ul>
+  </div>`;
+}
+
+function mistakesHTML(mistakes){
+  return `<div class="mistakes">
+    <div class="mistakes-label">Common mistakes</div>
+    ${mistakes.map(m => `<div class="mistake-row">
+      <span class="wrong">${esc(m.wrong)}</span> → <span class="right">${esc(m.right)}</span>
+      ${m.why ? `<span class="why">${esc(m.why)}</span>` : ""}
+    </div>`).join("")}
+  </div>`;
+}
+
+function literaryHTML(section, lesson, sectionIndex){
+  const list = section.literary_examples || [];
+
+  if (!list.length){
+    return `<div class="lit-none">No verified literary example available for this section.</div>`;
+  }
+
+  return list.map((L, li) => {
+    const key = `${lesson.id}::${section.id || sectionIndex}::${li}`;
+    passageStore.set(key, {
+      passage: L.passage || "",
+      book: L.book || "",
+      author: L.author || "",
+      url: L.url || "",
+      context: L.context || "",
+      targets: L.target_instances || []
+    });
+
+    return `<figure class="literary-card">
+      <div class="lit-head">
+        <div>
+          <div class="lit-book">${esc(L.book || "")}</div>
+          <div class="lit-author">${esc(L.author || "")}</div>
+        </div>
+        ${L.url ? `<a class="lit-link" href="${esc(L.url)}" target="_blank" rel="noopener noreferrer">Project Gutenberg ↗</a>` : ""}
+      </div>
+      ${L.context ? `<div class="lit-context"><span class="lit-label">Context</span>${esc(L.context)}</div>` : ""}
+      <blockquote class="lit-passage">${passageHTML(L.passage, L.target_instances || [])}</blockquote>
+      ${L.analysis ? `<div class="lit-analysis"><span class="lit-label">Grammar analysis</span>${esc(L.analysis)}</div>` : ""}
+      <button class="btn ghost" data-action="open-passage" data-key="${esc(key)}">Read complete passage</button>
+    </figure>`;
+  }).join("");
+}
+
+function comparisonsHTML(comparisons){
+  return `<section class="lesson-block">
+    <h2 class="block-title">Comparison</h2>
+    ${comparisons.map(c => {
+      let l1 = "Structure 1", l2 = "Structure 2";
+      if (c.title && c.title.indexOf(" vs ") > -1){
+        const parts = c.title.split(" vs ");
+        l1 = parts[0].trim();
+        l2 = parts.slice(1).join(" vs ").trim();
+      }
+      l1 = c.label_1 || l1;
+      l2 = c.label_2 || l2;
+      return `<div class="card">
+        <h3 class="cmp-title">${esc(c.title || "")}</h3>
+        <div class="table-scroll">
+          <table class="tbl cmp-table">
+            <thead><tr><th>Feature</th><th>${esc(l1)}</th><th>${esc(l2)}</th></tr></thead>
+            <tbody>
+              ${(c.rows || []).map(r => `<tr>
+                <td class="feat">${esc(r.feature || "")}</td>
+                <td>${highlight(r.structure_1 || "", r.target_1 || [])}</td>
+                <td>${highlight(r.structure_2 || "", r.target_2 || [])}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+    }).join("")}
+  </section>`;
+}
+
+function summaryHTML(summary){
+  return `<section class="lesson-block">
+    <h2 class="block-title">Summary</h2>
+    <div class="card">
+      <div class="table-scroll">
+        <table class="tbl summary-table">
+          <thead><tr><th>Pattern</th><th>Form</th><th>Use</th><th>Example</th></tr></thead>
+          <tbody>
+            ${summary.map(r => `<tr>
+              <td class="pat">${esc(r.pattern || "")}</td>
+              <td class="form">${esc(r.form || "")}</td>
+              <td>${esc(r.use || "")}</td>
+              <td class="ex">${highlight(r.example || "", r.target || [])}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>`;
+}
+
+/* ---------------------------------------------------------------------------
+   18. EXERCISES BLOCK
+   --------------------------------------------------------------------------- */
+function exercisesBlockHTML(topicId){
+  const exercises = getExercisesFor(topicId);
+  const lesson = state.lessons[topicId];
+  const lessonHasOwn = !!(lesson && Array.isArray(lesson.exercises) && lesson.exercises.length);
+  const importedCount = importedExerciseCount(topicId);
+
+  let html = `<section class="lesson-block">
+    <h2 class="block-title">
+      Exercises
+      <span class="exercise-count">${exercises.length} total</span>
+    </h2>`;
+
+  if (exercises.length){
+    html += `<div class="exercises">
+      ${exercises.map((ex, i) => exerciseHTML(ex, i, topicId)).join("")}
+    </div>`;
+  } else {
+    html += `<div class="lit-none">No exercises loaded for this topic yet.</div>`;
+  }
+
+  const notes = [];
+  if (lessonHasOwn) notes.push("Exercises from the lesson file");
+  if (importedCount) notes.push(`${importedCount} imported exercise${importedCount === 1 ? "" : "s"}`);
+
+  const noteText = notes.length
+    ? notes.join(" · ")
+    : "You can import an exercise JSON file specifically for this topic.";
+
+  html += `<div class="exercise-import-bar">
+    <div class="exercise-import-note">
+      <strong>${esc(topicId)}</strong><br>
+      ${esc(noteText)}
+    </div>
+    <label class="btn primary">
+      ${exercises.length ? "Import more exercises" : "Import exercises JSON"}
+      <input type="file" class="exercise-file-input" accept=".json,application/json" multiple hidden
+             data-topic="${esc(topicId)}">
+    </label>
+    <button class="btn ghost" data-action="download-template" data-kind="exercise" data-id="${esc(topicId)}">
+      Download template
+    </button>
+    ${importedCount ? `<button class="btn ghost" data-action="clear-exercises" data-id="${esc(topicId)}">
+      Clear imported
+    </button>` : ""}
+  </div>`;
+
+  html += `</section>`;
+  return html;
+}
+
+/* ---------------------------------------------------------------------------
+   19. EXERCISES RENDERERS
+   --------------------------------------------------------------------------- */
+function exerciseHTML(ex, i, lessonId){
+  const type = ex.type || "multiple_choice";
+  if (type === "multiple_choice")      return mcHTML(ex, i);
+  if (type === "fill_blank")           return fillHTML(ex, i);
+  if (type === "matching_definition")  return matchHTML(ex, i, lessonId);
+  return `<div class="exercise" data-ex="${i}">
+    <div class="ex-feedback err">Unsupported exercise type: <strong>${esc(type)}</strong></div>
+  </div>`;
+}
+
+function mcHTML(ex, i){
+  return `<div class="exercise" data-ex="${i}" data-type="multiple_choice">
+    <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Multiple choice</span></div>
+    <p class="ex-question">${esc(ex.question || ex.sentence || "")}</p>
+    <div class="options">
+      ${(ex.options || []).map((o, oi) =>
+        `<button type="button" class="option" data-oi="${oi}">${esc(o)}</button>`).join("")}
+    </div>
+    <div class="ex-actions"><button class="btn" data-action="check-exercise">Check answer</button></div>
+    <div class="ex-feedback" hidden></div>
+  </div>`;
+}
+
+function fillHTML(ex, i){
+  const sentence = ex.sentence || ex.question || "";
+  const parts = String(sentence).split("{{blank}}");
+  const blanks = parts.length - 1;
+
+  let body = "";
+  parts.forEach((p, pi) => {
+    body += esc(p);
+    if (pi < blanks){
+      body += `<input class="blank-input" data-bi="${pi}" autocomplete="off" spellcheck="false" aria-label="Answer ${pi + 1}">`;
+    }
+  });
+
+  return `<div class="exercise" data-ex="${i}" data-type="fill_blank">
+    <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Fill in the blank</span></div>
+    <p class="ex-question fill-sentence">${body}</p>
+    <div class="ex-actions"><button class="btn" data-action="check-exercise">Check answer</button></div>
+    <div class="ex-feedback" hidden></div>
+  </div>`;
+}
+
+function matchOrder(key, n){
+  if (!matchOrders[key] || matchOrders[key].length !== n){
+    const a = [...Array(n).keys()];
+    for (let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    matchOrders[key] = a;
+  }
+  return matchOrders[key];
+}
+
+function matchHTML(ex, i, lessonId){
+  const pairs = ex.pairs || [];
+  const order = matchOrder(`${lessonId}:${i}`, pairs.length);
+
+  return `<div class="exercise" data-ex="${i}" data-type="matching_definition">
+    <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Matching</span></div>
+    <p class="ex-question">${esc(ex.question || "Match each item with its definition.")}</p>
+    <div class="match-grid">
+      ${pairs.map((p, pi) => `<div class="match-row">
+        <div class="match-term">${esc(p.term)}</div>
+        <select class="match-select" data-mi="${pi}" aria-label="Definition for ${esc(p.term)}">
+          <option value="">— choose a definition —</option>
+          ${order.map(oi => `<option value="${oi}">${esc(pairs[oi].definition)}</option>`).join("")}
+        </select>
+      </div>`).join("")}
+    </div>
+    <div class="ex-actions"><button class="btn" data-action="check-exercise">Check answer</button></div>
+    <div class="ex-feedback" hidden></div>
+  </div>`;
+}
+
+function normalizeAccepted(answer, blanks){
+  if (blanks > 1){
+    if (Array.isArray(answer) && answer.length && Array.isArray(answer[0])) return answer;
+    return [Array.isArray(answer) ? answer : [answer]];
+  }
+  if (Array.isArray(answer) && answer.length && Array.isArray(answer[0])) return answer;
+  return [Array.isArray(answer) ? answer : [answer]];
+}
+
+function feedback(card, cls, html){
+  const fb = card.querySelector(".ex-feedback");
+  if (!fb) return;
+  fb.hidden = false;
+  fb.className = "ex-feedback " + cls;
+  fb.innerHTML = html;
+}
+
+function checkExercise(card){
+  const i = Number(card.dataset.ex);
+  const exercises = getExercisesFor(state.currentTopicId);
+  if (!exercises[i]) return;
+  const ex = exercises[i];
+  const type = card.dataset.type;
+
+  if (type === "multiple_choice"){
+    const opts = [...card.querySelectorAll(".option")];
+    const selected = opts.findIndex(o => o.classList.contains("selected"));
+    if (selected < 0){ feedback(card, "warn", "Choose an answer first."); return; }
+
+    let correct = ex.answer;
+    if (typeof correct === "string"){
+      correct = (ex.options || []).findIndex(o => norm(o) === norm(ex.answer));
+    }
+    correct = Number(correct);
+
+    opts.forEach((o, oi) => {
+      o.classList.add("locked");
+      if (oi === correct) o.classList.add("correct");
+      else if (oi === selected) o.classList.add("wrong");
+    });
+
+    const ok = selected === correct;
+    const correctText = (ex.options && ex.options[correct] != null) ? esc(ex.options[correct]) : "—";
+    feedback(card, ok ? "ok" : "err",
+      (ok ? "✓ Correct. " : "✗ Not quite. The correct answer is: <strong>" + correctText + "</strong>. ")
+      + (ex.explanation ? esc(ex.explanation) : ""));
+    return;
+  }
+
+  if (type === "fill_blank"){
+    const inputs = [...card.querySelectorAll(".blank-input")];
+    const accepted = normalizeAccepted(ex.answer, inputs.length);
+    let allOk = true;
+
+    inputs.forEach((inp, bi) => {
+      const value = norm(inp.value);
+      const list = accepted[bi] || [];
+      const ok = value.length > 0 && list.some(a => norm(a) === value);
+      inp.classList.toggle("correct", ok);
+      inp.classList.toggle("wrong", !ok);
+      inp.disabled = true;
+      if (!ok) allOk = false;
+    });
+
+    const answersText = accepted.map(a => a[0]).filter(Boolean).join(" / ");
+    feedback(card, allOk ? "ok" : "err",
+      (allOk ? "✓ Correct. " : "✗ Not quite. Suggested answer: <strong>" + esc(answersText) + "</strong>. ")
+      + (ex.explanation ? esc(ex.explanation) : ""));
+    return;
+  }
+
+  if (type === "matching_definition"){
+    const selects = [...card.querySelectorAll(".match-select")];
+    const pairs = ex.pairs || [];
+    let allOk = true;
+    const wrongList = [];
+
+    selects.forEach((sel, pi) => {
+      const ok = sel.value !== "" && Number(sel.value) === pi;
+      sel.classList.add(ok ? "correct" : "wrong");
+      sel.disabled = true;
+      if (!ok){
+        allOk = false;
+        wrongList.push(`<strong>${esc(pairs[pi].term)}</strong> → ${esc(pairs[pi].definition)}`);
+      }
+    });
+
+    feedback(card, allOk ? "ok" : "err",
+      allOk
+        ? "✓ All matches are correct."
+        : "✗ Some matches are wrong. Correct matches:<br>" + wrongList.join("<br>"));
+    return;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   20. PASSAGE MODAL
+   --------------------------------------------------------------------------- */
+function openPassage(key){
+  const data = passageStore.get(key);
+  if (!data) return;
+
+  $("modalTitle").textContent = data.book || "";
+  $("modalSub").textContent = data.author || "";
+
+  $("modalBody").innerHTML =
+    (data.context ? `<p class="modal-context">${esc(data.context)}</p>` : "") +
+    `<blockquote class="lit-passage">${passageHTML(data.passage, data.targets)}</blockquote>` +
+    (data.url ? `<a class="modal-link" href="${esc(data.url)}" target="_blank" rel="noopener noreferrer">Read the full text on Project Gutenberg ↗</a>` : "");
+
+  const modal = $("modal");
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+  const closeBtn = modal.querySelector(".modal-close");
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeModal(){
+  $("modal").hidden = true;
+  document.body.style.overflow = "";
+}
+
+/* ---------------------------------------------------------------------------
+   21. SETTINGS VIEW
+   --------------------------------------------------------------------------- */
+function settingsHTML(){
+  const messages = state.importMessages.map(m =>
+    `<div class="alert ${m.type}">${esc(m.text)}</div>`).join("");
+
+  const topicIds = allTopics().map(t => t.topic.id);
+  const loadedIds = Object.keys(state.lessons);
+  const orphanLessons = loadedIds.filter(id => topicIds.indexOf(id) === -1);
+
+  const exTopicIds = Object.keys(state.exercises);
+  const orphanExercises = exTopicIds.filter(id => topicIds.indexOf(id) === -1);
+
+  const bookTitle = (state.book && state.book.book && state.book.book.title) || "—";
+
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Settings</h2>
+    <p class="page-sub">Import content, view JSON templates, adjust reading options. Everything is stored locally in your browser.</p>
+  </div>
+
+  ${messages}
+
+  <!-- ===================== GRAMMAR BOOK ===================== -->
+  <section class="card">
+    <h3>Grammar Book JSON</h3>
+    <p class="muted">Defines the sections and topics of the book. Import this file first — it creates the table of contents for the whole application.</p>
+    <div class="file-row">
+      <input type="file" id="bookFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="book">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="bookTpl">▸ Show structure</button>
+    <div class="template-wrap" id="bookTpl" hidden>
+      <div class="template-box">${esc(bookTemplateString())}</div>
+    </div>
+  </section>
+
+  <!-- ===================== LESSON ===================== -->
+  <section class="card">
+    <h3>Lesson JSON</h3>
+    <p class="muted">One file per topic. The lesson <code>id</code> must match a topic <code>id</code> in the grammar book. You can select several files at once.</p>
+    <div class="file-row">
+      <input type="file" id="lessonFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="lesson">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="lessonTpl">▸ Show structure</button>
+    <div class="template-wrap" id="lessonTpl" hidden>
+      <div class="template-box">${esc(lessonTemplateString())}</div>
+    </div>
+  </section>
+
+  <!-- ===================== EXERCISES ===================== -->
+  <section class="card">
+    <h3>Exercise JSON</h3>
+    <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus an <code>exercises</code> array.
+      Can also be imported from each topic's lesson page.</p>
+    <div class="file-row">
+      <input type="file" id="exerciseFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="exercise">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="exTpl">▸ Show structure</button>
+    <div class="template-wrap" id="exTpl" hidden>
+      <div class="template-box">${esc(exerciseTemplateString())}</div>
+    </div>
+  </section>
+
+  <!-- ===================== PASTE ===================== -->
+  <section class="card">
+    <h3>Paste JSON</h3>
+    <p class="muted">Paste any of the three file types. The type is detected automatically.</p>
+    <textarea class="paste" id="pasteArea" placeholder='{ "book": { "title": "English Grammar" }, "sections": [ ... ] }'></textarea>
+    <div class="file-row">
+      <button class="btn primary" data-action="import-paste">Import pasted JSON</button>
+    </div>
+  </section>
+
+  <!-- ===================== READING OPTIONS ===================== -->
+  <section class="card">
+    <h3>Reading Options</h3>
+    <p class="muted">Choose the font family and size used in grammar lessons. These settings apply to every topic and are saved in your browser.</p>
+    ${readerPanelHTML("inline")}
+  </section>
+
+  <!-- ===================== LIBRARY ===================== -->
+  <section class="card">
+    <h3>Library</h3>
+    <p class="muted">Grammar book: <strong>${esc(bookTitle)}</strong>
+      · ${topicCount()} topics
+      · ${loadedIds.length} lesson${loadedIds.length === 1 ? "" : "s"} loaded
+      · ${exTopicIds.length} exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)</p>
+    ${orphanLessons.length ? `<div class="alert info">Lessons loaded without a matching topic in the grammar book:
+      <code>${esc(orphanLessons.join(", "))}</code></div>` : ""}
+    ${orphanExercises.length ? `<div class="alert info">Exercise banks loaded without a matching topic in the grammar book:
+      <code>${esc(orphanExercises.join(", "))}</code></div>` : ""}
+    <div class="file-row">
+      <button class="btn" data-action="export-progress">Export progress</button>
+      <button class="btn" data-action="reset-progress">Reset all progress</button>
+      <button class="btn" data-action="clear-all">Clear all data</button>
+    </div>
+  </section>
+
+  <!-- ===================== WORKFLOW ===================== -->
+  <section class="card">
+    <h3>How to add a topic</h3>
+    <ol class="muted" style="padding-left:20px;line-height:2;">
+      <li>Download the <strong>Grammar Book template</strong>. Add a section and topic entry with a new <code>id</code>.</li>
+      <li>Download the <strong>Lesson template</strong> (or open any topic's page and use its
+        <em>Download lesson template</em> button, which pre-fills the id).</li>
+      <li>Fill in the lesson: sections, examples, literary examples, comparisons, summary.</li>
+      <li>Optionally download the <strong>Exercise template</strong> for that topic's id and add exercises.</li>
+      <li>Import all three files here — or import the lesson/exercise files directly from the topic's page.</li>
+    </ol>
+  </section>`;
+}
+
+/* ---------------------------------------------------------------------------
+   22. JSON IMPORT VALIDATION + APPLY
+   --------------------------------------------------------------------------- */
+function validateBook(obj){
+  const errors = [];
+  if (!obj || typeof obj !== "object") errors.push("file is not a JSON object");
+  if (!Array.isArray(obj.sections)) errors.push("missing 'sections' array");
+  else if (!obj.sections.length) errors.push("'sections' is empty");
+  else {
+    obj.sections.forEach((s, i) => {
+      if (!s || typeof s !== "object") { errors.push(`section ${i + 1} is not an object`); return; }
+      if (!s.id)    errors.push(`section ${i + 1} has no 'id'`);
+      if (!s.title) errors.push(`section ${i + 1} has no 'title'`);
+      if (!Array.isArray(s.topics)) errors.push(`section "${s.title || i + 1}" has no 'topics' array`);
+      else s.topics.forEach((t, j) => {
+        if (!t || typeof t !== "object") { errors.push(`topic ${j + 1} in "${s.title}" is not an object`); return; }
+        if (!t.id)    errors.push(`topic ${j + 1} in "${s.title}" has no 'id'`);
+        if (!t.title) errors.push(`topic ${j + 1} in "${s.title}" has no 'title'`);
+      });
+    });
+  }
+  return { ok: errors.length === 0, errors };
+}
+
+function validateLesson(obj){
+  const errors = [];
+  if (!obj || typeof obj !== "object") errors.push("file is not a JSON object");
+  if (!obj.id)    errors.push("missing 'id'");
+  if (!obj.title) errors.push("missing 'title'");
+  if (!Array.isArray(obj.sections)) errors.push("missing 'sections' array");
+  if (obj.exercises && !Array.isArray(obj.exercises)) errors.push("'exercises' must be an array");
+  if (obj.comparisons && !Array.isArray(obj.comparisons)) errors.push("'comparisons' must be an array");
+  if (obj.summary && !Array.isArray(obj.summary)) errors.push("'summary' must be an array");
+  return { ok: errors.length === 0, errors };
+}
+
+function validateExerciseFile(obj){
+  const errors = [];
+  if (!obj || typeof obj !== "object") errors.push("file is not a JSON object");
+  if (!obj.topic_id) errors.push("missing 'topic_id'");
+  if (!Array.isArray(obj.exercises)) errors.push("missing 'exercises' array");
+  else if (!obj.exercises.length) errors.push("'exercises' is empty");
+  else {
+    obj.exercises.forEach((ex, i) => {
+      if (!ex || typeof ex !== "object"){ errors.push(`exercise ${i + 1} is not an object`); return; }
+      const t = ex.type;
+      if (!t){ errors.push(`exercise ${i + 1} has no 'type'`); return; }
+      if (t === "multiple_choice"){
+        if (!Array.isArray(ex.options) || ex.options.length < 2)
+          errors.push(`exercise ${i + 1}: multiple_choice needs at least 2 options`);
+        if (ex.answer === undefined)
+          errors.push(`exercise ${i + 1}: multiple_choice needs 'answer'`);
+      } else if (t === "fill_blank"){
+        if (!ex.sentence) errors.push(`exercise ${i + 1}: fill_blank needs 'sentence'`);
+        else if (String(ex.sentence).indexOf("{{blank}}") === -1)
+          errors.push(`exercise ${i + 1}: fill_blank 'sentence' must contain {{blank}}`);
+        if (ex.answer === undefined)
+          errors.push(`exercise ${i + 1}: fill_blank needs 'answer'`);
+      } else if (t === "matching_definition"){
+        if (!Array.isArray(ex.pairs) || ex.pairs.length < 2)
+          errors.push(`exercise ${i + 1}: matching_definition needs at least 2 pairs`);
+      } else {
+        errors.push(`exercise ${i + 1}: unsupported type "${t}"`);
+      }
+    });
+  }
+  return { ok: errors.length === 0, errors };
+}
+
+function applyJSON(obj){
+  if (obj && typeof obj === "object" && obj.book && Array.isArray(obj.sections)){
+    const v = validateBook(obj);
+    if (!v.ok) return { ok: false, message: "Invalid grammar book JSON — " + v.errors.join("; ") };
+    state.book = obj;
+    saveBook();
+    return { ok: true, message: `Grammar book "${(obj.book.title || "untitled")}" imported — ${topicCount()} topics.` };
+  }
+
+  if (obj && typeof obj === "object" && obj.topic_id && Array.isArray(obj.exercises)){
+    const v = validateExerciseFile(obj);
+    if (!v.ok) return { ok: false, message: "Invalid exercise JSON — " + v.errors.join("; ") };
+    state.exercises[obj.topic_id] = obj;
+    saveExercises();
+    const known = allTopics().some(t => t.topic.id === obj.topic_id);
+    const n = obj.exercises.length;
+    return {
+      ok: true,
+      message: `Exercises for "${obj.topic_id}" imported — ${n} exercise${n === 1 ? "" : "s"}${known ? "" : " (warning: no matching topic id)"}.`
+    };
+  }
+
+  if (obj && typeof obj === "object" && obj.id && obj.title && Array.isArray(obj.sections)){
+    const v = validateLesson(obj);
+    if (!v.ok) return { ok: false, message: "Invalid lesson JSON — " + v.errors.join("; ") };
+    state.lessons[obj.id] = obj;
+    saveLessons();
+    const known = allTopics().some(t => t.topic.id === obj.id);
+    return {
+      ok: true,
+      message: `Lesson "${obj.title}" imported${known ? "" : " (warning: no matching topic id)"}.`
+    };
+  }
+
+  return {
+    ok: false,
+    message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }) or an exercise bank ({ topic_id, exercises })."
+  };
+}
+
+async function handleFiles(fileList){
+  const files = [...fileList];
+  if (!files.length) return;
+  const messages = [];
+
+  for (const file of files){
+    try {
+      const text = await file.text();
+      let obj;
+      try { obj = JSON.parse(text); }
+      catch (e){ messages.push({ type: "error", text: `${file.name}: not valid JSON — ${e.message}` }); continue; }
+
+      const result = applyJSON(obj);
+      messages.push({ type: result.ok ? "ok" : "error", text: `${file.name}: ${result.message}` });
+    } catch (e){
+      messages.push({ type: "error", text: `${file.name}: ${e.message}` });
+    }
+  }
+
+  state.importMessages = messages;
+
+  if (state.view === "settings"){
+    render();
+  } else {
+    const anyOk = messages.some(m => m.type === "ok");
+    toast(messages.map(m => m.text).join(" | "), anyOk ? "" : "err");
+    render();
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   23. EVENTS
+   --------------------------------------------------------------------------- */
+document.addEventListener("click", (ev) => {
+
+  const option = ev.target.closest(".option");
+  if (option && !option.classList.contains("locked")){
+    const card = option.closest(".exercise");
+    card.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+    option.classList.add("selected");
+    return;
+  }
+
+  if (ev.target.id === "modal"){ closeModal(); return; }
+
+  const el = ev.target.closest("[data-action]");
+  if (!el) return;
+  const action = el.dataset.action;
+
+  switch (action){
+
+    case "nav":
+      ev.preventDefault && ev.preventDefault();
+      go(el.dataset.view);
+      break;
+
+    case "open-topic":
+      openTopic(el.dataset.id);
+      break;
+
+    case "toggle-complete": {
+      const id = el.dataset.id;
+      const next = statusOf(id) === "completed" ? "not_started" : "completed";
+      setStatus(id, next);
+
+      const pill = $("lessonPill");
+      const btn = $("lessonCompleteBtn");
+      if (pill){
+        pill.className = "pill " + next;
+        pill.textContent = statusLabel(next);
+      }
+      if (btn){
+        btn.className = "btn " + (next === "completed" ? "ok" : "primary");
+        btn.textContent = next === "completed" ? "↺ Mark as not completed" : "✓ Mark as completed";
+      }
+      updateHeader();
+      updateNav();
+      toast(next === "completed" ? "Topic marked as completed." : "Topic marked as not completed.");
+      break;
+    }
+
+    case "prev-topic": {
+      const n = neighborTopics(el.dataset.id).prev;
+      if (n) openTopic(n.id);
+      break;
+    }
+
+    case "next-topic": {
+      const n = neighborTopics(el.dataset.id).next;
+      if (n) openTopic(n.id);
+      break;
+    }
+
+    case "open-passage":
+      openPassage(el.dataset.key);
+      break;
+
+    case "close-modal":
+      closeModal();
+      break;
+
+    case "check-exercise": {
+      const card = el.closest(".exercise");
+      if (card) checkExercise(card);
+      break;
+    }
+
+    /* ---------------- READING OPTIONS ---------------- */
+    case "toggle-reader": {
+      state.readerOpen = !state.readerOpen;
+      const panel = document.querySelector(".lesson .reader-panel");
+      if (panel) panel.hidden = !state.readerOpen;
+      el.textContent = "Aa " + (state.readerOpen ? "Hide options" : "Reading options");
+      break;
+    }
+
+    case "set-reader-font": {
+      setReaderFont(el.dataset.font);
+      break;
+    }
+
+    case "reader-size-step": {
+      const step = Number(el.dataset.step) || 0;
+      setReaderSize(state.reader.size + step, true);
+      break;
+    }
+
+    case "reset-reader": {
+      state.reader.fontId = DEFAULT_READER.fontId;
+      state.reader.size = DEFAULT_READER.size;
+      saveReader();
+      applyReader();
+      toast("Reading options reset.");
+      break;
+    }
+
+    /* ---------------- TEMPLATES ---------------- */
+    case "download-template": {
+      const kind = el.dataset.kind;
+      const id = el.dataset.id;
+
+      if (kind === "book"){
+        downloadJSON(GRAMMAR_BOOK_TEMPLATE, "grammar-book.template.json");
+        toast("Grammar book template downloaded.");
+      } else if (kind === "lesson"){
+        const tpl = id ? lessonTemplateForTopic(id) : LESSON_TEMPLATE;
+        const filename = (id ? id : "lesson") + ".template.json";
+        downloadJSON(tpl, filename);
+        toast("Lesson template downloaded" + (id ? " for " + id : "") + ".");
+      } else if (kind === "exercise"){
+        const tpl = id ? exerciseTemplateForTopic(id) : EXERCISE_TEMPLATE;
+        const filename = (id ? id : "exercise") + "-exercises.template.json";
+        downloadJSON(tpl, filename);
+        toast("Exercise template downloaded" + (id ? " for " + id : "") + ".");
+      }
+      break;
+    }
+
+    case "toggle-template": {
+      const target = $(el.dataset.target);
+      if (!target) break;
+      const isHidden = target.hidden;
+      target.hidden = !isHidden;
+      el.textContent = (isHidden ? "▾ Hide structure" : "▸ Show structure");
+      break;
+    }
+
+    case "export-lesson": {
+      const id = el.dataset.id;
+      const lesson = state.lessons[id];
+      if (!lesson){ toast("No lesson loaded for this topic.", "err"); break; }
+      downloadJSON(lesson, id + ".json");
+      toast("Lesson exported.");
+      break;
+    }
+
+    case "clear-exercises": {
+      const id = el.dataset.id;
+      if (!confirm("Remove the imported exercise bank for this topic?")) return;
+      delete state.exercises[id];
+      saveExercises();
+      toast("Imported exercises removed.");
+      render();
+      break;
+    }
+
+    case "import-paste": {
+      const area = $("pasteArea");
+      if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); return; }
+      let obj;
+      try { obj = JSON.parse(area.value); }
+      catch (e){
+        state.importMessages = [{ type: "error", text: "Pasted text is not valid JSON — " + e.message }];
+        render();
+        return;
+      }
+      const result = applyJSON(obj);
+      state.importMessages = [{ type: result.ok ? "ok" : "error", text: result.message }];
+      render();
+      break;
+    }
+
+    case "reset-progress": {
+      if (!confirm("Reset all progress? This cannot be undone.")) return;
+      state.progress = {};
+      saveProgress();
+      state.importMessages = [{ type: "ok", text: "All progress has been reset." }];
+      render();
+      break;
+    }
+
+    case "clear-all": {
+      if (!confirm("Clear all data? This removes the grammar book, all lessons, all exercise banks and all progress. Reading options are kept.")) return;
+      state.book = null;
+      state.lessons = {};
+      state.exercises = {};
+      state.progress = {};
+      state.currentTopicId = null;
+      try {
+        localStorage.removeItem(LS.BOOK);
+        localStorage.removeItem(LS.LESSONS);
+        localStorage.removeItem(LS.EXERCISES);
+        localStorage.removeItem(LS.PROGRESS);
+      } catch (e){}
+      state.importMessages = [{ type: "ok", text: "All data cleared. Import a grammar book to begin." }];
+      state.view = "settings";
+      render();
+      break;
+    }
+
+    case "export-progress": {
+      const data = {
+        exportedAt: new Date().toISOString(),
+        progress: state.progress,
+        totals: progressStats()
+      };
+      downloadJSON(data, "grammar-progress.json");
+      break;
+    }
+  }
+});
+
+/* keyboard */
+document.addEventListener("keydown", (ev) => {
+  if (ev.key === "Escape" && !$("modal").hidden){ closeModal(); return; }
+  if (ev.key === "Enter" || ev.key === " "){
+    const card = ev.target.closest && ev.target.closest(".topic-card");
+    if (card && ev.target === card){
+      ev.preventDefault();
+      openTopic(card.dataset.id);
+    }
+  }
+});
+
+/* live search + font-size slider */
+document.addEventListener("input", (ev) => {
+  const t = ev.target;
+
+  if (t.id === "searchInput"){
+    state.query = t.value;
+    renderBookResults();
+    return;
+  }
+
+  if (t.classList && t.classList.contains("size-slider")){
+    setReaderSize(Number(t.value), false);
+  }
+});
+
+/* save the size when the slider is released */
+document.addEventListener("change", (ev) => {
+  const t = ev.target;
+  if (!t) return;
+
+  if (t.classList && t.classList.contains("size-slider")){
+    setReaderSize(Number(t.value), true);
+    return;
+  }
+
+  if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile"){
+    const files = t.files;
+    t.value = "";
+    handleFiles(files);
+    return;
+  }
+
+  if (t.classList){
+    if (t.classList.contains("lesson-file-input") || t.classList.contains("exercise-file-input")){
+      const files = t.files;
+      t.value = "";
+      handleFiles(files);
+    }
+  }
+});
+
+/* ---------------------------------------------------------------------------
+   24. DYNAMIC INPUT BINDING
+   --------------------------------------------------------------------------- */
+function bindDynamicInputs(){
+  if (state.view === "book" && hasBook()){
+    renderBookResults();
+    const input = $("searchInput");
+    if (input){
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter"){
+          const first = document.querySelector(".topic-card");
+          if (first) openTopic(first.dataset.id);
+        }
+      });
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   25. INIT
+   --------------------------------------------------------------------------- */
+(function init(){
+  loadState();
+  render();
+})();
+</script>
+</body>
+</html>
