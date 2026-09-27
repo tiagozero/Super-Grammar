@@ -4,6 +4,20 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>English Grammar — Grammar Reference &amp; Practice</title>
+<script>
+/* Apply saved theme as early as possible to avoid a flash of the wrong theme. */
+(function(){
+  try {
+    var t = localStorage.getItem("egb:theme:v1");
+    var dark = false;
+    if (t === "dark") dark = true;
+    else if (t === "system" || t === null){
+      dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    if (dark) document.documentElement.setAttribute("data-theme", "dark");
+  } catch (e){}
+})();
+</script>
 <style>
 /* ============================================================
    TOKENS
@@ -560,6 +574,56 @@ button{font:inherit;}
 .cmp-title{font-family:var(--serif);font-size:1.02rem;font-weight:600;margin-bottom:14px;}
 
 /* ============================================================
+   VOCABULARY
+   ============================================================ */
+.vocab-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+.vocab-card{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--gold);
+  border-radius:var(--radius);
+  padding:14px 16px 15px;
+  display:flex;flex-direction:column;gap:9px;
+  box-shadow:var(--shadow);
+}
+.vocab-head{display:flex;flex-direction:column;gap:2px;}
+.vocab-term-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.vocab-term{
+  font-family:var(--serif);font-size:1.16rem;font-weight:600;color:var(--ink);
+  letter-spacing:.005em;line-height:1.2;
+}
+.vocab-pos{
+  font-size:.64rem;text-transform:uppercase;letter-spacing:.14em;font-weight:800;
+  color:var(--muted);
+}
+.vocab-pron{font-family:var(--mono);font-size:.76rem;color:var(--accent-2);letter-spacing:.01em;}
+.vocab-def{font-size:.9rem;color:var(--ink-soft);line-height:1.55;}
+.vocab-ex{
+  font-size:.85rem;color:var(--ink-soft);font-style:italic;
+  padding:8px 11px;background:var(--card-soft);border-radius:5px;
+  border-left:2px solid var(--rule-strong);
+}
+.vocab-ex-label{
+  display:block;font-style:normal;
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;font-weight:800;
+  color:var(--muted);margin-bottom:3px;
+}
+.vocab-meta{display:flex;flex-direction:column;gap:3px;font-size:.78rem;color:var(--muted);}
+.vocab-meta strong{color:var(--ink-soft);font-weight:700;margin-right:5px;}
+.vocab-note{font-size:.79rem;color:var(--muted);line-height:1.5;}
+.vocab-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.vocab-tag{
+  font-size:.64rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:2px 8px;border-radius:99px;
+  background:var(--accent-soft);color:var(--accent);
+  border:1px solid rgba(47,110,165,.22);
+}
+
+/* ============================================================
    EXERCISES
    ============================================================ */
 .exercises{display:flex;flex-direction:column;gap:16px;}
@@ -833,10 +897,43 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .option         { font-size: .85em; }
 .lesson .match-term     { font-size: .85em; }
 .lesson .ex-feedback    { font-size: .82em; }
+.lesson .vocab-term     { font-size: .96em; }
+.lesson .vocab-def      { font-size: .84em; }
+.lesson .vocab-ex       { font-size: .79em; }
 /* keep UI chrome in the interface font */
 .btn{ font-family: var(--sans); }
 .pill{ font-family: var(--sans); }
 .lesson .btn{ font-family: var(--sans); }
+
+/* ============================================================
+   THEME PICKER (settings)
+   ============================================================ */
+.theme-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;margin-top:14px;
+}
+.theme-btn{
+  display:flex;flex-direction:column;align-items:flex-start;gap:9px;
+  padding:12px 14px;border-radius:8px;
+  border:1px solid var(--rule-strong);background:var(--card);
+  color:var(--ink-soft);font-size:.88rem;font-weight:600;cursor:pointer;
+  transition:border-color .15s,background .15s,box-shadow .15s,color .15s;
+  text-align:left;
+}
+.theme-btn:hover{background:#f6f3ec;border-color:#c6bfae;color:var(--ink);}
+.theme-btn.active{
+  border-color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent);
+  background:var(--accent-soft);color:var(--accent);font-weight:700;
+}
+.theme-swatch{
+  width:100%;height:46px;border-radius:6px;border:1px solid var(--rule-strong);
+  display:block;
+}
+.theme-swatch-light{background:linear-gradient(135deg,#faf8f3 0 50%, #ffffff 50% 100%);}
+.theme-swatch-dark{background:linear-gradient(135deg,#16161a 0 50%, #1f1f24 50% 100%);}
+.theme-swatch-system{background:linear-gradient(135deg,#faf8f3 0 50%, #1f1f24 50% 100%);}
 
 /* ============================================================
    MODAL
@@ -940,6 +1037,172 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .book-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
   .add-book-card{min-height:220px;}
 }
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+html[data-theme="dark"]{
+  --paper:#16161a;
+  --card:#1f1f24;
+  --card-soft:#26262c;
+  --ink:#e8e6e1;
+  --ink-soft:#b8b5ad;
+  --muted:#8a867d;
+  --rule:#33333a;
+  --rule-strong:#45454f;
+  --accent:#7ab0e0;
+  --accent-2:#95c0e8;
+  --accent-soft:#1b2936;
+  --gold:#d9ac4f;
+  --ok:#5fbc8d;
+  --ok-soft:#16281f;
+  --warn:#d9a44e;
+  --warn-soft:#2a2318;
+  --err:#e08a80;
+  --err-soft:#2c1e1c;
+  --target-bg:#4a3d12;
+  --target-line:#8a6f1f;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 6px 20px rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+html[data-theme="dark"] ::selection{ background:#5b4a12; color:#fff; }
+html[data-theme="dark"] code{ background:#2c2c33; color:#e8e6e1; }
+html[data-theme="dark"] a{ color:var(--accent-2); }
+html[data-theme="dark"] .topbar{
+  background:rgba(22,22,26,.94);
+  border-bottom-color:var(--rule);
+}
+html[data-theme="dark"] .nav button:hover{ background:#26262c; color:var(--ink); }
+html[data-theme="dark"] .pbar{ background:#26262c; border-color:#33333a; }
+html[data-theme="dark"] .pbar > span{
+  background:linear-gradient(90deg,#4d84b8,#7ab0e0);
+}
+html[data-theme="dark"] .book-card:hover{ border-color:#45454f; box-shadow:0 12px 28px rgba(0,0,0,.5); }
+html[data-theme="dark"] .book-cover{
+  background:linear-gradient(160deg,#252a33,#1e222a);
+  border-bottom-color:var(--rule);
+}
+html[data-theme="dark"] .book-cover .cover-placeholder{ color:#5d6b7a; }
+html[data-theme="dark"] .add-book-card{
+  background:#1c1c21; border-color:#3a3a42;
+}
+html[data-theme="dark"] .add-book-card:hover{ background:#22222a; border-color:var(--accent-2); }
+html[data-theme="dark"] .add-book-card .ab-title{ color:var(--ink); }
+html[data-theme="dark"] .empty-section{ background:#1c1c21; }
+html[data-theme="dark"] .icon-btn{
+  background:#24242a; border-color:#3a3a42; color:var(--muted);
+}
+html[data-theme="dark"] .icon-btn:hover{ background:#2d2d35; color:var(--ink); border-color:#4d4d58; }
+html[data-theme="dark"] .btn{ background:#24242a; border-color:#3a3a42; color:var(--ink-soft); }
+html[data-theme="dark"] .btn:hover{ background:#2d2d35; color:var(--ink); border-color:#4d4d58; }
+html[data-theme="dark"] .btn.ghost{ background:transparent; }
+html[data-theme="dark"] .btn.ghost:hover{ background:#2d2d35; }
+html[data-theme="dark"] .btn.primary{ background:var(--accent); border-color:var(--accent); color:#0d1620; }
+html[data-theme="dark"] .btn.primary:hover{ background:#95c0e8; border-color:#95c0e8; }
+html[data-theme="dark"] .btn.ok{ background:var(--ok); border-color:var(--ok); color:#0a1f16; }
+html[data-theme="dark"] .btn.ok:hover{ background:#74cba0; border-color:#74cba0; }
+html[data-theme="dark"] .field input[type="text"],
+html[data-theme="dark"] .field input[type="number"],
+html[data-theme="dark"] .field textarea{
+  background:#1a1a1f; color:var(--ink); border-color:#3a3a42;
+}
+html[data-theme="dark"] .cover-drop{ background:#1c1c21; border-color:#3a3a42; }
+html[data-theme="dark"] .cover-preview{
+  background:linear-gradient(160deg,#252a33,#1e222a); border-color:#3a3a42;
+}
+html[data-theme="dark"] .option{
+  background:#24242a; border-color:#3a3a42; color:var(--ink-soft);
+}
+html[data-theme="dark"] .option:hover:not(.locked){ background:#2d2d35; border-color:#4d4d58; }
+html[data-theme="dark"] .option.selected{
+  background:var(--accent-soft); color:var(--accent-2); border-color:var(--accent-2);
+}
+html[data-theme="dark"] .option.correct{ background:#16281f; color:#8fe0b6; border-color:#2f6a4a; }
+html[data-theme="dark"] .option.wrong{ background:#2c1e1c; color:#e8a49c; border-color:#6a342e; }
+html[data-theme="dark"] .blank-input{ background:#1c2530; color:var(--ink); }
+html[data-theme="dark"] .blank-input:focus{ background:#202c3a; }
+html[data-theme="dark"] .blank-input.correct{ background:#16281f; }
+html[data-theme="dark"] .blank-input.wrong{ background:#2c1e1c; }
+html[data-theme="dark"] .match-select{ background:#24242a; color:var(--ink-soft); border-color:#3a3a42; }
+html[data-theme="dark"] .match-select.correct{ background:#16281f; color:#8fe0b6; border-color:#2f6a4a; }
+html[data-theme="dark"] .match-select.wrong{ background:#2c1e1c; color:#e8a49c; border-color:#6a342e; }
+html[data-theme="dark"] .tbl th{
+  background:#232328; color:var(--muted);
+  border-bottom-color:var(--rule-strong);
+}
+html[data-theme="dark"] .tbl td{ color:var(--ink-soft); border-bottom-color:var(--rule); }
+html[data-theme="dark"] .tbl tbody tr:hover{ background:#26262c; }
+html[data-theme="dark"] .lit-card,
+html[data-theme="dark"] .literary-card{ background:#1c1c21; border-color:var(--rule-strong); }
+html[data-theme="dark"] .lit-passage{ color:#d9d6cd; border-left-color:var(--rule-strong); }
+html[data-theme="dark"] .lit-none,
+html[data-theme="dark"] .empty{ background:#1c1c21; border-color:#3a3a42; }
+html[data-theme="dark"] .empty h3{ color:var(--ink); }
+html[data-theme="dark"] .modal{ background:#1c1c21; border-color:var(--rule-strong); }
+html[data-theme="dark"] .modal-body{ color:#d9d6cd; }
+html[data-theme="dark"] .modal-close:hover{ background:#2d2d35; color:var(--ink); }
+html[data-theme="dark"] .toast{ background:#e8e6e1; color:#1a1a1f; }
+html[data-theme="dark"] .toast.err{ background:#7d211a; color:#fff; }
+html[data-theme="dark"] .reader-preview{
+  background:#1c1c21; color:var(--ink); border-color:var(--rule);
+}
+html[data-theme="dark"] .font-btn{
+  background:#24242a; border-color:#3a3a42; color:var(--ink-soft);
+}
+html[data-theme="dark"] .font-btn:hover{ background:#2d2d35; border-color:#4d4d58; color:var(--ink); }
+html[data-theme="dark"] .font-btn.active{
+  background:var(--accent-soft); color:var(--accent-2); border-color:var(--accent);
+}
+html[data-theme="dark"] .size-btn{
+  background:#24242a; border-color:#3a3a42; color:var(--ink-soft);
+}
+html[data-theme="dark"] .size-btn:hover{ background:#2d2d35; }
+html[data-theme="dark"] .size-slider{ background:#33333a; }
+html[data-theme="dark"] .size-slider::-webkit-slider-thumb{ background:#1c1c21; }
+html[data-theme="dark"] .size-slider::-moz-range-thumb{ background:#1c1c21; }
+html[data-theme="dark"] .template-box{ background:#1c1c21; color:var(--ink-soft); border-color:var(--rule); }
+html[data-theme="dark"] textarea.paste{
+  background:#1c1c21; color:var(--ink); border-color:#3a3a42;
+}
+html[data-theme="dark"] .exercise-import-bar{ background:#1c1c21; border-color:#3a3a42; }
+html[data-theme="dark"] .search{
+  background-color:#1c1c21; color:var(--ink); border-color:#3a3a42;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238a867d' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E");
+}
+html[data-theme="dark"] .context-box{ color:#b8cfe4; }
+html[data-theme="dark"] .mistakes{ border-color:#5a4a24; }
+html[data-theme="dark"] .ex-feedback.ok{ color:#8fe0b6; }
+html[data-theme="dark"] .ex-feedback.err{ color:#e8a49c; }
+html[data-theme="dark"] .ex-feedback.warn{ color:#e0c58a; }
+html[data-theme="dark"] .alert.ok{ color:#8fe0b6; }
+html[data-theme="dark"] .alert.error{ color:#e8a49c; }
+html[data-theme="dark"] .alert.info{ color:#b8cfe4; }
+html[data-theme="dark"] .theme-btn:hover{ background:#2d2d35; border-color:#4d4d58; color:var(--ink); }
+html[data-theme="dark"] .theme-btn.active{
+  background:var(--accent-soft); color:var(--accent-2); border-color:var(--accent);
+}
+html[data-theme="dark"] .continue-card{
+  background:linear-gradient(180deg,#1f1f24,#1c1c21);
+}
+html[data-theme="dark"] .topic-card.in_progress{
+  background:linear-gradient(180deg,#221f18,#1f1f24);
+}
+html[data-theme="dark"] .topic-card.completed{
+  background:linear-gradient(180deg,#19241e,#1f1f24);
+}
+html[data-theme="dark"] .topic-card:hover{ border-color:#45454f; box-shadow:0 8px 22px rgba(0,0,0,.45); }
+html[data-theme="dark"] .vocab-tag{ border-color:rgba(122,176,224,.25); }
+html[data-theme="dark"] .cover-flag{ background:rgba(0,0,0,.6); }
+html[data-theme="dark"] .pill.not_started{ background:#2a2a30; color:var(--muted); border-color:#3a3a42; }
+html[data-theme="dark"] .pill.in_progress{ border-color:#5a4a24; }
+html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
+
+@media (max-width:900px){
+  html[data-theme="dark"] .sidebar{
+    background:rgba(22,22,26,.97);
+    border-bottom-color:var(--rule);
+  }
+}
 </style>
 </head>
 <body>
@@ -996,6 +1259,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 <!-- hidden file inputs -->
 <input type="file" id="coverInput" accept="image/*" hidden>
 <input type="file" id="bookFileQuick" accept=".json,application/json" multiple hidden>
+<input type="file" id="libraryFile" accept=".json,application/json" multiple hidden>
 
 <div class="toast" id="toast"></div>
 
@@ -1009,22 +1273,28 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
      • BOOK files         -> one library entry each: title, cover, sections, topics
      • LESSON files       -> explanations, examples, literary passages, tables
      • EXERCISE files     -> per-topic exercise banks
+     • VOCABULARY files   -> per-topic word banks (term / definition / example)
 
    Books can also be created, edited and deleted entirely inside the app, with
    an uploaded cover image (downscaled and stored as a data URL).
+
+   A full "all data" export/import round-trips everything at once:
+     books + lessons + exercises + vocabulary + progress + theme + reader prefs.
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
    1. STORAGE KEYS
    --------------------------------------------------------------------------- */
 const LS = {
-  BOOKS:     "egb:books:v3",
-  BOOK:      "egb:book:v2",        // legacy single-book key (migrated)
-  CURRENT:   "egb:current-book:v1",
-  LESSONS:   "egb:lessons:v2",
-  EXERCISES: "egb:exercises:v2",
-  PROGRESS:  "egb:progress:v2",
-  READER:    "egb:reader:v1"
+  BOOKS:      "egb:books:v3",
+  BOOK:       "egb:book:v2",        // legacy single-book key (migrated)
+  CURRENT:    "egb:current-book:v1",
+  LESSONS:    "egb:lessons:v2",
+  EXERCISES:  "egb:exercises:v2",
+  VOCABULARY: "egb:vocabulary:v1",
+  PROGRESS:   "egb:progress:v2",
+  READER:     "egb:reader:v1",
+  THEME:      "egb:theme:v1"
 };
 
 /* ---------------------------------------------------------------------------
@@ -1051,6 +1321,9 @@ const READER_FONTS = [
 const DEFAULT_READER = { fontId: "system", size: 17 };
 const READER_MIN = 14;
 const READER_MAX = 26;
+
+const THEMES = ["light", "dark", "system"];
+const DEFAULT_THEME = "light";
 
 /* ---------------------------------------------------------------------------
    3. JSON TEMPLATES
@@ -1270,9 +1543,39 @@ const EXERCISE_TEMPLATE = {
   ]
 };
 
+const VOCABULARY_TEMPLATE = {
+  topic_id: "TOPIC_ID_HERE",
+  title: "Vocabulary — TOPIC_ID_HERE",
+  words: [
+    {
+      term: "routine",
+      part_of_speech: "noun",
+      pronunciation: "/ruːˈtiːn/",
+      definition: "a usual or fixed way of doing things",
+      example: "My morning routine starts at 6 a.m.",
+      synonyms: ["habit", "practice"],
+      antonyms: [],
+      notes: "Often used with 'daily' or 'morning'.",
+      tags: ["daily life"]
+    },
+    {
+      term: "rarely",
+      part_of_speech: "adverb",
+      pronunciation: "/ˈreəli/",
+      definition: "not often; seldom",
+      example: "She rarely drinks coffee after noon.",
+      synonyms: ["seldom", "hardly ever"],
+      antonyms: ["often", "frequently"],
+      notes: "Negative-frequency adverb; takes inversion in formal style: 'Rarely does she...'",
+      tags: ["frequency"]
+    }
+  ]
+};
+
 function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
 function lessonTemplateString(){ return JSON.stringify(LESSON_TEMPLATE, null, 2); }
 function exerciseTemplateString(){ return JSON.stringify(EXERCISE_TEMPLATE, null, 2); }
+function vocabularyTemplateString(){ return JSON.stringify(VOCABULARY_TEMPLATE, null, 2); }
 
 function lessonTemplateForTopic(topicId){
   const tpl = JSON.parse(JSON.stringify(LESSON_TEMPLATE));
@@ -1297,6 +1600,13 @@ function exerciseTemplateForTopic(topicId){
   return tpl;
 }
 
+function vocabularyTemplateForTopic(topicId){
+  const tpl = JSON.parse(JSON.stringify(VOCABULARY_TEMPLATE));
+  tpl.topic_id = topicId;
+  tpl.title = "Vocabulary — " + topicId;
+  return tpl;
+}
+
 /* ---------------------------------------------------------------------------
    4. STATE
    --------------------------------------------------------------------------- */
@@ -1305,9 +1615,11 @@ const state = {
   currentBookId: null,
   lessons: {},
   exercises: {},
+  vocabulary: {},        // topic_id -> { topic_id, title, words: [...] }
   progress: {},
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
+  theme: DEFAULT_THEME,  // "light" | "dark" | "system"
   view: "dashboard",
   currentTopicId: null,
   query: "",
@@ -1581,6 +1893,41 @@ function readerPanelHTML(open){
 }
 
 /* ---------------------------------------------------------------------------
+   7b. THEME helpers
+   --------------------------------------------------------------------------- */
+function applyTheme(){
+  let dark = false;
+  if (state.theme === "dark") dark = true;
+  else if (state.theme === "system"){
+    dark = !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  }
+  if (dark) document.documentElement.setAttribute("data-theme", "dark");
+  else document.documentElement.removeAttribute("data-theme");
+}
+
+function loadTheme(){
+  try {
+    const t = localStorage.getItem(LS.THEME);
+    if (typeof t === "string" && THEMES.indexOf(t) !== -1) state.theme = t;
+  } catch (e){}
+}
+
+function saveTheme(){
+  try { localStorage.setItem(LS.THEME, state.theme); } catch (e){}
+}
+
+function setTheme(theme){
+  if (THEMES.indexOf(theme) === -1) return;
+  state.theme = theme;
+  saveTheme();
+  applyTheme();
+  document.querySelectorAll(".theme-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.theme === theme);
+  });
+  toast("Theme set to " + theme + ".");
+}
+
+/* ---------------------------------------------------------------------------
    8. PERSISTENCE
    --------------------------------------------------------------------------- */
 function loadState(){
@@ -1606,17 +1953,22 @@ function loadState(){
   try { state.currentBookId = localStorage.getItem(LS.CURRENT) || null; }
   catch (e){ state.currentBookId = null; }
 
-  /* --- lessons / exercises / progress --- */
+  /* --- lessons / exercises / vocabulary / progress --- */
   try { state.lessons = JSON.parse(localStorage.getItem(LS.LESSONS)) || {}; }
   catch (e) { state.lessons = {}; }
 
   try { state.exercises = JSON.parse(localStorage.getItem(LS.EXERCISES)) || {}; }
   catch (e) { state.exercises = {}; }
 
+  try { state.vocabulary = JSON.parse(localStorage.getItem(LS.VOCABULARY)) || {}; }
+  catch (e) { state.vocabulary = {}; }
+  if (!state.vocabulary || typeof state.vocabulary !== "object") state.vocabulary = {};
+
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
 
   loadReader();
+  loadTheme();
   ensureCurrentBook();
 }
 
@@ -1634,6 +1986,7 @@ function saveCurrentBook(){
 }
 function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(state.lessons)); }catch(e){} }
 function saveExercises(){ try{ localStorage.setItem(LS.EXERCISES, JSON.stringify(state.exercises)); }catch(e){} }
+function saveVocabulary(){ try{ localStorage.setItem(LS.VOCABULARY, JSON.stringify(state.vocabulary)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
@@ -1697,6 +2050,23 @@ function importedExerciseCount(topicId){
 function totalExerciseCount(){
   return Object.keys(state.exercises).reduce(
     (sum, id) => sum + importedExerciseCount(id), 0);
+}
+
+/* ---------------------------------------------------------------------------
+   10b. VOCABULARY HELPERS
+   --------------------------------------------------------------------------- */
+function getVocabularyFor(topicId){
+  const v = state.vocabulary[topicId];
+  return (v && Array.isArray(v.words)) ? v.words : [];
+}
+
+function importedVocabCount(topicId){
+  return getVocabularyFor(topicId).length;
+}
+
+function totalVocabCount(){
+  return Object.keys(state.vocabulary).reduce(
+    (sum, id) => sum + importedVocabCount(id), 0);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1769,7 +2139,7 @@ function updateNav(){
   `<div class="nav-sep"></div>
    <p class="side-note">${state.books.length} book${state.books.length === 1 ? "" : "s"} ·
    ${topicCount()} topics · ${Object.keys(state.lessons).length} lessons ·
-   ${totalExerciseCount()} imported exercises</p>`;
+   ${totalExerciseCount()} exercises · ${totalVocabCount()} words</p>`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1820,18 +2190,19 @@ function noBookHTML(){
   return `
   <div class="page-head">
     <h2 class="page-title">Welcome</h2>
-    <p class="page-sub">Create a book or import one to begin.</p>
+    <p class="page-sub">Create a book, import a single book file, or restore a full backup.</p>
   </div>
 
   <div class="empty">
     <h3>Your library is empty</h3>
     <p>This application is an engine — it ships without grammar content.
        Create a book and add sections and topics inside it, or import a grammar
-       book JSON file. Then add lesson JSON files (and optional exercise files)
-       for each topic.</p>
+       book JSON file. Then add lesson JSON files (and optional exercise or
+       vocabulary files) for each topic.</p>
     <div class="sec-toolbar" style="justify-content:center;margin-top:18px;margin-bottom:0;">
       <button class="btn primary" data-action="add-book">＋ Create a book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn" data-action="import-library">Import all data</button>
       <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings →</button>
     </div>
   </div>
@@ -1843,9 +2214,10 @@ function noBookHTML(){
       <li><strong>Sections and topics</strong> inside that book — add them in the app or define them in the JSON.</li>
       <li>One or more <strong>lesson JSON</strong> files — content for individual topics.</li>
       <li>Optional <strong>exercise JSON</strong> files — one per topic, importable from each lesson page.</li>
+      <li>Optional <strong>vocabulary JSON</strong> files — one per topic, displayed on the lesson page.</li>
     </ol>
     <p class="muted" style="margin-top:14px;">
-      Full templates for all three file types are available in
+      Full templates for all four file types are available in
       <a href="#" data-action="nav" data-view="settings">Settings</a>.
     </p>
   </section>`;
@@ -1930,6 +2302,7 @@ function libraryHTML(){
     <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
       <button class="btn primary" data-action="add-book">＋ New book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn ghost" data-action="import-library">Import all data</button>
     </div>
   </div>
 
@@ -2027,6 +2400,12 @@ function searchIndex(){
       parts.push(Array.isArray(s.explanation) ? s.explanation.join(" ") : (s.explanation || ""));
       (s.examples || []).forEach(e => parts.push(e.sentence || ""));
     });
+    /* vocabulary entries also become searchable */
+    getVocabularyFor(topic.id).forEach(w => {
+      parts.push(w.term || "", w.definition || "", w.example || "");
+      (w.synonyms || []).forEach(s => parts.push(s));
+      (w.antonyms || []).forEach(s => parts.push(s));
+    });
     return { topic, section, hay: parts.join(" ").toLowerCase() };
   });
 }
@@ -2108,9 +2487,11 @@ function topicCardHTML(topic, sectionId){
   const status = statusOf(topic.id);
   const lesson = state.lessons[topic.id];
   const exCount = getExercisesFor(topic.id).length;
+  const vocabCount = importedVocabCount(topic.id);
 
   const flags = [];
   if (lesson) flags.push("Lesson ✓");
+  if (vocabCount) flags.push(vocabCount + " words");
   if (exCount) flags.push(exCount + " ex.");
   const flagText = flags.length ? flags.join(" · ") : "No content";
 
@@ -2192,6 +2573,7 @@ function lessonHTML(id){
     </div>`;
 
   html += lesson ? lessonContentHTML(lesson) : noLessonHTML(topic);
+  html += vocabularyHTML(id);
   html += exercisesBlockHTML(id);
 
   html += `
@@ -2371,6 +2753,84 @@ function summaryHTML(summary){
       </div>
     </div>
   </section>`;
+}
+
+/* ---------------------------------------------------------------------------
+   19b. VOCABULARY BLOCK
+   --------------------------------------------------------------------------- */
+function vocabCardHTML(w){
+  const pos = w.part_of_speech
+    ? `<span class="vocab-pos">${esc(w.part_of_speech)}</span>` : "";
+  const pron = w.pronunciation
+    ? `<span class="vocab-pron">${esc(w.pronunciation)}</span>` : "";
+  const def = w.definition
+    ? `<div class="vocab-def">${esc(w.definition)}</div>` : "";
+  const ex = w.example
+    ? `<div class="vocab-ex"><span class="vocab-ex-label">Example</span>${esc(w.example)}</div>` : "";
+  const syn = (w.synonyms && w.synonyms.length)
+    ? `<span class="vocab-syn"><strong>Syn.</strong>${esc(w.synonyms.join(", "))}</span>` : "";
+  const ant = (w.antonyms && w.antonyms.length)
+    ? `<span class="vocab-ant"><strong>Ant.</strong>${esc(w.antonyms.join(", "))}</span>` : "";
+  const meta = (syn || ant) ? `<div class="vocab-meta">${syn}${ant}</div>` : "";
+  const note = w.notes ? `<div class="vocab-note">${esc(w.notes)}</div>` : "";
+  const tags = (w.tags && w.tags.length)
+    ? `<div class="vocab-tags">${w.tags.map(t => `<span class="vocab-tag">${esc(t)}</span>`).join("")}</div>`
+    : "";
+
+  return `<article class="vocab-card">
+    <header class="vocab-head">
+      <div class="vocab-term-line">
+        <span class="vocab-term">${esc(w.term || "")}</span>
+        ${pos}
+      </div>
+      ${pron}
+    </header>
+    ${def}
+    ${ex}
+    ${meta}
+    ${note}
+    ${tags}
+  </article>`;
+}
+
+function vocabularyHTML(topicId){
+  const words = getVocabularyFor(topicId);
+  const n = words.length;
+
+  let html = `<section class="lesson-block">
+    <h2 class="block-title">
+      Vocabulary
+      <span class="exercise-count">${n} word${n === 1 ? "" : "s"}</span>
+    </h2>`;
+
+  if (n){
+    html += `<div class="vocab-grid">${words.map(vocabCardHTML).join("")}</div>`;
+  } else {
+    html += `<div class="lit-none">No vocabulary loaded for this topic yet.</div>`;
+  }
+
+  html += `<div class="exercise-import-bar">
+    <div class="exercise-import-note">
+      <strong>${esc(topicId)}</strong><br>
+      ${n
+        ? "Importing another file for this topic replaces the current word list."
+        : "You can import a vocabulary JSON file specifically for this topic."}
+    </div>
+    <label class="btn primary">
+      ${n ? "Replace vocabulary" : "Import vocabulary JSON"}
+      <input type="file" class="vocab-file-input" accept=".json,application/json" multiple hidden
+             data-topic="${esc(topicId)}">
+    </label>
+    <button class="btn ghost" data-action="download-template" data-kind="vocabulary" data-id="${esc(topicId)}">
+      Download template
+    </button>
+    ${n ? `<button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}">
+      Clear vocabulary
+    </button>` : ""}
+  </div>`;
+
+  html += `</section>`;
+  return html;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2776,7 +3236,7 @@ function saveBookForm(){
 function deleteBook(id){
   const b = state.books.find(x => x.id === id);
   if (!b) return;
-  if (!confirm(`Delete "${bookTitle(b)}" and all of its topics?\n\nLessons, exercises and progress that were imported stay in the library and will reappear if a book with the same topic ids is loaded.`)) return;
+  if (!confirm(`Delete "${bookTitle(b)}" and all of its topics?\n\nLessons, exercises, vocabulary and progress that were imported stay in the library and will reappear if a book with the same topic ids is loaded.`)) return;
   state.books = state.books.filter(x => x.id !== id);
   ensureCurrentBook();
   saveBooks();
@@ -2934,7 +3394,7 @@ function editTopic(topicId){
         <textarea id="tfDesc">${esc(topic.description || "")}</textarea>
       </div>
       <div class="field">
-        <label>Topic id (used by lesson &amp; exercise files)</label>
+        <label>Topic id (used by lesson, exercise &amp; vocabulary files)</label>
         <div class="muted"><code>${esc(topic.id)}</code></div>
       </div>
       <div class="form-actions">
@@ -2973,12 +3433,14 @@ function settingsHTML(){
   const messages = state.importMessages.map(m =>
     `<div class="alert ${m.type}">${esc(m.text)}</div>`).join("");
 
-  const topicIds = allTopics().map(t => t.topic.id);
   const loadedIds = Object.keys(state.lessons);
   const orphanLessons = loadedIds.filter(id => !findTopicAnywhere(id));
 
   const exTopicIds = Object.keys(state.exercises);
   const orphanExercises = exTopicIds.filter(id => !findTopicAnywhere(id));
+
+  const vocabTopicIds = Object.keys(state.vocabulary);
+  const orphanVocabulary = vocabTopicIds.filter(id => !findTopicAnywhere(id));
 
   const bookList = state.books.length
     ? state.books.map(b => {
@@ -2994,10 +3456,66 @@ function settingsHTML(){
   return `
   <div class="page-head">
     <h2 class="page-title">Settings</h2>
-    <p class="page-sub">Manage books, import content, view JSON templates, adjust reading options. Everything is stored locally in your browser.</p>
+    <p class="page-sub">Manage books, import content, view JSON templates, adjust appearance and reading options. Everything is stored locally in your browser.</p>
   </div>
 
   ${messages}
+
+  <!-- ===================== APPEARANCE ===================== -->
+  <section class="card">
+    <h3>Appearance</h3>
+    <p class="muted">Choose the theme used throughout the app. <em>System</em> follows your device's light/dark preference.</p>
+    <div class="theme-grid">
+      <button type="button" class="theme-btn ${state.theme === "light" ? "active" : ""}"
+              data-action="set-theme" data-theme="light" aria-pressed="${state.theme === "light"}">
+        <span class="theme-swatch theme-swatch-light" aria-hidden="true"></span>
+        <span>Light</span>
+      </button>
+      <button type="button" class="theme-btn ${state.theme === "dark" ? "active" : ""}"
+              data-action="set-theme" data-theme="dark" aria-pressed="${state.theme === "dark"}">
+        <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
+        <span>Dark</span>
+      </button>
+      <button type="button" class="theme-btn ${state.theme === "system" ? "active" : ""}"
+              data-action="set-theme" data-theme="system" aria-pressed="${state.theme === "system"}">
+        <span class="theme-swatch theme-swatch-system" aria-hidden="true"></span>
+        <span>System</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== DATA MANAGEMENT ===================== -->
+  <section class="card">
+    <h3>Data management</h3>
+    <p class="muted">
+      <strong>Export all data</strong> saves one JSON file containing everything stored in this browser:
+      your books, lessons, exercises, vocabulary banks, progress, plus your theme and reading-options
+      preferences. Use it to move your whole setup to another browser or device.
+      <br>
+      <strong>Import data</strong> accepts that same full backup (with or without the settings block),
+      or a plain library export, an array of books, a single book object, a progress file, or an
+      individual lesson / exercise / vocabulary file. Existing entries with the same id are replaced;
+      anything else is added.
+    </p>
+    <div class="file-row">
+      <button class="btn primary" data-action="export-all">⭱ Export all data</button>
+      <button class="btn primary" data-action="import-library">⭳ Import data</button>
+    </div>
+    <div class="file-row">
+      <button class="btn" data-action="export-library">Export library only</button>
+      <button class="btn" data-action="export-progress">Export progress only</button>
+      <button class="btn ghost" data-action="reset-progress">Reset all progress</button>
+      <button class="btn ghost" data-action="clear-all">Clear all data</button>
+    </div>
+    <p class="muted" style="margin-top:12px;">
+      Accepted file shapes:
+      <code>{ books, lessons, exercises, vocabulary, progress, theme, reader }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, progress }</code> ·
+      <code>[ book, book, … ]</code> ·
+      <code>{ book, sections }</code> ·
+      <code>{ progress, totals }</code>
+    </p>
+  </section>
 
   <!-- ===================== LIBRARY ===================== -->
   <section class="card">
@@ -3007,6 +3525,7 @@ function settingsHTML(){
     <div class="file-row">
       <button class="btn primary" data-action="add-book">＋ New book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn ghost" data-action="import-library">Import data</button>
       <button class="btn ghost" data-action="nav" data-view="book">Open library →</button>
     </div>
   </section>
@@ -3058,10 +3577,26 @@ function settingsHTML(){
     </div>
   </section>
 
+  <!-- ===================== VOCABULARY ===================== -->
+  <section class="card">
+    <h3>Vocabulary JSON</h3>
+    <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus a <code>words</code> array.
+      Words are displayed on the topic's lesson page, above the exercises. Can also be imported from the lesson page.</p>
+    <div class="file-row">
+      <input type="file" id="vocabularyFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="vocabulary">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="vocabTpl">▸ Show structure</button>
+    <div class="template-wrap" id="vocabTpl" hidden>
+      <div class="template-box">${esc(vocabularyTemplateString())}</div>
+    </div>
+  </section>
+
   <!-- ===================== PASTE ===================== -->
   <section class="card">
     <h3>Paste JSON</h3>
-    <p class="muted">Paste any of the three file types. The type is detected automatically.</p>
+    <p class="muted">Paste any of the file types above, or a full library / all-data backup. The type is detected automatically.</p>
     <textarea class="paste" id="pasteArea" placeholder='{ "book": { "title": "English Grammar" }, "sections": [ ... ] }'></textarea>
     <div class="file-row">
       <button class="btn primary" data-action="import-paste">Import pasted JSON</button>
@@ -3075,23 +3610,22 @@ function settingsHTML(){
     ${readerPanelHTML("inline")}
   </section>
 
-  <!-- ===================== STORAGE ===================== -->
+  <!-- ===================== STORAGE SUMMARY ===================== -->
   <section class="card">
-    <h3>Storage &amp; data</h3>
+    <h3>Storage summary</h3>
     <p class="muted">${state.books.length} book${state.books.length === 1 ? "" : "s"}
       · ${topicCount()} topics in the current book
       · ${loadedIds.length} lesson${loadedIds.length === 1 ? "" : "s"} loaded
-      · ${exTopicIds.length} exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)</p>
+      · ${exTopicIds.length} exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)
+      · ${vocabTopicIds.length} vocabulary bank${vocabTopicIds.length === 1 ? "" : "s"} (${totalVocabCount()} words)
+      · theme: <strong>${esc(state.theme)}</strong>
+      · reader: <strong>${esc(readerFont().name)}</strong> at <strong>${state.reader.size} px</strong></p>
     ${orphanLessons.length ? `<div class="alert info">Lessons loaded without a matching topic in any book:
       <code>${esc(orphanLessons.join(", "))}</code></div>` : ""}
     ${orphanExercises.length ? `<div class="alert info">Exercise banks loaded without a matching topic in any book:
       <code>${esc(orphanExercises.join(", "))}</code></div>` : ""}
-    <div class="file-row">
-      <button class="btn" data-action="export-library">Export library</button>
-      <button class="btn" data-action="export-progress">Export progress</button>
-      <button class="btn" data-action="reset-progress">Reset all progress</button>
-      <button class="btn" data-action="clear-all">Clear all data</button>
-    </div>
+    ${orphanVocabulary.length ? `<div class="alert info">Vocabulary banks loaded without a matching topic in any book:
+      <code>${esc(orphanVocabulary.join(", "))}</code></div>` : ""}
   </section>
 
   <!-- ===================== WORKFLOW ===================== -->
@@ -3105,7 +3639,10 @@ function settingsHTML(){
         <em>Download lesson template</em> button, which pre-fills the id).</li>
       <li>Fill in the lesson: sections, examples, literary examples, comparisons, summary.</li>
       <li>Optionally download the <strong>Exercise template</strong> for that topic's id and add exercises.</li>
-      <li>Import the lesson/exercise files in Settings — or directly from the topic's page.</li>
+      <li>Optionally download the <strong>Vocabulary template</strong> for that topic's id and add words.</li>
+      <li>Import the lesson / exercise / vocabulary files in Settings — or directly from the topic's page.</li>
+      <li>To move everything (including theme and reading options) to another browser, use
+        <em>Export all data</em> and <em>Import data</em>.</li>
     </ol>
   </section>`;
 }
@@ -3179,6 +3716,22 @@ function validateExerciseFile(obj){
   return { ok: errors.length === 0, errors };
 }
 
+function validateVocabularyFile(obj){
+  const errors = [];
+  if (!obj || typeof obj !== "object") errors.push("file is not a JSON object");
+  if (!obj.topic_id) errors.push("missing 'topic_id'");
+  if (!Array.isArray(obj.words)) errors.push("missing 'words' array");
+  else if (!obj.words.length) errors.push("'words' is empty");
+  else {
+    obj.words.forEach((w, i) => {
+      if (!w || typeof w !== "object"){ errors.push(`word ${i + 1} is not an object`); return; }
+      if (!w.term) errors.push(`word ${i + 1} has no 'term'`);
+      if (!w.definition) errors.push(`word ${i + 1} has no 'definition'`);
+    });
+  }
+  return { ok: errors.length === 0, errors };
+}
+
 function applyJSON(obj){
   /* --- grammar book --- */
   if (obj && typeof obj === "object" && obj.book && Array.isArray(obj.sections)){
@@ -3217,6 +3770,20 @@ function applyJSON(obj){
     };
   }
 
+  /* --- vocabulary bank --- */
+  if (obj && typeof obj === "object" && obj.topic_id && Array.isArray(obj.words)){
+    const v = validateVocabularyFile(obj);
+    if (!v.ok) return { ok: false, message: "Invalid vocabulary JSON — " + v.errors.join("; ") };
+    state.vocabulary[obj.topic_id] = obj;
+    saveVocabulary();
+    const known = !!findTopicAnywhere(obj.topic_id);
+    const n = obj.words.length;
+    return {
+      ok: true,
+      message: `Vocabulary for "${obj.topic_id}" imported — ${n} word${n === 1 ? "" : "s"}${known ? "" : " (warning: no matching topic id)"}.`
+    };
+  }
+
   /* --- lesson --- */
   if (obj && typeof obj === "object" && obj.id && obj.title && Array.isArray(obj.sections)){
     const v = validateLesson(obj);
@@ -3230,10 +3797,228 @@ function applyJSON(obj){
     };
   }
 
+  /* --- full library / all-data backup --- */
+  if (looksLikeLibrary(obj)){
+    return applyLibrary(obj);
+  }
+
   return {
     ok: false,
-    message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }) or an exercise bank ({ topic_id, exercises })."
+    message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }), an exercise bank ({ topic_id, exercises }), a vocabulary bank ({ topic_id, words }) or a library / all-data backup."
   };
+}
+
+/* ---- library (full-data) import ---- */
+function looksLikeLibrary(obj){
+  if (!obj || typeof obj !== "object") return false;
+  if (Array.isArray(obj)) return true;                          // array of books
+  if (obj.book && Array.isArray(obj.sections)) return false;    // single book handled above
+  if ("books" in obj || "lessons" in obj || "exercises" in obj ||
+      "vocabulary" in obj || "progress" in obj ||
+      "theme" in obj || "reader" in obj) return true;
+  return false;
+}
+
+function validateLibraryFile(obj){
+  const errors = [];
+
+  if (Array.isArray(obj)){
+    if (!obj.length) errors.push("the book array is empty");
+    else obj.forEach((b, i) => {
+      if (!b || typeof b !== "object" || !Array.isArray(b.sections))
+        errors.push(`book ${i + 1} is not a valid book object`);
+    });
+    return { ok: errors.length === 0, errors };
+  }
+
+  if (!obj || typeof obj !== "object"){
+    errors.push("file is not a JSON object");
+    return { ok: false, errors };
+  }
+
+  const isPlainObject = (v) => v && typeof v === "object" && !Array.isArray(v);
+
+  if (obj.books !== undefined){
+    if (!Array.isArray(obj.books)) errors.push("'books' must be an array");
+    else obj.books.forEach((b, i) => {
+      if (!b || typeof b !== "object" || !Array.isArray(b.sections))
+        errors.push(`book ${i + 1} is not a valid book object`);
+    });
+  }
+  if (obj.lessons    !== undefined && !isPlainObject(obj.lessons))    errors.push("'lessons' must be an object");
+  if (obj.exercises  !== undefined && !isPlainObject(obj.exercises))  errors.push("'exercises' must be an object");
+  if (obj.vocabulary !== undefined && !isPlainObject(obj.vocabulary)) errors.push("'vocabulary' must be an object");
+  if (obj.progress   !== undefined && !isPlainObject(obj.progress))   errors.push("'progress' must be an object");
+  if (obj.theme      !== undefined && typeof obj.theme !== "string")  errors.push("'theme' must be a string");
+  if (obj.reader     !== undefined && !isPlainObject(obj.reader))     errors.push("'reader' must be an object");
+
+  const nothing =
+    obj.books === undefined && obj.lessons === undefined &&
+    obj.exercises === undefined && obj.vocabulary === undefined &&
+    obj.progress === undefined && obj.theme === undefined &&
+    obj.reader === undefined;
+
+  if (nothing) errors.push("no recognisable data found");
+
+  return { ok: errors.length === 0, errors };
+}
+
+function applyLibrary(obj){
+  const v = validateLibraryFile(obj);
+  if (!v.ok) return { ok: false, message: "Invalid library file — " + v.errors.join("; ") };
+
+  let bookCount = 0, lessonCount = 0, exCount = 0, vocabCount = 0, progressCount = 0;
+  let themeApplied = false, readerApplied = false;
+
+  /* --- books --- */
+  let incomingBooks = [];
+  if (Array.isArray(obj)) incomingBooks = obj;
+  else if (Array.isArray(obj.books)) incomingBooks = obj.books;
+
+  incomingBooks.forEach(raw => {
+    const nb = ensureBookShape(deepClone(raw));
+    const idx = state.books.findIndex(b => b.id === nb.id);
+    if (idx >= 0){
+      nb.cover = nb.cover || state.books[idx].cover || null;
+      state.books[idx] = nb;
+    } else {
+      state.books.push(nb);
+    }
+    bookCount++;
+  });
+
+  /* --- lessons --- */
+  if (obj && !Array.isArray(obj) && obj.lessons && typeof obj.lessons === "object"){
+    Object.keys(obj.lessons).forEach(id => {
+      const lesson = obj.lessons[id];
+      if (lesson && typeof lesson === "object"){
+        state.lessons[id] = lesson;
+        lessonCount++;
+      }
+    });
+    if (lessonCount) saveLessons();
+  }
+
+  /* --- exercises --- */
+  if (obj && !Array.isArray(obj) && obj.exercises && typeof obj.exercises === "object"){
+    Object.keys(obj.exercises).forEach(id => {
+      const bank = obj.exercises[id];
+      if (bank && typeof bank === "object"){
+        state.exercises[id] = bank;
+        exCount++;
+      }
+    });
+    if (exCount) saveExercises();
+  }
+
+  /* --- vocabulary --- */
+  if (obj && !Array.isArray(obj) && obj.vocabulary && typeof obj.vocabulary === "object"){
+    Object.keys(obj.vocabulary).forEach(id => {
+      const bank = obj.vocabulary[id];
+      if (bank && typeof bank === "object"){
+        state.vocabulary[id] = bank;
+        vocabCount++;
+      }
+    });
+    if (vocabCount) saveVocabulary();
+  }
+
+  /* --- progress (optional) --- */
+  if (obj && !Array.isArray(obj) && obj.progress && typeof obj.progress === "object"){
+    Object.keys(obj.progress).forEach(id => {
+      const p = obj.progress[id];
+      if (p && typeof p === "object"){
+        state.progress[id] = p;
+        progressCount++;
+      }
+    });
+    if (progressCount) saveProgress();
+  }
+
+  /* --- theme (optional) --- */
+  if (obj && !Array.isArray(obj) && typeof obj.theme === "string" &&
+      THEMES.indexOf(obj.theme) !== -1){
+    state.theme = obj.theme;
+    saveTheme();
+    applyTheme();
+    themeApplied = true;
+  }
+
+  /* --- reader preferences (optional) --- */
+  if (obj && !Array.isArray(obj) && obj.reader && typeof obj.reader === "object"){
+    let changed = false;
+    if (typeof obj.reader.fontId === "string" &&
+        READER_FONTS.some(f => f.id === obj.reader.fontId)){
+      state.reader.fontId = obj.reader.fontId;
+      changed = true;
+    }
+    if (typeof obj.reader.size === "number" &&
+        obj.reader.size >= READER_MIN && obj.reader.size <= READER_MAX){
+      state.reader.size = Math.round(obj.reader.size);
+      changed = true;
+    }
+    if (changed){
+      saveReader();
+      readerApplied = true;
+    }
+  }
+
+  if (bookCount){
+    saveBooks();
+    if (!state.currentBookId && state.books.length){
+      state.currentBookId = state.books[0].id;
+      saveCurrentBook();
+    }
+  }
+
+  const parts = [];
+  if (bookCount)     parts.push(`${bookCount} book${bookCount === 1 ? "" : "s"}`);
+  if (lessonCount)   parts.push(`${lessonCount} lesson${lessonCount === 1 ? "" : "s"}`);
+  if (exCount)       parts.push(`${exCount} exercise bank${exCount === 1 ? "" : "s"}`);
+  if (vocabCount)    parts.push(`${vocabCount} vocabulary bank${vocabCount === 1 ? "" : "s"}`);
+  if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
+  if (themeApplied)  parts.push("theme");
+  if (readerApplied) parts.push("reading options");
+
+  return {
+    ok: true,
+    message: parts.length
+      ? "Data imported — " + parts.join(", ") + "."
+      : "File contained no data to import."
+  };
+}
+
+/* ---- full "all data" export ---- */
+function exportAllData(){
+  const data = {
+    format: "egb-all-data",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    app: {
+      title: "English Grammar — Grammar Reference & Practice",
+      theme: state.theme,
+      reader: {
+        fontId: state.reader.fontId,
+        size: state.reader.size
+      }
+    },
+    /* flat fields so the same file round-trips through applyLibrary */
+    theme: state.theme,
+    reader: {
+      fontId: state.reader.fontId,
+      size: state.reader.size
+    },
+    books: state.books,
+    lessons: state.lessons,
+    exercises: state.exercises,
+    vocabulary: state.vocabulary,
+    progress: state.progress,
+    totals: progressStats()
+  };
+
+  const stamp = new Date().toISOString().slice(0,10);
+  downloadJSON(data, `grammar-all-data-${stamp}.json`);
+  toast("All data exported — books, lessons, exercises, vocabulary, progress, theme and reading options.");
 }
 
 async function handleFiles(fileList){
@@ -3266,6 +4051,37 @@ async function handleFiles(fileList){
   }
 }
 
+/* ---- library file input handler (Settings → Import data) ---- */
+async function handleLibraryFiles(fileList){
+  const files = [...fileList];
+  if (!files.length) return;
+  const messages = [];
+
+  for (const file of files){
+    try {
+      const text = await file.text();
+      let obj;
+      try { obj = JSON.parse(text); }
+      catch (e){ messages.push({ type: "error", text: `${file.name}: not valid JSON — ${e.message}` }); continue; }
+
+      const result = applyLibrary(obj);
+      messages.push({ type: result.ok ? "ok" : "error", text: `${file.name}: ${result.message}` });
+    } catch (e){
+      messages.push({ type: "error", text: `${file.name}: ${e.message}` });
+    }
+  }
+
+  state.importMessages = messages;
+  const anyOk = messages.some(m => m.type === "ok");
+
+  if (state.view === "settings"){
+    render();
+  } else {
+    toast(messages.map(m => m.text).join(" | "), anyOk ? "" : "err");
+    render();
+  }
+}
+
 /* ---------------------------------------------------------------------------
    26. EVENTS
    --------------------------------------------------------------------------- */
@@ -3293,6 +4109,11 @@ document.addEventListener("click", (ev) => {
       go(el.dataset.view);
       break;
 
+    /* ---------------- THEME ---------------- */
+    case "set-theme":
+      setTheme(el.dataset.theme);
+      break;
+
     /* ---------------- BOOKS ---------------- */
     case "add-book":
       openBookForm(null);
@@ -3316,6 +4137,14 @@ document.addEventListener("click", (ev) => {
 
     case "import-book": {
       const input = $("bookFileQuick");
+      input.value = "";
+      input.click();
+      break;
+    }
+
+    /* ---------------- DATA IMPORT ---------------- */
+    case "import-library": {
+      const input = $("libraryFile");
       input.value = "";
       input.click();
       break;
@@ -3464,6 +4293,11 @@ document.addEventListener("click", (ev) => {
         const filename = (id ? id : "exercise") + "-exercises.template.json";
         downloadJSON(tpl, filename);
         toast("Exercise template downloaded" + (id ? " for " + id : "") + ".");
+      } else if (kind === "vocabulary"){
+        const tpl = id ? vocabularyTemplateForTopic(id) : VOCABULARY_TEMPLATE;
+        const filename = (id ? id : "vocabulary") + "-vocabulary.template.json";
+        downloadJSON(tpl, filename);
+        toast("Vocabulary template downloaded" + (id ? " for " + id : "") + ".");
       }
       break;
     }
@@ -3496,6 +4330,16 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    case "clear-vocabulary": {
+      const id = el.dataset.id;
+      if (!confirm("Remove the imported vocabulary for this topic?")) return;
+      delete state.vocabulary[id];
+      saveVocabulary();
+      toast("Vocabulary removed.");
+      render();
+      break;
+    }
+
     case "import-paste": {
       const area = $("pasteArea");
       if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); return; }
@@ -3521,18 +4365,31 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    /* ---------------- EXPORT ---------------- */
+    case "export-all":
+      exportAllData();
+      break;
+
     case "export-library": {
-      downloadJSON({ exportedAt: new Date().toISOString(), books: state.books }, "grammar-library.json");
-      toast("Library exported.");
+      downloadJSON({
+        exportedAt: new Date().toISOString(),
+        books: state.books,
+        lessons: state.lessons,
+        exercises: state.exercises,
+        vocabulary: state.vocabulary,
+        progress: state.progress
+      }, "grammar-library.json");
+      toast("Library exported — books, lessons, exercises, vocabulary and progress.");
       break;
     }
 
     case "clear-all": {
-      if (!confirm("Clear all data? This removes every book, all lessons, all exercise banks and all progress. Reading options are kept.")) return;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise and vocabulary banks and all progress. Theme and reading options are kept.")) return;
       state.books = [];
       state.currentBookId = null;
       state.lessons = {};
       state.exercises = {};
+      state.vocabulary = {};
       state.progress = {};
       state.currentTopicId = null;
       try {
@@ -3541,6 +4398,7 @@ document.addEventListener("click", (ev) => {
         localStorage.removeItem(LS.CURRENT);
         localStorage.removeItem(LS.LESSONS);
         localStorage.removeItem(LS.EXERCISES);
+        localStorage.removeItem(LS.VOCABULARY);
         localStorage.removeItem(LS.PROGRESS);
       } catch (e){}
       state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
@@ -3634,17 +4492,27 @@ document.addEventListener("change", (ev) => {
     return;
   }
 
+  /* ---- library / full-data import ---- */
+  if (t.id === "libraryFile"){
+    const files = t.files;
+    t.value = "";
+    handleLibraryFiles(files);
+    return;
+  }
+
   /* ---- settings file inputs ---- */
-  if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile"){
+  if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile" || t.id === "vocabularyFile"){
     const files = t.files;
     t.value = "";
     handleFiles(files);
     return;
   }
 
-  /* ---- in-page lesson / exercise imports ---- */
+  /* ---- in-page lesson / exercise / vocabulary imports ---- */
   if (t.classList){
-    if (t.classList.contains("lesson-file-input") || t.classList.contains("exercise-file-input")){
+    if (t.classList.contains("lesson-file-input") ||
+        t.classList.contains("exercise-file-input") ||
+        t.classList.contains("vocab-file-input")){
       const files = t.files;
       t.value = "";
       handleFiles(files);
@@ -3675,6 +4543,20 @@ function bindDynamicInputs(){
    --------------------------------------------------------------------------- */
 (function init(){
   loadState();
+  applyTheme();
+
+  /* React to OS theme changes when the user picked "system". */
+  if (window.matchMedia){
+    try {
+      window.matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+          if (state.theme === "system") applyTheme();
+        });
+    } catch (e){
+      /* older browsers: no live listener, but init still works */
+    }
+  }
+
   render();
 })();
 </script>
