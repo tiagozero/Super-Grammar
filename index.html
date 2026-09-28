@@ -2852,25 +2852,25 @@ function vocabularyHTML(topicId){
     html += `<div class="lit-none">No vocabulary loaded for this topic yet.</div>`;
   }
 
-  html += `<div class="exercise-import-bar">
+    html += `<div class="exercise-import-bar">
     <div class="exercise-import-note">
       <strong>${esc(topicId)}</strong><br>
-      ${n
-        ? "Importing another file for this topic replaces the current word list."
-        : "You can import a vocabulary JSON file specifically for this topic."}
+      ${esc(noteText)}
     </div>
     <label class="btn primary">
-      ${n ? "Replace vocabulary" : "Import vocabulary JSON"}
-      <input type="file" class="vocab-file-input" accept=".json,application/json" multiple hidden
+      ${exercises.length ? "Import more exercises" : "Import exercises JSON"}
+      <input type="file" class="exercise-file-input" accept=".json,application/json" multiple hidden
              data-topic="${esc(topicId)}">
     </label>
-    <button class="btn ghost" data-action="download-template" data-kind="vocabulary" data-id="${esc(topicId)}">
+    ${templateToggleBtnHTML("exercise", topicId)}
+    <button class="btn ghost" data-action="download-template" data-kind="exercise" data-id="${esc(topicId)}">
       Download template
     </button>
-    ${n ? `<button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}">
-      Clear vocabulary
+    ${importedCount ? `<button class="btn ghost" data-action="clear-exercises" data-id="${esc(topicId)}">
+      Clear imported
     </button>` : ""}
-  </div>`;
+  </div>
+  ${inlineTemplateHTML("exercise", topicId)}`;
 
   html += `</section>`;
   return html;
