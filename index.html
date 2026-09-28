@@ -643,6 +643,28 @@ button{font:inherit;}
 }
 
 /* ============================================================
+   READING
+   ============================================================ */
+.reading-card{margin-top:0;}
+.reading-card .lit-passage{font-size:1.02rem;}
+.glossary-box{margin:0 0 14px;padding-top:12px;border-top:1px dashed var(--rule);}
+.glossary-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.glossary-list li{font-size:.85rem;color:var(--ink-soft);line-height:1.5;}
+.glossary-list .gl-term{font-weight:700;color:var(--ink);}
+.questions-box{margin-top:14px;padding-top:12px;border-top:1px dashed var(--rule);}
+.reading-q{margin-bottom:12px;}
+.reading-q:last-child{margin-bottom:0;}
+.reading-q .rq-q{font-size:.9rem;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.reading-q .rq-a{
+  display:none;margin-top:7px;padding:9px 13px;
+  background:var(--card-soft);border-left:2px solid var(--rule-strong);border-radius:0 5px 5px 0;
+  font-size:.87rem;color:var(--ink-soft);
+}
+.reading-q.revealed .rq-a{display:block;}
+.paste-wrap{margin-top:12px;}
+.paste-wrap[hidden]{display:none;}
+
+/* ============================================================
    EXERCISES
    ============================================================ */
 .exercises{display:flex;flex-direction:column;gap:16px;}
@@ -910,6 +932,9 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .lit-context    { font-size: .80em; }
 .lesson .lit-analysis   { font-size: .80em; }
 .lesson .lit-passage    { font-size: .99em; }
+.lesson .glossary-list li{ font-size: .82em; }
+.lesson .reading-q .rq-q { font-size: .87em; }
+.lesson .reading-q .rq-a { font-size: .83em; }
 .lesson .toc ol         { font-size: .83em; }
 .lesson .tbl            { font-size: .83em; }
 .lesson .tbl .ex        { font-size: 1.045em; } /* relative to .tbl */
@@ -1170,6 +1195,7 @@ html[data-theme="dark"] .lit-passage{ color:#d9d6cd; border-left-color:var(--rul
 html[data-theme="dark"] .lit-none,
 html[data-theme="dark"] .empty{ background:#1c1c21; border-color:#3a3a42; }
 html[data-theme="dark"] .empty h3{ color:var(--ink); }
+html[data-theme="dark"] .reading-q .rq-a{ background:#26262c; border-left-color:var(--rule-strong); }
 html[data-theme="dark"] .modal{ background:#1c1c21; border-color:var(--rule-strong); }
 html[data-theme="dark"] .modal-body{ color:#d9d6cd; }
 html[data-theme="dark"] .modal-close:hover{ background:#2d2d35; color:var(--ink); }
@@ -1307,13 +1333,14 @@ html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
      • EXERCISE files     -> per-topic grammar exercise banks
      • VOCABULARY files   -> per-topic word banks (term / definition / example)
      • VOCAB EXERCISE files -> per-topic practice exercises tied to the vocabulary
+     • READING files      -> per-topic reading passages (text, glossary, questions)
 
    Books can also be created, edited and deleted entirely inside the app, with
    an uploaded cover image (downscaled and stored as a data URL).
 
    A full "all data" export/import round-trips everything at once:
-     books + lessons + exercises + vocabulary + vocab exercises + progress +
-     theme + reader prefs + display prefs.
+     books + lessons + exercises + vocabulary + vocab exercises + reading +
+     progress + theme + reader prefs + display prefs.
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
@@ -1327,6 +1354,7 @@ const LS = {
   EXERCISES:       "egb:exercises:v2",
   VOCABULARY:      "egb:vocabulary:v1",
   VOCAB_EXERCISES: "egb:vocab-exercises:v1",
+  READING:         "egb:reading:v1",
   PROGRESS:        "egb:progress:v2",
   READER:          "egb:reader:v1",
   PREFS:           "egb:prefs:v1",
@@ -1641,11 +1669,39 @@ const VOCAB_EXERCISE_TEMPLATE = {
   ]
 };
 
+/* Reading passages: extended reading practice tied to a topic.
+   Displayed in the "Reading" block on the lesson page, below the vocabulary. */
+const READING_TEMPLATE = {
+  topic_id: "TOPIC_ID_HERE",
+  kind: "reading",
+  title: "Reading — TOPIC_ID_HERE",
+  passages: [
+    {
+      title: "Passage title",
+      author: "Author Name",
+      source: "Book or publication",
+      url: "https://www.gutenberg.org/ebooks/0000",
+      context: "Where this passage comes from and why it is relevant to the topic.",
+      text: "First paragraph of the reading passage. It contains the target grammar in context.\n\nSecond paragraph, separated from the first by a blank line.",
+      target_instances: [
+        "phrase containing the target grammar"
+      ],
+      glossary: [
+        { "term": "word", "definition": "meaning of the word in this context" }
+      ],
+      questions: [
+        { "question": "What does the writer describe first?", "answer": "A suggested answer." }
+      ]
+    }
+  ]
+};
+
 function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
 function lessonTemplateString(){ return JSON.stringify(LESSON_TEMPLATE, null, 2); }
 function exerciseTemplateString(){ return JSON.stringify(EXERCISE_TEMPLATE, null, 2); }
 function vocabularyTemplateString(){ return JSON.stringify(VOCABULARY_TEMPLATE, null, 2); }
 function vocabExerciseTemplateString(){ return JSON.stringify(VOCAB_EXERCISE_TEMPLATE, null, 2); }
+function readingTemplateString(){ return JSON.stringify(READING_TEMPLATE, null, 2); }
 
 function lessonTemplateForTopic(topicId){
   const tpl = JSON.parse(JSON.stringify(LESSON_TEMPLATE));
@@ -1684,6 +1740,13 @@ function vocabExerciseTemplateForTopic(topicId){
   return tpl;
 }
 
+function readingTemplateForTopic(topicId){
+  const tpl = JSON.parse(JSON.stringify(READING_TEMPLATE));
+  tpl.topic_id = topicId;
+  tpl.title = "Reading — " + topicId;
+  return tpl;
+}
+
 /* ---------------------------------------------------------------------------
    4. STATE
    --------------------------------------------------------------------------- */
@@ -1694,6 +1757,7 @@ const state = {
   exercises: {},
   vocabulary: {},        // topic_id -> { topic_id, title, words: [...] }
   vocabExercises: {},    // topic_id -> { topic_id, kind, exercises: [...] }
+  readings: {},          // topic_id -> { topic_id, kind, passages: [...] }
   progress: {},
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
@@ -2049,7 +2113,7 @@ function loadState(){
   try { state.currentBookId = localStorage.getItem(LS.CURRENT) || null; }
   catch (e){ state.currentBookId = null; }
 
-  /* --- lessons / exercises / vocabulary / progress --- */
+  /* --- lessons / exercises / vocabulary / reading / progress --- */
   try { state.lessons = JSON.parse(localStorage.getItem(LS.LESSONS)) || {}; }
   catch (e) { state.lessons = {}; }
 
@@ -2063,6 +2127,10 @@ function loadState(){
   try { state.vocabExercises = JSON.parse(localStorage.getItem(LS.VOCAB_EXERCISES)) || {}; }
   catch (e) { state.vocabExercises = {}; }
   if (!state.vocabExercises || typeof state.vocabExercises !== "object") state.vocabExercises = {};
+
+  try { state.readings = JSON.parse(localStorage.getItem(LS.READING)) || {}; }
+  catch (e) { state.readings = {}; }
+  if (!state.readings || typeof state.readings !== "object") state.readings = {};
 
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
@@ -2089,6 +2157,7 @@ function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(sta
 function saveExercises(){ try{ localStorage.setItem(LS.EXERCISES, JSON.stringify(state.exercises)); }catch(e){} }
 function saveVocabulary(){ try{ localStorage.setItem(LS.VOCABULARY, JSON.stringify(state.vocabulary)); }catch(e){} }
 function saveVocabExercises(){ try{ localStorage.setItem(LS.VOCAB_EXERCISES, JSON.stringify(state.vocabExercises)); }catch(e){} }
+function saveReadings(){ try{ localStorage.setItem(LS.READING, JSON.stringify(state.readings)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
@@ -2189,12 +2258,30 @@ function totalVocabExerciseCount(){
 }
 
 /* ---------------------------------------------------------------------------
+   10b-3. READING HELPERS
+   --------------------------------------------------------------------------- */
+function getReadingFor(topicId){
+  const bank = state.readings[topicId];
+  return (bank && Array.isArray(bank.passages)) ? bank.passages : [];
+}
+
+function importedReadingCount(topicId){
+  return getReadingFor(topicId).length;
+}
+
+function totalReadingCount(){
+  return Object.keys(state.readings).reduce(
+    (sum, id) => sum + importedReadingCount(id), 0);
+}
+
+/* ---------------------------------------------------------------------------
    10c. INLINE TEMPLATE HELPERS (shown inside lesson pages)
    --------------------------------------------------------------------------- */
 function templateLabel(kind){
   if (kind === "vocab-exercise") return "vocabulary exercise";
   if (kind === "exercise")       return "exercise";
   if (kind === "vocabulary")     return "vocabulary";
+  if (kind === "reading")        return "reading";
   return "lesson";
 }
 
@@ -2202,12 +2289,14 @@ function templateNoun(kind){
   if (kind === "vocab-exercise") return "vocabulary exercises";
   if (kind === "exercise")       return "exercises";
   if (kind === "vocabulary")     return "vocabulary";
+  if (kind === "reading")        return "reading passages";
   return "lesson";
 }
 
 function templateForKind(kind, topicId){
   if (kind === "vocab-exercise") return vocabExerciseTemplateForTopic(topicId);
   if (kind === "vocabulary")     return vocabularyTemplateForTopic(topicId);
+  if (kind === "reading")        return readingTemplateForTopic(topicId);
   if (kind === "exercise")       return exerciseTemplateForTopic(topicId);
   return lessonTemplateForTopic(topicId);
 }
@@ -2218,7 +2307,7 @@ function templateWrapId(kind, topicId){
 
 /**
  * Build the toggle button that shows/hides the inline JSON template.
- * kind: "lesson" | "exercise" | "vocabulary" | "vocab-exercise"
+ * kind: "lesson" | "exercise" | "vocabulary" | "vocab-exercise" | "reading"
  */
 function templateToggleBtnHTML(kind, topicId){
   const wrapId = templateWrapId(kind, topicId);
@@ -2326,7 +2415,7 @@ function updateNav(){
    <p class="side-note">${state.books.length} book${state.books.length === 1 ? "" : "s"} ·
    ${topicCount()} topics · ${Object.keys(state.lessons).length} lessons ·
    ${totalExerciseCount() + totalVocabExerciseCount()} exercises ·
-   ${totalVocabCount()} words</p>`;
+   ${totalVocabCount()} words · ${totalReadingCount()} reading passages</p>`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2384,8 +2473,8 @@ function noBookHTML(){
     <h3>Your library is empty</h3>
     <p>This application is an engine — it ships without grammar content.
        Create a book and add sections and topics inside it, or import a grammar
-       book JSON file. Then add lesson JSON files (and optional exercise or
-       vocabulary files) for each topic.</p>
+       book JSON file. Then add lesson JSON files (and optional exercise,
+       vocabulary or reading files) for each topic.</p>
     <div class="sec-toolbar" style="justify-content:center;margin-top:18px;margin-bottom:0;">
       <button class="btn primary" data-action="add-book">＋ Create a book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
@@ -2403,9 +2492,10 @@ function noBookHTML(){
       <li>Optional <strong>exercise JSON</strong> files — one per topic, importable from each lesson page.</li>
       <li>Optional <strong>vocabulary JSON</strong> files — one per topic, displayed on the lesson page.</li>
       <li>Optional <strong>vocabulary exercise JSON</strong> files — practice items that sit with the vocabulary.</li>
+      <li>Optional <strong>reading JSON</strong> files — reading passages that sit below the vocabulary.</li>
     </ol>
     <p class="muted" style="margin-top:14px;">
-      Full templates for all five file types are available in
+      Full templates for all six file types are available in
       <a href="#" data-action="nav" data-view="settings">Settings</a>.
     </p>
   </section>`;
@@ -2594,6 +2684,10 @@ function searchIndex(){
       (w.synonyms || []).forEach(s => parts.push(s));
       (w.antonyms || []).forEach(s => parts.push(s));
     });
+    /* reading passages are searchable too */
+    getReadingFor(topic.id).forEach(p => {
+      parts.push(p.title || "", p.context || "", p.text || "");
+    });
     return { topic, section, hay: parts.join(" ").toLowerCase() };
   });
 }
@@ -2677,10 +2771,12 @@ function topicCardHTML(topic, sectionId){
   const exCount = getExercisesFor(topic.id).length;
   const vocabCount = importedVocabCount(topic.id);
   const vocabExCount = importedVocabExerciseCount(topic.id);
+  const readingCount = importedReadingCount(topic.id);
 
   const flags = [];
   if (lesson) flags.push("Lesson ✓");
   if (vocabCount) flags.push(vocabCount + " words");
+  if (readingCount) flags.push(readingCount + " reading");
   if (exCount) flags.push(exCount + " ex.");
   if (vocabExCount) flags.push(vocabExCount + " vocab ex.");
   const flagText = flags.length ? flags.join(" · ") : "No content";
@@ -2765,6 +2861,7 @@ function lessonHTML(id){
   html += tocHTML(lesson, id);
   html += lesson ? lessonContentHTML(lesson) : noLessonHTML(topic);
   html += vocabularyHTML(id);
+  html += readingHTML(id);
   html += exercisesBlockHTML(id);
 
   html += `
@@ -2799,6 +2896,7 @@ function tocHTML(lesson, topicId){
   }
 
   items.push(`<li><a href="#lesson-vocabulary">Vocabulary</a></li>`);
+  items.push(`<li><a href="#lesson-reading">Reading</a></li>`);
   items.push(`<li><a href="#lesson-exercises">Exercises</a></li>`);
 
   return `<nav class="toc" aria-label="Lesson contents">
@@ -3111,6 +3209,106 @@ function vocabularyExercisesHTML(topicId){
   ${inlineTemplateHTML("vocab-exercise", topicId)}`;
 
   html += `</div>`;
+  return html;
+}
+
+/* ---------------------------------------------------------------------------
+   19c. READING BLOCK
+   --------------------------------------------------------------------------- */
+function readingPassageHTML(p, index){
+  const head = `<div class="lit-head">
+      <div>
+        <div class="lit-book">${esc(p.title || ("Passage " + (index + 1)))}</div>
+        <div class="lit-author">${esc([p.author, p.source].filter(Boolean).join(" · "))}</div>
+      </div>
+      ${p.url ? `<a class="lit-link" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Source ↗</a>` : ""}
+    </div>`;
+
+  const context = p.context
+    ? `<div class="lit-context"><span class="lit-label">Context</span>${esc(p.context)}</div>` : "";
+
+  const text = `<blockquote class="lit-passage">${passageHTML(p.text || "", p.target_instances || [])}</blockquote>`;
+
+  const glossary = (Array.isArray(p.glossary) && p.glossary.length)
+    ? `<div class="glossary-box">
+         <span class="lit-label">Glossary</span>
+         <ul class="glossary-list">
+           ${p.glossary.map(g => `<li><span class="gl-term">${esc(g.term || "")}</span> — ${esc(g.definition || "")}</li>`).join("")}
+         </ul>
+       </div>` : "";
+
+  const questions = (Array.isArray(p.questions) && p.questions.length)
+    ? `<div class="questions-box">
+         <span class="lit-label">Comprehension</span>
+         ${p.questions.map(q => `<div class="reading-q">
+            <div class="rq-q">${esc(q.question || "")}</div>
+            ${q.answer ? `<button type="button" class="btn ghost tiny" data-action="reveal-answer">Show answer</button>
+              <div class="rq-a">${esc(q.answer)}</div>` : ""}
+         </div>`).join("")}
+       </div>` : "";
+
+  return `<figure class="literary-card reading-card">${head}${context}${text}${glossary}${questions}</figure>`;
+}
+
+function readingHTML(topicId){
+  const passages = getReadingFor(topicId);
+  const n = passages.length;
+  const bodyId      = "reading-body-" + slugify(topicId);
+  const pasteWrapId = "reading-paste-wrap-" + slugify(topicId);
+  const pasteAreaId = "reading-paste-" + slugify(topicId);
+
+  let html = `<section class="lesson-block" id="lesson-reading">
+    <h2 class="block-title">
+      <span>Reading</span>
+      <span class="exercise-count">${n} passage${n === 1 ? "" : "s"}</span>
+      <button class="btn ghost tiny block-toggle" data-action="toggle-block"
+              data-block="reading" data-target="${esc(bodyId)}"
+              aria-expanded="true">▾ Hide</button>
+    </h2>
+    <div id="${esc(bodyId)}">`;
+
+  if (n){
+    html += passages.map((p, i) => readingPassageHTML(p, i)).join("");
+  } else {
+    html += `<div class="lit-none">No reading passages loaded for this topic yet.</div>`;
+  }
+
+  html += `<div class="exercise-import-bar">
+    <div class="exercise-import-note">
+      <strong>${esc(topicId)}</strong><br>
+      ${n
+        ? "Importing another file for this topic replaces the current reading passages."
+        : "Import a reading JSON file, or paste JSON text, for this topic."}
+    </div>
+    <label class="btn primary">
+      ${n ? "Replace reading" : "Import reading JSON"}
+      <input type="file" class="reading-file-input" accept=".json,application/json" multiple hidden
+             data-topic="${esc(topicId)}">
+    </label>
+    ${templateToggleBtnHTML("reading", topicId)}
+    <button class="btn ghost" data-action="download-template" data-kind="reading" data-id="${esc(topicId)}">
+      Download template
+    </button>
+    <button class="btn ghost" data-action="toggle-paste" data-target="${esc(pasteWrapId)}"
+            data-label-show="⌨ Paste JSON text" data-label-hide="▾ Hide paste box">⌨ Paste JSON text</button>
+    ${n ? `<button class="btn ghost" data-action="clear-reading" data-id="${esc(topicId)}">
+      Clear reading
+    </button>` : ""}
+  </div>
+
+  <div class="paste-wrap" id="${esc(pasteWrapId)}" hidden>
+    <textarea class="paste" id="${esc(pasteAreaId)}"
+              placeholder='{ "topic_id": "${esc(topicId)}", "passages": [ { "title": "...", "text": "..." } ] }'></textarea>
+    <div class="file-row">
+      <button class="btn primary" data-action="import-reading-paste"
+              data-topic="${esc(topicId)}" data-target="${esc(pasteAreaId)}">Import pasted JSON</button>
+      <span class="muted">The <code>topic_id</code> is filled in automatically when it is missing.</span>
+    </div>
+  </div>
+
+  ${inlineTemplateHTML("reading", topicId)}`;
+
+  html += `</div></section>`;
   return html;
 }
 
@@ -3530,7 +3728,7 @@ function saveBookForm(){
 function deleteBook(id){
   const b = state.books.find(x => x.id === id);
   if (!b) return;
-  if (!confirm(`Delete "${bookTitle(b)}" and all of its topics?\n\nLessons, exercises, vocabulary and progress that were imported stay in the library and will reappear if a book with the same topic ids is loaded.`)) return;
+  if (!confirm(`Delete "${bookTitle(b)}" and all of its topics?\n\nLessons, exercises, vocabulary, reading passages and progress that were imported stay in the library and will reappear if a book with the same topic ids is loaded.`)) return;
   state.books = state.books.filter(x => x.id !== id);
   ensureCurrentBook();
   saveBooks();
@@ -3688,7 +3886,7 @@ function editTopic(topicId){
         <textarea id="tfDesc">${esc(topic.description || "")}</textarea>
       </div>
       <div class="field">
-        <label>Topic id (used by lesson, exercise &amp; vocabulary files)</label>
+        <label>Topic id (used by lesson, exercise, vocabulary &amp; reading files)</label>
         <div class="muted"><code>${esc(topic.id)}</code></div>
       </div>
       <div class="form-actions">
@@ -3738,6 +3936,9 @@ function settingsHTML(){
 
   const vocabExTopicIds = Object.keys(state.vocabExercises);
   const orphanVocabExercises = vocabExTopicIds.filter(id => !findTopicAnywhere(id));
+
+  const readingTopicIds = Object.keys(state.readings);
+  const orphanReadings = readingTopicIds.filter(id => !findTopicAnywhere(id));
 
   const bookList = state.books.length
     ? state.books.map(b => {
@@ -3809,13 +4010,14 @@ function settingsHTML(){
     <h3>Data management</h3>
     <p class="muted">
       <strong>Export all data</strong> saves one JSON file containing everything stored in this browser:
-      your books, lessons, exercises, vocabulary banks, vocabulary exercises, progress, plus your theme,
-      reading options and display preferences. Use it to move your whole setup to another browser or device.
+      your books, lessons, exercises, vocabulary banks, vocabulary exercises, reading passages, progress,
+      plus your theme, reading options and display preferences. Use it to move your whole setup to another
+      browser or device.
       <br>
       <strong>Import data</strong> accepts that same full backup (with or without the settings block),
       or a plain library export, an array of books, a single book object, a progress file, or an
-      individual lesson / exercise / vocabulary / vocabulary-exercise file. Existing entries with the same id
-      are replaced; anything else is added.
+      individual lesson / exercise / vocabulary / vocabulary-exercise / reading file. Existing entries with
+      the same id are replaced; anything else is added.
     </p>
     <div class="file-row">
       <button class="btn primary" data-action="export-all">⭱ Export all data</button>
@@ -3829,8 +4031,8 @@ function settingsHTML(){
     </div>
     <p class="muted" style="margin-top:12px;">
       Accepted file shapes:
-      <code>{ books, lessons, exercises, vocabulary, vocabExercises, progress, theme, reader, prefs }</code> ·
-      <code>{ books, lessons, exercises, vocabulary, vocabExercises, progress }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, progress, theme, reader, prefs }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, progress }</code> ·
       <code>[ book, book, … ]</code> ·
       <code>{ book, sections }</code> ·
       <code>{ progress, totals }</code>
@@ -3932,6 +4134,24 @@ function settingsHTML(){
     </div>
   </section>
 
+  <!-- ===================== READING ===================== -->
+  <section class="card">
+    <h3>Reading JSON</h3>
+    <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus a <code>passages</code> array.
+      Passages are displayed in the <em>Reading</em> block on the topic's lesson page, below the vocabulary.
+      Each passage may carry a glossary and comprehension questions. Reading content can also be imported —
+      or pasted as JSON text — directly from the lesson page.</p>
+    <div class="file-row">
+      <input type="file" id="readingFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="reading">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="readingTpl">▸ Show structure</button>
+    <div class="template-wrap" id="readingTpl" hidden>
+      <div class="template-box">${esc(readingTemplateString())}</div>
+    </div>
+  </section>
+
   <!-- ===================== PASTE ===================== -->
   <section class="card">
     <h3>Paste JSON</h3>
@@ -3958,6 +4178,7 @@ function settingsHTML(){
       · ${exTopicIds.length} grammar exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)
       · ${vocabExTopicIds.length} vocabulary exercise bank${vocabExTopicIds.length === 1 ? "" : "s"} (${totalVocabExerciseCount()} exercises)
       · ${vocabTopicIds.length} vocabulary bank${vocabTopicIds.length === 1 ? "" : "s"} (${totalVocabCount()} words)
+      · ${readingTopicIds.length} reading bank${readingTopicIds.length === 1 ? "" : "s"} (${totalReadingCount()} passages)
       · theme: <strong>${esc(state.theme)}</strong>
       · reader: <strong>${esc(readerFont().name)}</strong> at <strong>${state.reader.size} px</strong>
       · grammar exercises <strong>${state.prefs.hideGrammarExercises ? "hidden" : "shown"}</strong>
@@ -3970,6 +4191,8 @@ function settingsHTML(){
       <code>${esc(orphanVocabulary.join(", "))}</code></div>` : ""}
     ${orphanVocabExercises.length ? `<div class="alert info">Vocabulary exercise banks loaded without a matching topic in any book:
       <code>${esc(orphanVocabExercises.join(", "))}</code></div>` : ""}
+    ${orphanReadings.length ? `<div class="alert info">Reading banks loaded without a matching topic in any book:
+      <code>${esc(orphanReadings.join(", "))}</code></div>` : ""}
   </section>
 
   <!-- ===================== WORKFLOW ===================== -->
@@ -3986,8 +4209,10 @@ function settingsHTML(){
       <li>Optionally download the <strong>Vocabulary template</strong> for that topic's id and add words.</li>
       <li>Optionally download the <strong>Vocabulary Exercise template</strong> and add practice items
         that sit with the vocabulary.</li>
-      <li>Import the lesson / exercise / vocabulary / vocabulary-exercise files in Settings — or directly
-        from the topic's page.</li>
+      <li>Optionally download the <strong>Reading template</strong> and add reading passages. They appear in the
+        <em>Reading</em> block, below the vocabulary — or paste the JSON text straight into the lesson page.</li>
+      <li>Import the lesson / exercise / vocabulary / vocabulary-exercise / reading files in Settings — or
+        directly from the topic's page.</li>
       <li>To move everything (including theme, reading options and display preferences) to another browser, use
         <em>Export all data</em> and <em>Import data</em>.</li>
     </ol>
@@ -4079,6 +4304,23 @@ function validateVocabularyFile(obj){
   return { ok: errors.length === 0, errors };
 }
 
+function validateReadingFile(obj){
+  const errors = [];
+  if (!obj || typeof obj !== "object") errors.push("file is not a JSON object");
+  if (!obj.topic_id) errors.push("missing 'topic_id'");
+  if (!Array.isArray(obj.passages)) errors.push("missing 'passages' array");
+  else if (!obj.passages.length) errors.push("'passages' is empty");
+  else {
+    obj.passages.forEach((p, i) => {
+      if (!p || typeof p !== "object"){ errors.push(`passage ${i + 1} is not an object`); return; }
+      if (!p.text) errors.push(`passage ${i + 1} has no 'text'`);
+      if (p.glossary && !Array.isArray(p.glossary)) errors.push(`passage ${i + 1}: 'glossary' must be an array`);
+      if (p.questions && !Array.isArray(p.questions)) errors.push(`passage ${i + 1}: 'questions' must be an array`);
+    });
+  }
+  return { ok: errors.length === 0, errors };
+}
+
 /** True when an exercise file is meant for the vocabulary block. */
 function isVocabExerciseFile(obj){
   if (!obj || typeof obj !== "object") return false;
@@ -4086,6 +4328,12 @@ function isVocabExerciseFile(obj){
   return obj.kind === "vocabulary_exercises" ||
          obj.bank === "vocabulary" ||
          obj.vocabulary_exercises === true;
+}
+
+/** True when a file carries reading passages. */
+function isReadingFile(obj){
+  return !!obj && typeof obj === "object" &&
+         Array.isArray(obj.passages) && !!obj.topic_id;
 }
 
 function applyJSON(obj){
@@ -4109,6 +4357,20 @@ function applyJSON(obj){
       ok: true,
       message: `Book "${bookTitle(nb)}" imported — ${bookTopics(nb).length} topics` +
                (idx >= 0 ? " (replaced existing book)." : ".")
+    };
+  }
+
+  /* --- reading passages (checked before the exercise banks) --- */
+  if (isReadingFile(obj)){
+    const v = validateReadingFile(obj);
+    if (!v.ok) return { ok: false, message: "Invalid reading JSON — " + v.errors.join("; ") };
+    state.readings[obj.topic_id] = obj;
+    saveReadings();
+    const known = !!findTopicAnywhere(obj.topic_id);
+    const n = obj.passages.length;
+    return {
+      ok: true,
+      message: `Reading passages for "${obj.topic_id}" imported — ${n} passage${n === 1 ? "" : "s"}${known ? "" : " (warning: no matching topic id)"}.`
     };
   }
 
@@ -4176,7 +4438,8 @@ function applyJSON(obj){
     ok: false,
     message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }), " +
              "an exercise bank ({ topic_id, exercises }), a vocabulary bank ({ topic_id, words }), " +
-             "a vocabulary exercise bank ({ topic_id, kind: \"vocabulary_exercises\", exercises }) " +
+             "a vocabulary exercise bank ({ topic_id, kind: \"vocabulary_exercises\", exercises }), " +
+             "a reading bank ({ topic_id, passages }) " +
              "or a library / all-data backup."
   };
 }
@@ -4187,8 +4450,8 @@ function looksLikeLibrary(obj){
   if (Array.isArray(obj)) return true;                          // array of books
   if (obj.book && Array.isArray(obj.sections)) return false;    // single book handled above
   if ("books" in obj || "lessons" in obj || "exercises" in obj ||
-      "vocabulary" in obj || "vocabExercises" in obj || "progress" in obj ||
-      "theme" in obj || "reader" in obj || "prefs" in obj) return true;
+      "vocabulary" in obj || "vocabExercises" in obj || "readings" in obj ||
+      "progress" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
   return false;
 }
 
@@ -4222,6 +4485,7 @@ function validateLibraryFile(obj){
   if (obj.exercises      !== undefined && !isPlainObject(obj.exercises))      errors.push("'exercises' must be an object");
   if (obj.vocabulary     !== undefined && !isPlainObject(obj.vocabulary))     errors.push("'vocabulary' must be an object");
   if (obj.vocabExercises !== undefined && !isPlainObject(obj.vocabExercises)) errors.push("'vocabExercises' must be an object");
+  if (obj.readings       !== undefined && !isPlainObject(obj.readings))       errors.push("'readings' must be an object");
   if (obj.progress       !== undefined && !isPlainObject(obj.progress))       errors.push("'progress' must be an object");
   if (obj.theme          !== undefined && typeof obj.theme !== "string")      errors.push("'theme' must be a string");
   if (obj.reader         !== undefined && !isPlainObject(obj.reader))         errors.push("'reader' must be an object");
@@ -4230,8 +4494,9 @@ function validateLibraryFile(obj){
   const nothing =
     obj.books === undefined && obj.lessons === undefined &&
     obj.exercises === undefined && obj.vocabulary === undefined &&
-    obj.vocabExercises === undefined && obj.progress === undefined &&
-    obj.theme === undefined && obj.reader === undefined && obj.prefs === undefined;
+    obj.vocabExercises === undefined && obj.readings === undefined &&
+    obj.progress === undefined && obj.theme === undefined &&
+    obj.reader === undefined && obj.prefs === undefined;
 
   if (nothing) errors.push("no recognisable data found");
 
@@ -4243,7 +4508,7 @@ function applyLibrary(obj){
   if (!v.ok) return { ok: false, message: "Invalid library file — " + v.errors.join("; ") };
 
   let bookCount = 0, lessonCount = 0, exCount = 0, vocabCount = 0,
-      vocabExCount = 0, progressCount = 0;
+      vocabExCount = 0, readingCount = 0, progressCount = 0;
   let themeApplied = false, readerApplied = false, prefsApplied = false;
 
   /* --- books --- */
@@ -4311,6 +4576,18 @@ function applyLibrary(obj){
     if (vocabExCount) saveVocabExercises();
   }
 
+  /* --- reading passages --- */
+  if (obj && !Array.isArray(obj) && obj.readings && typeof obj.readings === "object"){
+    Object.keys(obj.readings).forEach(id => {
+      const bank = obj.readings[id];
+      if (bank && typeof bank === "object"){
+        state.readings[id] = bank;
+        readingCount++;
+      }
+    });
+    if (readingCount) saveReadings();
+  }
+
   /* --- progress (optional) --- */
   if (obj && !Array.isArray(obj) && obj.progress && typeof obj.progress === "object"){
     Object.keys(obj.progress).forEach(id => {
@@ -4376,6 +4653,7 @@ function applyLibrary(obj){
   if (exCount)       parts.push(`${exCount} grammar exercise bank${exCount === 1 ? "" : "s"}`);
   if (vocabExCount)  parts.push(`${vocabExCount} vocabulary exercise bank${vocabExCount === 1 ? "" : "s"}`);
   if (vocabCount)    parts.push(`${vocabCount} vocabulary bank${vocabCount === 1 ? "" : "s"}`);
+  if (readingCount)  parts.push(`${readingCount} reading bank${readingCount === 1 ? "" : "s"}`);
   if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
   if (themeApplied)  parts.push("theme");
   if (readerApplied) parts.push("reading options");
@@ -4422,13 +4700,14 @@ function exportAllData(){
     exercises: state.exercises,
     vocabulary: state.vocabulary,
     vocabExercises: state.vocabExercises,
+    readings: state.readings,
     progress: state.progress,
     totals: progressStats()
   };
 
   const stamp = new Date().toISOString().slice(0,10);
   downloadJSON(data, `grammar-all-data-${stamp}.json`);
-  toast("All data exported — books, lessons, exercises, vocabulary, vocabulary exercises, progress, theme, reading options and display preferences.");
+  toast("All data exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages, progress, theme, reading options and display preferences.");
 }
 
 async function handleFiles(fileList){
@@ -4657,6 +4936,15 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    /* ---------------- READING — reveal an answer ---------------- */
+    case "reveal-answer": {
+      const q = el.closest(".reading-q");
+      if (!q) break;
+      const on = q.classList.toggle("revealed");
+      el.textContent = on ? "Hide answer" : "Show answer";
+      break;
+    }
+
     /* ---------------- HIDE / SHOW EXERCISE BLOCKS ---------------- */
     case "toggle-block": {
       const kind = el.dataset.block;
@@ -4671,9 +4959,11 @@ document.addEventListener("click", (ev) => {
 
       el.textContent = nowHidden ? "▸ Show" : "▾ Hide";
       el.setAttribute("aria-expanded", String(!nowHidden));
-      toast(nowHidden
-        ? (kind === "vocab-exercises" ? "Vocabulary exercises hidden." : "Grammar exercises hidden.")
-        : (kind === "vocab-exercises" ? "Vocabulary exercises shown." : "Grammar exercises shown."));
+
+      const blockLabel = kind === "vocab-exercises" ? "Vocabulary exercises"
+                       : kind === "reading"         ? "Reading"
+                       : "Grammar exercises";
+      toast(blockLabel + (nowHidden ? " hidden." : " shown."));
       break;
     }
 
@@ -4705,7 +4995,7 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
-    /* ---------------- TEMPLATES ---------------- */
+    /* ---------------- TEMPLATES / DISCLOSURES ---------------- */
     case "download-template": {
       const kind = el.dataset.kind;
       const id = el.dataset.id;
@@ -4733,6 +5023,11 @@ document.addEventListener("click", (ev) => {
         const filename = (id ? id : "vocabulary") + "-vocabulary-exercises.template.json";
         downloadJSON(tpl, filename);
         toast("Vocabulary exercise template downloaded" + (id ? " for " + id : "") + ".");
+      } else if (kind === "reading"){
+        const tpl = id ? readingTemplateForTopic(id) : READING_TEMPLATE;
+        const filename = (id ? id : "reading") + "-reading.template.json";
+        downloadJSON(tpl, filename);
+        toast("Reading template downloaded" + (id ? " for " + id : "") + ".");
       }
       break;
     }
@@ -4745,6 +5040,51 @@ document.addEventListener("click", (ev) => {
       const showLabel = el.dataset.labelShow || "▸ Show structure";
       const hideLabel = el.dataset.labelHide || "▾ Hide structure";
       el.textContent = isHidden ? hideLabel : showLabel;
+      break;
+    }
+
+    /* ---- show / hide the inline "paste JSON text" box ---- */
+    case "toggle-paste": {
+      const target = $(el.dataset.target);
+      if (!target) break;
+      const isHidden = target.hidden;
+      target.hidden = !isHidden;
+      const showLabel = el.dataset.labelShow || "⌨ Paste JSON text";
+      const hideLabel = el.dataset.labelHide || "▾ Hide paste box";
+      el.textContent = isHidden ? hideLabel : showLabel;
+      if (isHidden){
+        const area = target.querySelector("textarea");
+        if (area) area.focus();
+      }
+      break;
+    }
+
+    /* ---- import reading JSON pasted straight into the lesson ---- */
+    case "import-reading-paste": {
+      const topicId = el.dataset.topic;
+      const area = $(el.dataset.target);
+      if (!area || !area.value.trim()){
+        toast("Nothing to import — the text area is empty.", "err");
+        break;
+      }
+      let obj;
+      try { obj = JSON.parse(area.value); }
+      catch (e){
+        toast("Pasted text is not valid JSON — " + e.message, "err");
+        break;
+      }
+      if (obj && !Array.isArray(obj) && typeof obj === "object" &&
+          Array.isArray(obj.passages) && !obj.topic_id){
+        obj.topic_id = topicId;
+      }
+      if (obj && !Array.isArray(obj) && typeof obj === "object" &&
+          Array.isArray(obj.passages) && !obj.kind){
+        obj.kind = "reading";
+      }
+      const result = applyJSON(obj);
+      if (result.ok) area.value = "";
+      toast(result.message, result.ok ? "" : "err");
+      render();
       break;
     }
 
@@ -4823,6 +5163,16 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    case "clear-reading": {
+      const id = el.dataset.id;
+      if (!confirm("Remove the imported reading passages for this topic?")) return;
+      delete state.readings[id];
+      saveReadings();
+      toast("Reading passages removed.");
+      render();
+      break;
+    }
+
     case "import-paste": {
       const area = $("pasteArea");
       if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); return; }
@@ -4861,20 +5211,22 @@ document.addEventListener("click", (ev) => {
         exercises: state.exercises,
         vocabulary: state.vocabulary,
         vocabExercises: state.vocabExercises,
+        readings: state.readings,
         progress: state.progress
       }, "grammar-library.json");
-      toast("Library exported — books, lessons, exercises, vocabulary, vocabulary exercises and progress.");
+      toast("Library exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages and progress.");
       break;
     }
 
     case "clear-all": {
-      if (!confirm("Clear all data? This removes every book, all lessons, all exercise and vocabulary banks and all progress. Theme, reading options and display preferences are kept.")) return;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise, vocabulary and reading banks and all progress. Theme, reading options and display preferences are kept.")) return;
       state.books = [];
       state.currentBookId = null;
       state.lessons = {};
       state.exercises = {};
       state.vocabulary = {};
       state.vocabExercises = {};
+      state.readings = {};
       state.progress = {};
       state.currentTopicId = null;
       try {
@@ -4885,6 +5237,7 @@ document.addEventListener("click", (ev) => {
         localStorage.removeItem(LS.EXERCISES);
         localStorage.removeItem(LS.VOCABULARY);
         localStorage.removeItem(LS.VOCAB_EXERCISES);
+        localStorage.removeItem(LS.READING);
         localStorage.removeItem(LS.PROGRESS);
       } catch (e){}
       state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
@@ -4999,19 +5352,20 @@ document.addEventListener("change", (ev) => {
 
   /* ---- settings file inputs ---- */
   if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile" ||
-      t.id === "vocabularyFile" || t.id === "vocabExerciseFile"){
+      t.id === "vocabularyFile" || t.id === "vocabExerciseFile" || t.id === "readingFile"){
     const files = t.files;
     t.value = "";
     handleFiles(files);
     return;
   }
 
-  /* ---- in-page lesson / exercise / vocabulary imports ---- */
+  /* ---- in-page lesson / exercise / vocabulary / reading imports ---- */
   if (t.classList){
     if (t.classList.contains("lesson-file-input") ||
         t.classList.contains("exercise-file-input") ||
         t.classList.contains("vocab-file-input") ||
-        t.classList.contains("vocab-exercise-file-input")){
+        t.classList.contains("vocab-exercise-file-input") ||
+        t.classList.contains("reading-file-input")){
       const files = t.files;
       t.value = "";
       handleFiles(files);
