@@ -2088,6 +2088,61 @@ function totalVocabCount(){
 }
 
 /* ---------------------------------------------------------------------------
+   10c. INLINE TEMPLATE HELPERS (shown inside lesson pages)
+   --------------------------------------------------------------------------- */
+/**
+ * Build the toggle button that shows/hides the inline JSON template.
+ * kind: "lesson" | "exercise" | "vocabulary"
+ */
+function templateToggleBtnHTML(kind, topicId){
+  const wrapId = templateWrapId(kind, topicId);
+  const label  = kind === "exercise" ? "exercise" : kind; // "exercise" / "vocabulary"
+  return `<button class="btn ghost" data-action="toggle-template"
+                  data-target="${esc(wrapId)}"
+                  data-label-show="▸ Show ${label} template"
+                  data-label-hide="▾ Hide ${label} template">▸ Show ${label} template</button>`;
+}
+
+function templateWrapId(kind, topicId){
+  return "tpl-" + kind + "-" + slugify(topicId);
+}
+
+/**
+ * Build the collapsible template block (hidden by default).
+ * Includes a copy-to-clipboard button and a download-as-file button.
+ */
+function inlineTemplateHTML(kind, topicId){
+  const wrapId = templateWrapId(kind, topicId);
+  const boxId  = wrapId + "-box";
+
+  let tpl;
+  if (kind === "vocabulary"){
+    tpl = vocabularyTemplateForTopic(topicId);
+  } else if (kind === "exercise"){
+    tpl = exerciseTemplateForTopic(topicId);
+  } else {
+    tpl = lessonTemplateForTopic(topicId);
+  }
+  const tplText = JSON.stringify(tpl, null, 2);
+
+  const noun = kind === "vocabulary" ? "vocabulary" : (kind === "exercise" ? "exercises" : "lesson");
+
+  return `<div class="template-wrap" id="${esc(wrapId)}" hidden>
+    <p class="muted" style="margin-top:14px;">
+      This template is pre-filled with <code>topic_id</code>
+      <strong>${esc(topicId)}</strong>. Edit it and import the file, or paste it into
+      <em>Settings → Paste JSON</em> to populate the ${esc(noun)} for this topic.
+    </p>
+    <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
+    <div class="file-row">
+      <button class="btn tiny" data-action="copy-template" data-target="${esc(boxId)}">Copy JSON</button>
+      <button class="btn tiny ghost" data-action="download-template"
+              data-kind="${esc(kind)}" data-id="${esc(topicId)}">Download</button>
+    </div>
+  </div>`;
+}
+
+/* ---------------------------------------------------------------------------
    11. PROGRESS
    --------------------------------------------------------------------------- */
 function statusOf(id){
@@ -2615,7 +2670,7 @@ function shortTitle(t){
   return String(t).length > 26 ? String(t).slice(0, 24) + "…" : t;
 }
 
-/* === CHANGED: inline template viewer instead of download-only === */
+/* === Lesson template viewer === */
 function noLessonHTML(topic){
   const tplId = "lessonTpl-" + slugify(topic.id);
   const boxId = tplId + "-box";
@@ -2799,7 +2854,7 @@ function summaryHTML(summary){
 }
 
 /* ---------------------------------------------------------------------------
-   19b. VOCABULARY BLOCK
+   19b. VOCABULARY BLOCK  (with inline template viewer)
    --------------------------------------------------------------------------- */
 function vocabCardHTML(w){
   const pos = w.part_of_speech
@@ -2852,32 +2907,34 @@ function vocabularyHTML(topicId){
     html += `<div class="lit-none">No vocabulary loaded for this topic yet.</div>`;
   }
 
-    html += `<div class="exercise-import-bar">
+  html += `<div class="exercise-import-bar">
     <div class="exercise-import-note">
       <strong>${esc(topicId)}</strong><br>
-      ${esc(noteText)}
+      ${n
+        ? "Importing another file for this topic replaces the current word list."
+        : "You can import a vocabulary JSON file specifically for this topic."}
     </div>
     <label class="btn primary">
-      ${exercises.length ? "Import more exercises" : "Import exercises JSON"}
-      <input type="file" class="exercise-file-input" accept=".json,application/json" multiple hidden
+      ${n ? "Replace vocabulary" : "Import vocabulary JSON"}
+      <input type="file" class="vocab-file-input" accept=".json,application/json" multiple hidden
              data-topic="${esc(topicId)}">
     </label>
-    ${templateToggleBtnHTML("exercise", topicId)}
-    <button class="btn ghost" data-action="download-template" data-kind="exercise" data-id="${esc(topicId)}">
+    ${templateToggleBtnHTML("vocabulary", topicId)}
+    <button class="btn ghost" data-action="download-template" data-kind="vocabulary" data-id="${esc(topicId)}">
       Download template
     </button>
-    ${importedCount ? `<button class="btn ghost" data-action="clear-exercises" data-id="${esc(topicId)}">
-      Clear imported
+    ${n ? `<button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}">
+      Clear vocabulary
     </button>` : ""}
   </div>
-  ${inlineTemplateHTML("exercise", topicId)}`;
+  ${inlineTemplateHTML("vocabulary", topicId)}`;
 
   html += `</section>`;
   return html;
 }
 
 /* ---------------------------------------------------------------------------
-   20. EXERCISES BLOCK
+   20. EXERCISES BLOCK  (with inline template viewer)
    --------------------------------------------------------------------------- */
 function exercisesBlockHTML(topicId){
   const exercises = getExercisesFor(topicId);
@@ -2917,13 +2974,15 @@ function exercisesBlockHTML(topicId){
       <input type="file" class="exercise-file-input" accept=".json,application/json" multiple hidden
              data-topic="${esc(topicId)}">
     </label>
+    ${templateToggleBtnHTML("exercise", topicId)}
     <button class="btn ghost" data-action="download-template" data-kind="exercise" data-id="${esc(topicId)}">
       Download template
     </button>
     ${importedCount ? `<button class="btn ghost" data-action="clear-exercises" data-id="${esc(topicId)}">
       Clear imported
     </button>` : ""}
-  </div>`;
+  </div>
+  ${inlineTemplateHTML("exercise", topicId)}`;
 
   html += `</section>`;
   return html;
@@ -4356,7 +4415,6 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
-    /* === NEW: copy template JSON to clipboard === */
     case "copy-template": {
       const target = $(el.dataset.target);
       if (!target){ toast("Template not found.", "err"); break; }
