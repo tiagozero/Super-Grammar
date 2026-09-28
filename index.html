@@ -558,11 +558,23 @@ button{font:inherit;}
   padding:12px 16px;margin:16px 0 18px;background:#fbfaf6;
 }
 
-.lesson-block{margin-bottom:38px;}
+.lesson-block{margin-bottom:38px;scroll-margin-top:90px;}
 .block-title{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   font-family:var(--serif);font-size:1.32rem;font-weight:600;
   padding-bottom:8px;margin-bottom:16px;border-bottom:1px solid var(--rule);
 }
+.block-title .exercise-count{margin-left:0;}
+.block-title .block-toggle{margin-left:auto;}
+
+.sub-block-title{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-family:var(--serif);font-size:1.08rem;font-weight:600;
+  margin:28px 0 14px;padding-bottom:6px;
+  border-bottom:1px dashed var(--rule);
+}
+.sub-block-title .exercise-count{margin-left:0;}
+.sub-block-title .block-toggle{margin-left:auto;}
 
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px;}
@@ -880,6 +892,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .lesson-title,
 .lesson .lsection-title,
 .lesson .block-title,
+.lesson .sub-block-title,
 .lesson .cmp-title{
   font-family: inherit;
 }
@@ -888,6 +901,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .lesson-desc    { font-size: .94em; }
 .lesson .lsection-title { font-size: 1.24em; }
 .lesson .block-title    { font-size: 1.24em; }
+.lesson .sub-block-title{ font-size: 1.0em; }
 .lesson .cmp-title      { font-size: .99em; }
 .lesson .explanation    { font-size: .91em; }
 .lesson .example-list li{ font-size: .90em; }
@@ -1290,29 +1304,33 @@ html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
 
      • BOOK files         -> one library entry each: title, cover, sections, topics
      • LESSON files       -> explanations, examples, literary passages, tables
-     • EXERCISE files     -> per-topic exercise banks
+     • EXERCISE files     -> per-topic grammar exercise banks
      • VOCABULARY files   -> per-topic word banks (term / definition / example)
+     • VOCAB EXERCISE files -> per-topic practice exercises tied to the vocabulary
 
    Books can also be created, edited and deleted entirely inside the app, with
    an uploaded cover image (downscaled and stored as a data URL).
 
    A full "all data" export/import round-trips everything at once:
-     books + lessons + exercises + vocabulary + progress + theme + reader prefs.
+     books + lessons + exercises + vocabulary + vocab exercises + progress +
+     theme + reader prefs + display prefs.
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
    1. STORAGE KEYS
    --------------------------------------------------------------------------- */
 const LS = {
-  BOOKS:      "egb:books:v3",
-  BOOK:       "egb:book:v2",        // legacy single-book key (migrated)
-  CURRENT:    "egb:current-book:v1",
-  LESSONS:    "egb:lessons:v2",
-  EXERCISES:  "egb:exercises:v2",
-  VOCABULARY: "egb:vocabulary:v1",
-  PROGRESS:   "egb:progress:v2",
-  READER:     "egb:reader:v1",
-  THEME:      "egb:theme:v1"
+  BOOKS:           "egb:books:v3",
+  BOOK:            "egb:book:v2",        // legacy single-book key (migrated)
+  CURRENT:         "egb:current-book:v1",
+  LESSONS:         "egb:lessons:v2",
+  EXERCISES:       "egb:exercises:v2",
+  VOCABULARY:      "egb:vocabulary:v1",
+  VOCAB_EXERCISES: "egb:vocab-exercises:v1",
+  PROGRESS:        "egb:progress:v2",
+  READER:          "egb:reader:v1",
+  PREFS:           "egb:prefs:v1",
+  THEME:           "egb:theme:v1"
 };
 
 /* ---------------------------------------------------------------------------
@@ -1342,6 +1360,8 @@ const READER_MAX = 26;
 
 const THEMES = ["light", "dark", "system"];
 const DEFAULT_THEME = "light";
+
+const DEFAULT_PREFS = { hideGrammarExercises: false, hideVocabExercises: false };
 
 /* ---------------------------------------------------------------------------
    3. JSON TEMPLATES
@@ -1590,10 +1610,42 @@ const VOCABULARY_TEMPLATE = {
   ]
 };
 
+/* Vocabulary exercises: practice items built on the topic's word bank.
+   Distinguished from grammar exercise banks by `kind` (or `bank`). */
+const VOCAB_EXERCISE_TEMPLATE = {
+  topic_id: "TOPIC_ID_HERE",
+  kind: "vocabulary_exercises",
+  title: "Vocabulary exercises — TOPIC_ID_HERE",
+  exercises: [
+    {
+      type: "multiple_choice",
+      question: "Choose the word that best completes the sentence: My morning ___ starts at 6 a.m.",
+      options: ["routine", "route", "rout", "rut"],
+      answer: 0,
+      explanation: "'Routine' means a usual or fixed way of doing things."
+    },
+    {
+      type: "fill_blank",
+      sentence: "She {{blank}} drinks coffee after noon. (not often)",
+      answer: ["rarely", "seldom"],
+      explanation: "'Rarely' and 'seldom' are negative-frequency adverbs."
+    },
+    {
+      type: "matching_definition",
+      question: "Match each word with its definition.",
+      pairs: [
+        { "term": "routine", "definition": "a usual or fixed way of doing things" },
+        { "term": "rarely",  "definition": "not often; seldom" }
+      ]
+    }
+  ]
+};
+
 function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
 function lessonTemplateString(){ return JSON.stringify(LESSON_TEMPLATE, null, 2); }
 function exerciseTemplateString(){ return JSON.stringify(EXERCISE_TEMPLATE, null, 2); }
 function vocabularyTemplateString(){ return JSON.stringify(VOCABULARY_TEMPLATE, null, 2); }
+function vocabExerciseTemplateString(){ return JSON.stringify(VOCAB_EXERCISE_TEMPLATE, null, 2); }
 
 function lessonTemplateForTopic(topicId){
   const tpl = JSON.parse(JSON.stringify(LESSON_TEMPLATE));
@@ -1625,6 +1677,13 @@ function vocabularyTemplateForTopic(topicId){
   return tpl;
 }
 
+function vocabExerciseTemplateForTopic(topicId){
+  const tpl = JSON.parse(JSON.stringify(VOCAB_EXERCISE_TEMPLATE));
+  tpl.topic_id = topicId;
+  tpl.title = "Vocabulary exercises — " + topicId;
+  return tpl;
+}
+
 /* ---------------------------------------------------------------------------
    4. STATE
    --------------------------------------------------------------------------- */
@@ -1634,9 +1693,11 @@ const state = {
   lessons: {},
   exercises: {},
   vocabulary: {},        // topic_id -> { topic_id, title, words: [...] }
+  vocabExercises: {},    // topic_id -> { topic_id, kind, exercises: [...] }
   progress: {},
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
+  prefs: { hideGrammarExercises: false, hideVocabExercises: false },
   theme: DEFAULT_THEME,  // "light" | "dark" | "system"
   view: "dashboard",
   currentTopicId: null,
@@ -1946,6 +2007,23 @@ function setTheme(theme){
 }
 
 /* ---------------------------------------------------------------------------
+   7c. DISPLAY PREFS helpers (hide / show exercise blocks)
+   --------------------------------------------------------------------------- */
+function loadPrefs(){
+  try {
+    const p = JSON.parse(localStorage.getItem(LS.PREFS));
+    if (p && typeof p === "object"){
+      state.prefs.hideGrammarExercises = !!p.hideGrammarExercises;
+      state.prefs.hideVocabExercises   = !!p.hideVocabExercises;
+    }
+  } catch (e){ /* keep defaults */ }
+}
+
+function savePrefs(){
+  try { localStorage.setItem(LS.PREFS, JSON.stringify(state.prefs)); } catch (e){}
+}
+
+/* ---------------------------------------------------------------------------
    8. PERSISTENCE
    --------------------------------------------------------------------------- */
 function loadState(){
@@ -1982,11 +2060,16 @@ function loadState(){
   catch (e) { state.vocabulary = {}; }
   if (!state.vocabulary || typeof state.vocabulary !== "object") state.vocabulary = {};
 
+  try { state.vocabExercises = JSON.parse(localStorage.getItem(LS.VOCAB_EXERCISES)) || {}; }
+  catch (e) { state.vocabExercises = {}; }
+  if (!state.vocabExercises || typeof state.vocabExercises !== "object") state.vocabExercises = {};
+
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
 
   loadReader();
   loadTheme();
+  loadPrefs();
   ensureCurrentBook();
 }
 
@@ -2005,6 +2088,7 @@ function saveCurrentBook(){
 function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(state.lessons)); }catch(e){} }
 function saveExercises(){ try{ localStorage.setItem(LS.EXERCISES, JSON.stringify(state.exercises)); }catch(e){} }
 function saveVocabulary(){ try{ localStorage.setItem(LS.VOCABULARY, JSON.stringify(state.vocabulary)); }catch(e){} }
+function saveVocabExercises(){ try{ localStorage.setItem(LS.VOCAB_EXERCISES, JSON.stringify(state.vocabExercises)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
@@ -2088,23 +2172,61 @@ function totalVocabCount(){
 }
 
 /* ---------------------------------------------------------------------------
+   10b-2. VOCABULARY EXERCISE HELPERS
+   --------------------------------------------------------------------------- */
+function getVocabExercisesFor(topicId){
+  const bank = state.vocabExercises[topicId];
+  return (bank && Array.isArray(bank.exercises)) ? bank.exercises : [];
+}
+
+function importedVocabExerciseCount(topicId){
+  return getVocabExercisesFor(topicId).length;
+}
+
+function totalVocabExerciseCount(){
+  return Object.keys(state.vocabExercises).reduce(
+    (sum, id) => sum + importedVocabExerciseCount(id), 0);
+}
+
+/* ---------------------------------------------------------------------------
    10c. INLINE TEMPLATE HELPERS (shown inside lesson pages)
    --------------------------------------------------------------------------- */
-/**
- * Build the toggle button that shows/hides the inline JSON template.
- * kind: "lesson" | "exercise" | "vocabulary"
- */
-function templateToggleBtnHTML(kind, topicId){
-  const wrapId = templateWrapId(kind, topicId);
-  const label  = kind === "exercise" ? "exercise" : kind; // "exercise" / "vocabulary"
-  return `<button class="btn ghost" data-action="toggle-template"
-                  data-target="${esc(wrapId)}"
-                  data-label-show="▸ Show ${label} template"
-                  data-label-hide="▾ Hide ${label} template">▸ Show ${label} template</button>`;
+function templateLabel(kind){
+  if (kind === "vocab-exercise") return "vocabulary exercise";
+  if (kind === "exercise")       return "exercise";
+  if (kind === "vocabulary")     return "vocabulary";
+  return "lesson";
+}
+
+function templateNoun(kind){
+  if (kind === "vocab-exercise") return "vocabulary exercises";
+  if (kind === "exercise")       return "exercises";
+  if (kind === "vocabulary")     return "vocabulary";
+  return "lesson";
+}
+
+function templateForKind(kind, topicId){
+  if (kind === "vocab-exercise") return vocabExerciseTemplateForTopic(topicId);
+  if (kind === "vocabulary")     return vocabularyTemplateForTopic(topicId);
+  if (kind === "exercise")       return exerciseTemplateForTopic(topicId);
+  return lessonTemplateForTopic(topicId);
 }
 
 function templateWrapId(kind, topicId){
   return "tpl-" + kind + "-" + slugify(topicId);
+}
+
+/**
+ * Build the toggle button that shows/hides the inline JSON template.
+ * kind: "lesson" | "exercise" | "vocabulary" | "vocab-exercise"
+ */
+function templateToggleBtnHTML(kind, topicId){
+  const wrapId = templateWrapId(kind, topicId);
+  const label  = templateLabel(kind);
+  return `<button class="btn ghost" data-action="toggle-template"
+                  data-target="${esc(wrapId)}"
+                  data-label-show="▸ Show ${label} template"
+                  data-label-hide="▾ Hide ${label} template">▸ Show ${label} template</button>`;
 }
 
 /**
@@ -2114,18 +2236,9 @@ function templateWrapId(kind, topicId){
 function inlineTemplateHTML(kind, topicId){
   const wrapId = templateWrapId(kind, topicId);
   const boxId  = wrapId + "-box";
-
-  let tpl;
-  if (kind === "vocabulary"){
-    tpl = vocabularyTemplateForTopic(topicId);
-  } else if (kind === "exercise"){
-    tpl = exerciseTemplateForTopic(topicId);
-  } else {
-    tpl = lessonTemplateForTopic(topicId);
-  }
+  const tpl = templateForKind(kind, topicId);
   const tplText = JSON.stringify(tpl, null, 2);
-
-  const noun = kind === "vocabulary" ? "vocabulary" : (kind === "exercise" ? "exercises" : "lesson");
+  const noun = templateNoun(kind);
 
   return `<div class="template-wrap" id="${esc(wrapId)}" hidden>
     <p class="muted" style="margin-top:14px;">
@@ -2212,7 +2325,8 @@ function updateNav(){
   `<div class="nav-sep"></div>
    <p class="side-note">${state.books.length} book${state.books.length === 1 ? "" : "s"} ·
    ${topicCount()} topics · ${Object.keys(state.lessons).length} lessons ·
-   ${totalExerciseCount()} exercises · ${totalVocabCount()} words</p>`;
+   ${totalExerciseCount() + totalVocabExerciseCount()} exercises ·
+   ${totalVocabCount()} words</p>`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2288,9 +2402,10 @@ function noBookHTML(){
       <li>One or more <strong>lesson JSON</strong> files — content for individual topics.</li>
       <li>Optional <strong>exercise JSON</strong> files — one per topic, importable from each lesson page.</li>
       <li>Optional <strong>vocabulary JSON</strong> files — one per topic, displayed on the lesson page.</li>
+      <li>Optional <strong>vocabulary exercise JSON</strong> files — practice items that sit with the vocabulary.</li>
     </ol>
     <p class="muted" style="margin-top:14px;">
-      Full templates for all four file types are available in
+      Full templates for all five file types are available in
       <a href="#" data-action="nav" data-view="settings">Settings</a>.
     </p>
   </section>`;
@@ -2561,11 +2676,13 @@ function topicCardHTML(topic, sectionId){
   const lesson = state.lessons[topic.id];
   const exCount = getExercisesFor(topic.id).length;
   const vocabCount = importedVocabCount(topic.id);
+  const vocabExCount = importedVocabExerciseCount(topic.id);
 
   const flags = [];
   if (lesson) flags.push("Lesson ✓");
   if (vocabCount) flags.push(vocabCount + " words");
   if (exCount) flags.push(exCount + " ex.");
+  if (vocabExCount) flags.push(vocabExCount + " vocab ex.");
   const flagText = flags.length ? flags.join(" · ") : "No content";
 
   return `
@@ -2645,6 +2762,7 @@ function lessonHTML(id){
       ${readerPanelHTML(state.readerOpen === true)}
     </div>`;
 
+  html += tocHTML(lesson, id);
   html += lesson ? lessonContentHTML(lesson) : noLessonHTML(topic);
   html += vocabularyHTML(id);
   html += exercisesBlockHTML(id);
@@ -2668,6 +2786,25 @@ function lessonHTML(id){
 
 function shortTitle(t){
   return String(t).length > 26 ? String(t).slice(0, 24) + "…" : t;
+}
+
+/* === Lesson contents (TOC) === */
+function tocHTML(lesson, topicId){
+  const items = [];
+
+  if (lesson && Array.isArray(lesson.sections)){
+    lesson.sections.forEach((s, i) => {
+      items.push(`<li><a href="#sec-${esc(s.id || i + 1)}">${esc(s.title || "Section " + (i + 1))}</a></li>`);
+    });
+  }
+
+  items.push(`<li><a href="#lesson-vocabulary">Vocabulary</a></li>`);
+  items.push(`<li><a href="#lesson-exercises">Exercises</a></li>`);
+
+  return `<nav class="toc" aria-label="Lesson contents">
+    <div class="toc-title">Contents</div>
+    <ol>${items.join("")}</ol>
+  </nav>`;
 }
 
 /* === Lesson template viewer === */
@@ -2716,14 +2853,6 @@ function noLessonHTML(topic){
 
 function lessonContentHTML(lesson){
   let html = "";
-
-  if (lesson.sections && lesson.sections.length){
-    html += `<nav class="toc" aria-label="Lesson contents">
-      <div class="toc-title">Contents</div>
-      <ol>${lesson.sections.map((s, i) =>
-        `<li><a href="#sec-${esc(s.id || i + 1)}">${esc(s.title || "Section " + (i + 1))}</a></li>`).join("")}</ol>
-    </nav>`;
-  }
 
   (lesson.sections || []).forEach((s, i) => { html += sectionHTML(s, i, lesson); });
   if (lesson.comparisons && lesson.comparisons.length) html += comparisonsHTML(lesson.comparisons);
@@ -2854,7 +2983,7 @@ function summaryHTML(summary){
 }
 
 /* ---------------------------------------------------------------------------
-   19b. VOCABULARY BLOCK  (with inline template viewer)
+   19b. VOCABULARY BLOCK
    --------------------------------------------------------------------------- */
 function vocabCardHTML(w){
   const pos = w.part_of_speech
@@ -2895,9 +3024,9 @@ function vocabularyHTML(topicId){
   const words = getVocabularyFor(topicId);
   const n = words.length;
 
-  let html = `<section class="lesson-block">
+  let html = `<section class="lesson-block" id="lesson-vocabulary">
     <h2 class="block-title">
-      Vocabulary
+      <span>Vocabulary</span>
       <span class="exercise-count">${n} word${n === 1 ? "" : "s"}</span>
     </h2>`;
 
@@ -2929,28 +3058,86 @@ function vocabularyHTML(topicId){
   </div>
   ${inlineTemplateHTML("vocabulary", topicId)}`;
 
+  html += vocabularyExercisesHTML(topicId);
+
   html += `</section>`;
   return html;
 }
 
+/* ---- Vocabulary exercises (practice on the word bank) ---- */
+function vocabularyExercisesHTML(topicId){
+  const exercises = getVocabExercisesFor(topicId);
+  const n = exercises.length;
+  const hidden = !!state.prefs.hideVocabExercises;
+  const bodyId = "vocab-ex-body-" + slugify(topicId);
+
+  let html = `<h3 class="sub-block-title">
+    <span>Vocabulary exercises</span>
+    <span class="exercise-count">${n}</span>
+    <button class="btn ghost tiny block-toggle" data-action="toggle-block"
+            data-block="vocab-exercises" data-target="${esc(bodyId)}"
+            aria-expanded="${hidden ? "false" : "true"}">${hidden ? "▸ Show" : "▾ Hide"}</button>
+  </h3>
+  <div id="${esc(bodyId)}" ${hidden ? "hidden" : ""}>`;
+
+  if (n){
+    html += `<div class="exercises">
+      ${exercises.map((ex, i) => exerciseHTML(ex, i, topicId, "vocabulary")).join("")}
+    </div>`;
+  } else {
+    html += `<div class="lit-none">No vocabulary exercises loaded for this topic yet.</div>`;
+  }
+
+  html += `<div class="exercise-import-bar">
+    <div class="exercise-import-note">
+      <strong>${esc(topicId)}</strong><br>
+      ${n
+        ? "Importing another file replaces the current vocabulary exercise bank."
+        : "You can import a vocabulary-exercise JSON file specifically for this topic."}
+    </div>
+    <label class="btn primary">
+      ${n ? "Replace vocabulary exercises" : "Import vocabulary exercises JSON"}
+      <input type="file" class="vocab-exercise-file-input" accept=".json,application/json" multiple hidden
+             data-topic="${esc(topicId)}">
+    </label>
+    ${templateToggleBtnHTML("vocab-exercise", topicId)}
+    <button class="btn ghost" data-action="download-template" data-kind="vocab-exercise" data-id="${esc(topicId)}">
+      Download template
+    </button>
+    ${n ? `<button class="btn ghost" data-action="clear-vocab-exercises" data-id="${esc(topicId)}">
+      Clear vocabulary exercises
+    </button>` : ""}
+  </div>
+  ${inlineTemplateHTML("vocab-exercise", topicId)}`;
+
+  html += `</div>`;
+  return html;
+}
+
 /* ---------------------------------------------------------------------------
-   20. EXERCISES BLOCK  (with inline template viewer)
+   20. EXERCISES BLOCK  (grammar exercises)
    --------------------------------------------------------------------------- */
 function exercisesBlockHTML(topicId){
   const exercises = getExercisesFor(topicId);
   const lesson = state.lessons[topicId];
   const lessonHasOwn = !!(lesson && Array.isArray(lesson.exercises) && lesson.exercises.length);
   const importedCount = importedExerciseCount(topicId);
+  const hidden = !!state.prefs.hideGrammarExercises;
+  const bodyId = "ex-body-" + slugify(topicId);
 
-  let html = `<section class="lesson-block">
+  let html = `<section class="lesson-block" id="lesson-exercises">
     <h2 class="block-title">
-      Exercises
+      <span>Exercises</span>
       <span class="exercise-count">${exercises.length} total</span>
-    </h2>`;
+      <button class="btn ghost tiny block-toggle" data-action="toggle-block"
+              data-block="grammar-exercises" data-target="${esc(bodyId)}"
+              aria-expanded="${hidden ? "false" : "true"}">${hidden ? "▸ Show" : "▾ Hide"}</button>
+    </h2>
+    <div id="${esc(bodyId)}" ${hidden ? "hidden" : ""}>`;
 
   if (exercises.length){
     html += `<div class="exercises">
-      ${exercises.map((ex, i) => exerciseHTML(ex, i, topicId)).join("")}
+      ${exercises.map((ex, i) => exerciseHTML(ex, i, topicId, "grammar")).join("")}
     </div>`;
   } else {
     html += `<div class="lit-none">No exercises loaded for this topic yet.</div>`;
@@ -2984,25 +3171,26 @@ function exercisesBlockHTML(topicId){
   </div>
   ${inlineTemplateHTML("exercise", topicId)}`;
 
-  html += `</section>`;
+  html += `</div></section>`;
   return html;
 }
 
 /* ---------------------------------------------------------------------------
    21. EXERCISES RENDERERS
    --------------------------------------------------------------------------- */
-function exerciseHTML(ex, i, lessonId){
+function exerciseHTML(ex, i, lessonId, bank){
   const type = ex.type || "multiple_choice";
-  if (type === "multiple_choice")      return mcHTML(ex, i);
-  if (type === "fill_blank")           return fillHTML(ex, i);
-  if (type === "matching_definition")  return matchHTML(ex, i, lessonId);
-  return `<div class="exercise" data-ex="${i}">
+  const b = bank || "grammar";
+  if (type === "multiple_choice")      return mcHTML(ex, i, b);
+  if (type === "fill_blank")           return fillHTML(ex, i, b);
+  if (type === "matching_definition")  return matchHTML(ex, i, lessonId, b);
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(b)}">
     <div class="ex-feedback err">Unsupported exercise type: <strong>${esc(type)}</strong></div>
   </div>`;
 }
 
-function mcHTML(ex, i){
-  return `<div class="exercise" data-ex="${i}" data-type="multiple_choice">
+function mcHTML(ex, i, bank){
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="multiple_choice">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Multiple choice</span></div>
     <p class="ex-question">${esc(ex.question || ex.sentence || "")}</p>
     <div class="options">
@@ -3014,7 +3202,7 @@ function mcHTML(ex, i){
   </div>`;
 }
 
-function fillHTML(ex, i){
+function fillHTML(ex, i, bank){
   const sentence = ex.sentence || ex.question || "";
   const parts = String(sentence).split("{{blank}}");
   const blanks = parts.length - 1;
@@ -3027,7 +3215,7 @@ function fillHTML(ex, i){
     }
   });
 
-  return `<div class="exercise" data-ex="${i}" data-type="fill_blank">
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="fill_blank">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Fill in the blank</span></div>
     <p class="ex-question fill-sentence">${body}</p>
     <div class="ex-actions"><button class="btn" data-action="check-exercise">Check answer</button></div>
@@ -3047,11 +3235,11 @@ function matchOrder(key, n){
   return matchOrders[key];
 }
 
-function matchHTML(ex, i, lessonId){
+function matchHTML(ex, i, lessonId, bank){
   const pairs = ex.pairs || [];
-  const order = matchOrder(`${lessonId}:${i}`, pairs.length);
+  const order = matchOrder(`${lessonId}:${bank}:${i}`, pairs.length);
 
-  return `<div class="exercise" data-ex="${i}" data-type="matching_definition">
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="matching_definition">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Matching</span></div>
     <p class="ex-question">${esc(ex.question || "Match each item with its definition.")}</p>
     <div class="match-grid">
@@ -3087,7 +3275,11 @@ function feedback(card, cls, html){
 
 function checkExercise(card){
   const i = Number(card.dataset.ex);
-  const exercises = getExercisesFor(state.currentTopicId);
+  const bank = card.dataset.bank === "vocabulary" ? "vocabulary" : "grammar";
+  const exercises = bank === "vocabulary"
+    ? getVocabExercisesFor(state.currentTopicId)
+    : getExercisesFor(state.currentTopicId);
+
   if (!exercises[i]) return;
   const ex = exercises[i];
   const type = card.dataset.type;
@@ -3544,6 +3736,9 @@ function settingsHTML(){
   const vocabTopicIds = Object.keys(state.vocabulary);
   const orphanVocabulary = vocabTopicIds.filter(id => !findTopicAnywhere(id));
 
+  const vocabExTopicIds = Object.keys(state.vocabExercises);
+  const orphanVocabExercises = vocabExTopicIds.filter(id => !findTopicAnywhere(id));
+
   const bookList = state.books.length
     ? state.books.map(b => {
         const s = bookStats(b);
@@ -3586,18 +3781,41 @@ function settingsHTML(){
     </div>
   </section>
 
+  <!-- ===================== LESSON DISPLAY ===================== -->
+  <section class="card">
+    <h3>Lesson display</h3>
+    <p class="muted">Hide exercise blocks on lesson pages when you want to read the grammar only.
+      Each block also has its own <em>Hide</em> / <em>Show</em> button on the lesson page.</p>
+    <div class="file-row">
+      <label class="btn ${state.prefs.hideGrammarExercises ? "primary" : ""}"
+             style="cursor:pointer;">
+        <input type="checkbox" data-action="pref-toggle" data-pref="hideGrammarExercises"
+               ${state.prefs.hideGrammarExercises ? "checked" : ""}
+               style="margin-right:8px;">
+        Hide grammar exercises
+      </label>
+      <label class="btn ${state.prefs.hideVocabExercises ? "primary" : ""}"
+             style="cursor:pointer;">
+        <input type="checkbox" data-action="pref-toggle" data-pref="hideVocabExercises"
+               ${state.prefs.hideVocabExercises ? "checked" : ""}
+               style="margin-right:8px;">
+        Hide vocabulary exercises
+      </label>
+    </div>
+  </section>
+
   <!-- ===================== DATA MANAGEMENT ===================== -->
   <section class="card">
     <h3>Data management</h3>
     <p class="muted">
       <strong>Export all data</strong> saves one JSON file containing everything stored in this browser:
-      your books, lessons, exercises, vocabulary banks, progress, plus your theme and reading-options
-      preferences. Use it to move your whole setup to another browser or device.
+      your books, lessons, exercises, vocabulary banks, vocabulary exercises, progress, plus your theme,
+      reading options and display preferences. Use it to move your whole setup to another browser or device.
       <br>
       <strong>Import data</strong> accepts that same full backup (with or without the settings block),
       or a plain library export, an array of books, a single book object, a progress file, or an
-      individual lesson / exercise / vocabulary file. Existing entries with the same id are replaced;
-      anything else is added.
+      individual lesson / exercise / vocabulary / vocabulary-exercise file. Existing entries with the same id
+      are replaced; anything else is added.
     </p>
     <div class="file-row">
       <button class="btn primary" data-action="export-all">⭱ Export all data</button>
@@ -3611,8 +3829,8 @@ function settingsHTML(){
     </div>
     <p class="muted" style="margin-top:12px;">
       Accepted file shapes:
-      <code>{ books, lessons, exercises, vocabulary, progress, theme, reader }</code> ·
-      <code>{ books, lessons, exercises, vocabulary, progress }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, progress, theme, reader, prefs }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, progress }</code> ·
       <code>[ book, book, … ]</code> ·
       <code>{ book, sections }</code> ·
       <code>{ progress, totals }</code>
@@ -3665,9 +3883,9 @@ function settingsHTML(){
 
   <!-- ===================== EXERCISES ===================== -->
   <section class="card">
-    <h3>Exercise JSON</h3>
+    <h3>Exercise JSON (grammar)</h3>
     <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus an <code>exercises</code> array.
-      Can also be imported from each topic's lesson page.</p>
+      Shown in the <em>Exercises</em> block. Can also be imported from each topic's lesson page.</p>
     <div class="file-row">
       <input type="file" id="exerciseFile" accept=".json,application/json" multiple>
       <button class="btn" data-action="download-template" data-kind="exercise">Download template</button>
@@ -3683,7 +3901,7 @@ function settingsHTML(){
   <section class="card">
     <h3>Vocabulary JSON</h3>
     <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus a <code>words</code> array.
-      Words are displayed on the topic's lesson page, above the exercises. Can also be imported from the lesson page.</p>
+      Words are displayed in the <em>Vocabulary</em> block on the topic's lesson page. Can also be imported from the lesson page.</p>
     <div class="file-row">
       <input type="file" id="vocabularyFile" accept=".json,application/json" multiple>
       <button class="btn" data-action="download-template" data-kind="vocabulary">Download template</button>
@@ -3692,6 +3910,25 @@ function settingsHTML(){
     <button class="template-toggle" data-action="toggle-template" data-target="vocabTpl">▸ Show structure</button>
     <div class="template-wrap" id="vocabTpl" hidden>
       <div class="template-box">${esc(vocabularyTemplateString())}</div>
+    </div>
+  </section>
+
+  <!-- ===================== VOCABULARY EXERCISES ===================== -->
+  <section class="card">
+    <h3>Vocabulary Exercise JSON</h3>
+    <p class="muted">Optional, one file per topic. Requires <code>topic_id</code>, a marker
+      <code>kind: "vocabulary_exercises"</code> and an <code>exercises</code> array using the same
+      three exercise types as grammar exercises. These appear in the
+      <em>Vocabulary exercises</em> sub-block inside the Vocabulary section of the topic's lesson page,
+      and can also be imported directly from that page.</p>
+    <div class="file-row">
+      <input type="file" id="vocabExerciseFile" accept=".json,application/json" multiple>
+      <button class="btn" data-action="download-template" data-kind="vocab-exercise">Download template</button>
+    </div>
+
+    <button class="template-toggle" data-action="toggle-template" data-target="vocabExTpl">▸ Show structure</button>
+    <div class="template-wrap" id="vocabExTpl" hidden>
+      <div class="template-box">${esc(vocabExerciseTemplateString())}</div>
     </div>
   </section>
 
@@ -3718,16 +3955,21 @@ function settingsHTML(){
     <p class="muted">${state.books.length} book${state.books.length === 1 ? "" : "s"}
       · ${topicCount()} topics in the current book
       · ${loadedIds.length} lesson${loadedIds.length === 1 ? "" : "s"} loaded
-      · ${exTopicIds.length} exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)
+      · ${exTopicIds.length} grammar exercise bank${exTopicIds.length === 1 ? "" : "s"} (${totalExerciseCount()} exercises)
+      · ${vocabExTopicIds.length} vocabulary exercise bank${vocabExTopicIds.length === 1 ? "" : "s"} (${totalVocabExerciseCount()} exercises)
       · ${vocabTopicIds.length} vocabulary bank${vocabTopicIds.length === 1 ? "" : "s"} (${totalVocabCount()} words)
       · theme: <strong>${esc(state.theme)}</strong>
-      · reader: <strong>${esc(readerFont().name)}</strong> at <strong>${state.reader.size} px</strong></p>
+      · reader: <strong>${esc(readerFont().name)}</strong> at <strong>${state.reader.size} px</strong>
+      · grammar exercises <strong>${state.prefs.hideGrammarExercises ? "hidden" : "shown"}</strong>
+      · vocabulary exercises <strong>${state.prefs.hideVocabExercises ? "hidden" : "shown"}</strong></p>
     ${orphanLessons.length ? `<div class="alert info">Lessons loaded without a matching topic in any book:
       <code>${esc(orphanLessons.join(", "))}</code></div>` : ""}
     ${orphanExercises.length ? `<div class="alert info">Exercise banks loaded without a matching topic in any book:
       <code>${esc(orphanExercises.join(", "))}</code></div>` : ""}
     ${orphanVocabulary.length ? `<div class="alert info">Vocabulary banks loaded without a matching topic in any book:
       <code>${esc(orphanVocabulary.join(", "))}</code></div>` : ""}
+    ${orphanVocabExercises.length ? `<div class="alert info">Vocabulary exercise banks loaded without a matching topic in any book:
+      <code>${esc(orphanVocabExercises.join(", "))}</code></div>` : ""}
   </section>
 
   <!-- ===================== WORKFLOW ===================== -->
@@ -3740,10 +3982,13 @@ function settingsHTML(){
       <li>Download the <strong>Lesson template</strong> (or open any topic's page and use its
         <em>Download lesson template</em> button, which pre-fills the id).</li>
       <li>Fill in the lesson: sections, examples, literary examples, comparisons, summary.</li>
-      <li>Optionally download the <strong>Exercise template</strong> for that topic's id and add exercises.</li>
+      <li>Optionally download the <strong>Exercise template</strong> for that topic's id and add grammar exercises.</li>
       <li>Optionally download the <strong>Vocabulary template</strong> for that topic's id and add words.</li>
-      <li>Import the lesson / exercise / vocabulary files in Settings — or directly from the topic's page.</li>
-      <li>To move everything (including theme and reading options) to another browser, use
+      <li>Optionally download the <strong>Vocabulary Exercise template</strong> and add practice items
+        that sit with the vocabulary.</li>
+      <li>Import the lesson / exercise / vocabulary / vocabulary-exercise files in Settings — or directly
+        from the topic's page.</li>
+      <li>To move everything (including theme, reading options and display preferences) to another browser, use
         <em>Export all data</em> and <em>Import data</em>.</li>
     </ol>
   </section>`;
@@ -3834,6 +4079,15 @@ function validateVocabularyFile(obj){
   return { ok: errors.length === 0, errors };
 }
 
+/** True when an exercise file is meant for the vocabulary block. */
+function isVocabExerciseFile(obj){
+  if (!obj || typeof obj !== "object") return false;
+  if (!obj.topic_id || !Array.isArray(obj.exercises)) return false;
+  return obj.kind === "vocabulary_exercises" ||
+         obj.bank === "vocabulary" ||
+         obj.vocabulary_exercises === true;
+}
+
 function applyJSON(obj){
   /* --- grammar book --- */
   if (obj && typeof obj === "object" && obj.book && Array.isArray(obj.sections)){
@@ -3858,7 +4112,21 @@ function applyJSON(obj){
     };
   }
 
-  /* --- exercise bank --- */
+  /* --- vocabulary exercise bank (must be checked before the generic one) --- */
+  if (isVocabExerciseFile(obj)){
+    const v = validateExerciseFile(obj);
+    if (!v.ok) return { ok: false, message: "Invalid vocabulary exercise JSON — " + v.errors.join("; ") };
+    state.vocabExercises[obj.topic_id] = obj;
+    saveVocabExercises();
+    const known = !!findTopicAnywhere(obj.topic_id);
+    const n = obj.exercises.length;
+    return {
+      ok: true,
+      message: `Vocabulary exercises for "${obj.topic_id}" imported — ${n} exercise${n === 1 ? "" : "s"}${known ? "" : " (warning: no matching topic id)"}.`
+    };
+  }
+
+  /* --- grammar exercise bank --- */
   if (obj && typeof obj === "object" && obj.topic_id && Array.isArray(obj.exercises)){
     const v = validateExerciseFile(obj);
     if (!v.ok) return { ok: false, message: "Invalid exercise JSON — " + v.errors.join("; ") };
@@ -3906,7 +4174,10 @@ function applyJSON(obj){
 
   return {
     ok: false,
-    message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }), an exercise bank ({ topic_id, exercises }), a vocabulary bank ({ topic_id, words }) or a library / all-data backup."
+    message: "Unrecognised JSON. Expected a grammar book ({ book, sections }), a lesson ({ id, title, sections }), " +
+             "an exercise bank ({ topic_id, exercises }), a vocabulary bank ({ topic_id, words }), " +
+             "a vocabulary exercise bank ({ topic_id, kind: \"vocabulary_exercises\", exercises }) " +
+             "or a library / all-data backup."
   };
 }
 
@@ -3916,8 +4187,8 @@ function looksLikeLibrary(obj){
   if (Array.isArray(obj)) return true;                          // array of books
   if (obj.book && Array.isArray(obj.sections)) return false;    // single book handled above
   if ("books" in obj || "lessons" in obj || "exercises" in obj ||
-      "vocabulary" in obj || "progress" in obj ||
-      "theme" in obj || "reader" in obj) return true;
+      "vocabulary" in obj || "vocabExercises" in obj || "progress" in obj ||
+      "theme" in obj || "reader" in obj || "prefs" in obj) return true;
   return false;
 }
 
@@ -3947,18 +4218,20 @@ function validateLibraryFile(obj){
         errors.push(`book ${i + 1} is not a valid book object`);
     });
   }
-  if (obj.lessons    !== undefined && !isPlainObject(obj.lessons))    errors.push("'lessons' must be an object");
-  if (obj.exercises  !== undefined && !isPlainObject(obj.exercises))  errors.push("'exercises' must be an object");
-  if (obj.vocabulary !== undefined && !isPlainObject(obj.vocabulary)) errors.push("'vocabulary' must be an object");
-  if (obj.progress   !== undefined && !isPlainObject(obj.progress))   errors.push("'progress' must be an object");
-  if (obj.theme      !== undefined && typeof obj.theme !== "string")  errors.push("'theme' must be a string");
-  if (obj.reader     !== undefined && !isPlainObject(obj.reader))     errors.push("'reader' must be an object");
+  if (obj.lessons        !== undefined && !isPlainObject(obj.lessons))        errors.push("'lessons' must be an object");
+  if (obj.exercises      !== undefined && !isPlainObject(obj.exercises))      errors.push("'exercises' must be an object");
+  if (obj.vocabulary     !== undefined && !isPlainObject(obj.vocabulary))     errors.push("'vocabulary' must be an object");
+  if (obj.vocabExercises !== undefined && !isPlainObject(obj.vocabExercises)) errors.push("'vocabExercises' must be an object");
+  if (obj.progress       !== undefined && !isPlainObject(obj.progress))       errors.push("'progress' must be an object");
+  if (obj.theme          !== undefined && typeof obj.theme !== "string")      errors.push("'theme' must be a string");
+  if (obj.reader         !== undefined && !isPlainObject(obj.reader))         errors.push("'reader' must be an object");
+  if (obj.prefs          !== undefined && !isPlainObject(obj.prefs))          errors.push("'prefs' must be an object");
 
   const nothing =
     obj.books === undefined && obj.lessons === undefined &&
     obj.exercises === undefined && obj.vocabulary === undefined &&
-    obj.progress === undefined && obj.theme === undefined &&
-    obj.reader === undefined;
+    obj.vocabExercises === undefined && obj.progress === undefined &&
+    obj.theme === undefined && obj.reader === undefined && obj.prefs === undefined;
 
   if (nothing) errors.push("no recognisable data found");
 
@@ -3969,8 +4242,9 @@ function applyLibrary(obj){
   const v = validateLibraryFile(obj);
   if (!v.ok) return { ok: false, message: "Invalid library file — " + v.errors.join("; ") };
 
-  let bookCount = 0, lessonCount = 0, exCount = 0, vocabCount = 0, progressCount = 0;
-  let themeApplied = false, readerApplied = false;
+  let bookCount = 0, lessonCount = 0, exCount = 0, vocabCount = 0,
+      vocabExCount = 0, progressCount = 0;
+  let themeApplied = false, readerApplied = false, prefsApplied = false;
 
   /* --- books --- */
   let incomingBooks = [];
@@ -4001,7 +4275,7 @@ function applyLibrary(obj){
     if (lessonCount) saveLessons();
   }
 
-  /* --- exercises --- */
+  /* --- grammar exercises --- */
   if (obj && !Array.isArray(obj) && obj.exercises && typeof obj.exercises === "object"){
     Object.keys(obj.exercises).forEach(id => {
       const bank = obj.exercises[id];
@@ -4023,6 +4297,18 @@ function applyLibrary(obj){
       }
     });
     if (vocabCount) saveVocabulary();
+  }
+
+  /* --- vocabulary exercises --- */
+  if (obj && !Array.isArray(obj) && obj.vocabExercises && typeof obj.vocabExercises === "object"){
+    Object.keys(obj.vocabExercises).forEach(id => {
+      const bank = obj.vocabExercises[id];
+      if (bank && typeof bank === "object"){
+        state.vocabExercises[id] = bank;
+        vocabExCount++;
+      }
+    });
+    if (vocabExCount) saveVocabExercises();
   }
 
   /* --- progress (optional) --- */
@@ -4065,6 +4351,17 @@ function applyLibrary(obj){
     }
   }
 
+  /* --- display preferences (optional) --- */
+  if (obj && !Array.isArray(obj) && obj.prefs && typeof obj.prefs === "object"){
+    if (typeof obj.prefs.hideGrammarExercises === "boolean" ||
+        typeof obj.prefs.hideVocabExercises === "boolean"){
+      state.prefs.hideGrammarExercises = !!obj.prefs.hideGrammarExercises;
+      state.prefs.hideVocabExercises   = !!obj.prefs.hideVocabExercises;
+      savePrefs();
+      prefsApplied = true;
+    }
+  }
+
   if (bookCount){
     saveBooks();
     if (!state.currentBookId && state.books.length){
@@ -4076,11 +4373,13 @@ function applyLibrary(obj){
   const parts = [];
   if (bookCount)     parts.push(`${bookCount} book${bookCount === 1 ? "" : "s"}`);
   if (lessonCount)   parts.push(`${lessonCount} lesson${lessonCount === 1 ? "" : "s"}`);
-  if (exCount)       parts.push(`${exCount} exercise bank${exCount === 1 ? "" : "s"}`);
+  if (exCount)       parts.push(`${exCount} grammar exercise bank${exCount === 1 ? "" : "s"}`);
+  if (vocabExCount)  parts.push(`${vocabExCount} vocabulary exercise bank${vocabExCount === 1 ? "" : "s"}`);
   if (vocabCount)    parts.push(`${vocabCount} vocabulary bank${vocabCount === 1 ? "" : "s"}`);
   if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
   if (themeApplied)  parts.push("theme");
   if (readerApplied) parts.push("reading options");
+  if (prefsApplied)  parts.push("display preferences");
 
   return {
     ok: true,
@@ -4102,6 +4401,10 @@ function exportAllData(){
       reader: {
         fontId: state.reader.fontId,
         size: state.reader.size
+      },
+      prefs: {
+        hideGrammarExercises: state.prefs.hideGrammarExercises,
+        hideVocabExercises: state.prefs.hideVocabExercises
       }
     },
     /* flat fields so the same file round-trips through applyLibrary */
@@ -4110,17 +4413,22 @@ function exportAllData(){
       fontId: state.reader.fontId,
       size: state.reader.size
     },
+    prefs: {
+      hideGrammarExercises: state.prefs.hideGrammarExercises,
+      hideVocabExercises: state.prefs.hideVocabExercises
+    },
     books: state.books,
     lessons: state.lessons,
     exercises: state.exercises,
     vocabulary: state.vocabulary,
+    vocabExercises: state.vocabExercises,
     progress: state.progress,
     totals: progressStats()
   };
 
   const stamp = new Date().toISOString().slice(0,10);
   downloadJSON(data, `grammar-all-data-${stamp}.json`);
-  toast("All data exported — books, lessons, exercises, vocabulary, progress, theme and reading options.");
+  toast("All data exported — books, lessons, exercises, vocabulary, vocabulary exercises, progress, theme, reading options and display preferences.");
 }
 
 async function handleFiles(fileList){
@@ -4349,6 +4657,26 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    /* ---------------- HIDE / SHOW EXERCISE BLOCKS ---------------- */
+    case "toggle-block": {
+      const kind = el.dataset.block;
+      const body = $(el.dataset.target);
+      if (!body) break;
+      const nowHidden = !body.hidden;
+      body.hidden = nowHidden;
+
+      if (kind === "grammar-exercises")      state.prefs.hideGrammarExercises = nowHidden;
+      else if (kind === "vocab-exercises")   state.prefs.hideVocabExercises = nowHidden;
+      savePrefs();
+
+      el.textContent = nowHidden ? "▸ Show" : "▾ Hide";
+      el.setAttribute("aria-expanded", String(!nowHidden));
+      toast(nowHidden
+        ? (kind === "vocab-exercises" ? "Vocabulary exercises hidden." : "Grammar exercises hidden.")
+        : (kind === "vocab-exercises" ? "Vocabulary exercises shown." : "Grammar exercises shown."));
+      break;
+    }
+
     /* ---------------- READING OPTIONS ---------------- */
     case "toggle-reader": {
       state.readerOpen = !state.readerOpen;
@@ -4400,6 +4728,11 @@ document.addEventListener("click", (ev) => {
         const filename = (id ? id : "vocabulary") + "-vocabulary.template.json";
         downloadJSON(tpl, filename);
         toast("Vocabulary template downloaded" + (id ? " for " + id : "") + ".");
+      } else if (kind === "vocab-exercise"){
+        const tpl = id ? vocabExerciseTemplateForTopic(id) : VOCAB_EXERCISE_TEMPLATE;
+        const filename = (id ? id : "vocabulary") + "-vocabulary-exercises.template.json";
+        downloadJSON(tpl, filename);
+        toast("Vocabulary exercise template downloaded" + (id ? " for " + id : "") + ".");
       }
       break;
     }
@@ -4480,6 +4813,16 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    case "clear-vocab-exercises": {
+      const id = el.dataset.id;
+      if (!confirm("Remove the imported vocabulary exercises for this topic?")) return;
+      delete state.vocabExercises[id];
+      saveVocabExercises();
+      toast("Vocabulary exercises removed.");
+      render();
+      break;
+    }
+
     case "import-paste": {
       const area = $("pasteArea");
       if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); return; }
@@ -4517,19 +4860,21 @@ document.addEventListener("click", (ev) => {
         lessons: state.lessons,
         exercises: state.exercises,
         vocabulary: state.vocabulary,
+        vocabExercises: state.vocabExercises,
         progress: state.progress
       }, "grammar-library.json");
-      toast("Library exported — books, lessons, exercises, vocabulary and progress.");
+      toast("Library exported — books, lessons, exercises, vocabulary, vocabulary exercises and progress.");
       break;
     }
 
     case "clear-all": {
-      if (!confirm("Clear all data? This removes every book, all lessons, all exercise and vocabulary banks and all progress. Theme and reading options are kept.")) return;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise and vocabulary banks and all progress. Theme, reading options and display preferences are kept.")) return;
       state.books = [];
       state.currentBookId = null;
       state.lessons = {};
       state.exercises = {};
       state.vocabulary = {};
+      state.vocabExercises = {};
       state.progress = {};
       state.currentTopicId = null;
       try {
@@ -4539,6 +4884,7 @@ document.addEventListener("click", (ev) => {
         localStorage.removeItem(LS.LESSONS);
         localStorage.removeItem(LS.EXERCISES);
         localStorage.removeItem(LS.VOCABULARY);
+        localStorage.removeItem(LS.VOCAB_EXERCISES);
         localStorage.removeItem(LS.PROGRESS);
       } catch (e){}
       state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
@@ -4574,7 +4920,7 @@ document.addEventListener("keydown", (ev) => {
   }
 });
 
-/* live search + font-size slider */
+/* live search + font-size slider + display preference checkboxes */
 document.addEventListener("input", (ev) => {
   const t = ev.target;
 
@@ -4589,10 +4935,21 @@ document.addEventListener("input", (ev) => {
   }
 });
 
-/* change events: slider commit + every file input */
+/* change events: slider commit + preference checkboxes + every file input */
 document.addEventListener("change", (ev) => {
   const t = ev.target;
   if (!t) return;
+
+  /* ---- display preference checkboxes ---- */
+  if (t.dataset && t.dataset.action === "pref-toggle"){
+    const pref = t.dataset.pref;
+    if (pref === "hideGrammarExercises" || pref === "hideVocabExercises"){
+      state.prefs[pref] = !!t.checked;
+      savePrefs();
+      render();
+    }
+    return;
+  }
 
   if (t.classList && t.classList.contains("size-slider")){
     setReaderSize(Number(t.value), true);
@@ -4641,7 +4998,8 @@ document.addEventListener("change", (ev) => {
   }
 
   /* ---- settings file inputs ---- */
-  if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile" || t.id === "vocabularyFile"){
+  if (t.id === "bookFile" || t.id === "lessonFile" || t.id === "exerciseFile" ||
+      t.id === "vocabularyFile" || t.id === "vocabExerciseFile"){
     const files = t.files;
     t.value = "";
     handleFiles(files);
@@ -4652,7 +5010,8 @@ document.addEventListener("change", (ev) => {
   if (t.classList){
     if (t.classList.contains("lesson-file-input") ||
         t.classList.contains("exercise-file-input") ||
-        t.classList.contains("vocab-file-input")){
+        t.classList.contains("vocab-file-input") ||
+        t.classList.contains("vocab-exercise-file-input")){
       const files = t.files;
       t.value = "";
       handleFiles(files);
