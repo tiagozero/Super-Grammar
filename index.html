@@ -1672,44 +1672,25 @@ const VOCAB_EXERCISE_TEMPLATE = {
 /* Reading passages: extended reading practice tied to a topic.
    Displayed in the "Reading" block on the lesson page, below the vocabulary. */
 const READING_TEMPLATE = {
-  {
-  "topic_id": "chapter_3_present_continuous_and_present_simple_1_i_am_doing_and_i_do",
-  "kind": "reading",
-  "title": "Reading — chapter_3_present_continuous_and_present_simple_1_i_am_doing_and_i_do",
-  "passages": [
+  topic_id: "TOPIC_ID_HERE",
+  kind: "reading",
+  title: "Reading — TOPIC_ID_HERE",
+  passages: [
     {
-      "title": "Passage title",
-      "author": "Author Name",
-      "source": "Book or publication",
-      "url": "https://www.gutenberg.org/ebooks/0000",
-      "context": "Where this passage comes from and why it is relevant to the topic.",
-      "text": "First paragraph of the reading passage. It contains the target grammar in context.\n\nSecond paragraph, separated from the first by a blank line.",
-      "chunks": [
-        {
-          "text": "First paragraph of",
-          "meaning": "translation or context note if needed"
-        },
-        {
-          "text": "the reading passage.",
-          "meaning": ""
-        },
-        {
-          "text": "It contains the target grammar",
-          "meaning": ""
-        },
-        {
-          "text": "in context.",
-          "meaning": ""
-        }
-      ],
-      "target_instances": [
+      title: "Passage title",
+      author: "Author Name",
+      source: "Book or publication",
+      url: "https://www.gutenberg.org/ebooks/0000",
+      context: "Where this passage comes from and why it is relevant to the topic.",
+      text: "First paragraph of the reading passage. It contains the target grammar in context.\n\nSecond paragraph, separated from the first by a blank line.",
+      target_instances: [
         "phrase containing the target grammar"
       ],
-      "glossary": [
-        {
-          "term": "word",
-          "definition": "meaning of the grammar point in this context"
-        }
+      glossary: [
+        { "term": "word", "definition": "meaning of the grammar point in this context" }
+      ],
+      questions: [
+        { "question": "What does the writer describe first?", "answer": "A suggested answer." }
       ]
     }
   ]
