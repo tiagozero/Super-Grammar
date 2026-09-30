@@ -137,6 +137,14 @@ button{font:inherit;}
 .nav button:hover{background:#f2ede3;color:var(--ink);}
 .nav button.active{background:var(--accent-soft);color:var(--accent);font-weight:650;border-left-color:var(--accent);}
 .nav .ic{width:16px;text-align:center;opacity:.75;font-size:.9rem;}
+.nav-badge{
+  margin-left:auto;
+  font-size:.66rem;font-weight:800;
+  background:var(--accent-soft);color:var(--accent);
+  border:1px solid rgba(47,110,165,.22);
+  padding:1px 7px;border-radius:99px;
+  font-variant-numeric:tabular-nums;
+}
 .nav-sep{height:1px;background:var(--rule);margin:14px 10px;}
 .side-note{font-size:.72rem;color:var(--muted);padding:0 12px;line-height:1.5;}
 
@@ -642,6 +650,124 @@ button{font:inherit;}
   border:1px solid rgba(47,110,165,.22);
 }
 
+/* ---- Vocabulary selection + bank controls ---- */
+.vocab-grid-toolbar{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  margin-bottom:14px;padding:11px 14px;
+  background:var(--card-soft);border:1px solid var(--rule);border-radius:var(--radius);
+}
+.vocab-grid-toolbar .vgt-spacer{flex:1 1 auto;}
+.vocab-select-all{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:.82rem;font-weight:600;color:var(--ink-soft);
+  cursor:pointer;user-select:none;
+  padding:5px 11px;border-radius:6px;
+  border:1px solid var(--rule-strong);background:#fff;
+  transition:background .12s,border-color .12s;
+}
+.vocab-select-all:hover{background:#f6f3ec;border-color:#c6bfae;}
+.vocab-select-all input{accent-color:var(--accent);cursor:pointer;margin:0;}
+
+.vocab-card.selectable{position:relative;}
+.vocab-card.selectable .vocab-head{padding-right:28px;}
+.vocab-select{
+  position:absolute;top:10px;right:10px;
+  display:flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:5px;cursor:pointer;
+}
+.vocab-select:hover{background:var(--accent-soft);}
+.vocab-select input{
+  width:16px;height:16px;margin:0;cursor:pointer;
+  accent-color:var(--accent);
+}
+
+.vocab-card.bank{position:relative;padding-right:46px;}
+.vocab-remove{
+  position:absolute;top:10px;right:10px;
+  width:24px;height:24px;border-radius:5px;padding:0;
+  border:1px solid var(--rule-strong);background:#fff;color:var(--muted);
+  font-size:.78rem;line-height:1;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:background .12s,color .12s,border-color .12s;
+}
+.vocab-remove:hover{background:var(--err-soft);color:var(--err);border-color:#e7b3ad;}
+
+/* ---- Source line: friendly name + safe wrapping ---- */
+.vocab-source{
+  font-size:.7rem;color:var(--muted);letter-spacing:.03em;
+  border-top:1px dashed var(--rule);padding-top:7px;margin-top:2px;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:5px;
+  min-width:0;
+}
+.vocab-source-label{
+  font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:800;color:var(--muted);flex:0 0 auto;
+}
+.vocab-source-title{
+  color:var(--ink-soft);font-weight:600;
+  min-width:0;max-width:100%;
+  overflow-wrap:anywhere;word-break:break-word;
+}
+.vocab-source-book{
+  color:var(--muted);font-style:italic;
+  min-width:0;max-width:100%;
+  overflow-wrap:anywhere;word-break:break-word;
+}
+.vocab-source-id{
+  font-family:var(--mono);font-size:.92em;font-weight:500;
+  color:var(--muted);
+}
+
+/* ---- Vocabulary Bank filters ---- */
+.bank-filters{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
+  margin-bottom:18px;padding:14px 16px;
+  background:var(--card);border:1px solid var(--rule);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+}
+.bank-filter{
+  display:flex;flex-direction:column;gap:4px;
+  flex:1 1 200px;min-width:0;
+}
+.bank-filter-label{
+  font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;
+  font-weight:800;color:var(--muted);
+}
+.bank-filter-select{
+  font:inherit;font-size:.85rem;
+  padding:8px 10px;
+  border:1px solid var(--rule-strong);border-radius:6px;
+  background:#fff;color:var(--ink-soft);
+  width:100%;max-width:100%;
+  outline:none;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;
+  text-overflow:ellipsis;
+}
+.bank-filter-select:focus{
+  border-color:var(--accent-2);
+  box-shadow:0 0 0 3px rgba(47,110,165,.12);
+}
+.bank-filter-reset{flex:0 0 auto;}
+
+.bank-empty{
+  text-align:center;padding:52px 24px;color:var(--muted);
+  border:1px dashed var(--rule-strong);border-radius:var(--radius);background:#fdfcf8;
+}
+.bank-empty h3{
+  font-family:var(--serif);font-size:1.15rem;font-weight:600;
+  color:var(--ink);margin-bottom:8px;
+}
+.bank-empty .btn{margin-top:14px;}
+
+.bank-bar{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding:14px 16px;margin-bottom:20px;
+  background:var(--card);border:1px solid var(--rule);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+}
+.bank-bar .bank-bar-info{flex:1 1 200px;font-size:.82rem;color:var(--muted);}
+.bank-bar .bank-bar-info strong{color:var(--ink);font-weight:700;}
+
 /* ============================================================
    READING
    ============================================================ */
@@ -1057,6 +1183,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .nav::-webkit-scrollbar{display:none;}
   .nav button{width:auto;white-space:nowrap;border-left:0;border-bottom:3px solid transparent;border-radius:5px 5px 0 0;}
   .nav button.active{border-left:0;border-bottom-color:var(--accent);}
+  .nav-badge{margin-left:6px;}
   .nav-sep,.side-note{display:none;}
   .main{padding:22px 18px 80px;}
   .hero{grid-template-columns:1fr;}
@@ -1067,6 +1194,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .match-row{grid-template-columns:1fr;gap:6px;}
   .font-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
   .sec-progress{max-width:none;min-width:160px;}
+  .bank-filter{flex:1 1 100%;}
 }
 @media (max-width:560px){
   .topbar{padding:11px 16px;gap:10px;}
@@ -1082,6 +1210,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .size-slider{max-width:none;}
   .book-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
   .add-book-card{min-height:220px;}
+  .vocab-grid-toolbar .btn{flex:1 1 auto;}
 }
 
 /* ============================================================
@@ -1255,6 +1384,32 @@ html[data-theme="dark"] .pill.not_started{ background:#2a2a30; color:var(--muted
 html[data-theme="dark"] .pill.in_progress{ border-color:#5a4a24; }
 html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
 
+/* ---- Vocabulary Bank — dark ---- */
+html[data-theme="dark"] .vocab-select-all{
+  background:#24242a; border-color:#3a3a42; color:var(--ink-soft);
+}
+html[data-theme="dark"] .vocab-select-all:hover{ background:#2d2d35; border-color:#4d4d58; }
+html[data-theme="dark"] .vocab-select:hover{ background:var(--accent-soft); }
+html[data-theme="dark"] .vocab-remove{
+  background:#24242a; border-color:#3a3a42; color:var(--muted);
+}
+html[data-theme="dark"] .vocab-remove:hover{
+  background:var(--err-soft); color:var(--err); border-color:#6a342e;
+}
+html[data-theme="dark"] .bank-empty{
+  background:#1c1c21; border-color:#3a3a42;
+}
+html[data-theme="dark"] .bank-empty h3{ color:var(--ink); }
+
+html[data-theme="dark"] .bank-filter-select{
+  background:#24242a;
+  color:var(--ink-soft);
+  border-color:#3a3a42;
+}
+html[data-theme="dark"] .bank-filter-select:focus{
+  border-color:var(--accent-2);
+}
+
 @media (max-width:900px){
   html[data-theme="dark"] .sidebar{
     background:rgba(22,22,26,.97);
@@ -1340,7 +1495,19 @@ html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
 
    A full "all data" export/import round-trips everything at once:
      books + lessons + exercises + vocabulary + vocab exercises + reading +
-     progress + theme + reader prefs + display prefs.
+     vocabulary bank + progress + theme + reader prefs + display prefs.
+
+   Vocabulary Bank
+   ---------------
+   • A dedicated "Vocabulary Bank" section in the sidebar, below Books.
+     Words collected from any topic live there, searchable and removable.
+   • The bank can be filtered by Topic / Unit and by Category
+     (part of speech or tag), and exported as CSV or plain text.
+   • Inside each lesson's Vocabulary section you can:
+       – add all words, or only the selected words, to the Vocabulary Bank;
+       – export all words, or only the selected words, as a CSV file.
+   • The bank shows the topic's friendly title (with its book) instead of the
+     raw topic id, and long values wrap safely without overflowing the card.
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
@@ -1355,6 +1522,7 @@ const LS = {
   VOCABULARY:      "egb:vocabulary:v1",
   VOCAB_EXERCISES: "egb:vocab-exercises:v1",
   READING:         "egb:reading:v1",
+  VOCAB_BANK:      "egb:vocab-bank:v1",
   PROGRESS:        "egb:progress:v2",
   READER:          "egb:reader:v1",
   PREFS:           "egb:prefs:v1",
@@ -1537,7 +1705,7 @@ const LESSON_TEMPLATE = {
     },
     {
       pattern: "Negative",
-      form: "have / has + not + past participle",
+      form: "have / has not + past participle",
       use: "Denying a result or an experience",
       example: "She hasn't arrived yet.",
       target: "hasn't arrived"
@@ -1758,6 +1926,9 @@ const state = {
   vocabulary: {},        // topic_id -> { topic_id, title, words: [...] }
   vocabExercises: {},    // topic_id -> { topic_id, kind, exercises: [...] }
   readings: {},          // topic_id -> { topic_id, kind, passages: [...] }
+  vocabBank: [],         // saved words collected from any topic
+  vocabBankQuery: "",
+  vocabBankFilters: { source: "", category: "" },
   progress: {},
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
@@ -1834,6 +2005,46 @@ function toast(message, type){
 
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---- CSV helpers ---- */
+function csvCell(value){
+  const s = String(value == null ? "" : value);
+  if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function wordsToCSV(words){
+  const headers = [
+    "Term", "Part of speech", "Pronunciation", "Definition",
+    "Example", "Synonyms", "Antonyms", "Notes", "Tags", "Source"
+  ];
+  const rows = (words || []).map(w => [
+    w.term || "",
+    w.part_of_speech || "",
+    w.pronunciation || "",
+    w.definition || "",
+    w.example || "",
+    (w.synonyms || []).join("; "),
+    (w.antonyms || []).join("; "),
+    w.notes || "",
+    (w.tags || []).join("; "),
+    w.source || ""
+  ]);
+  return [headers, ...rows].map(r => r.map(csvCell).join(",")).join("\r\n");
+}
+
+function downloadCSV(csvText, filename){
+  /* The BOM makes Excel read the file as UTF-8. */
+  const blob = new Blob(["\uFEFF" + csvText], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -2132,6 +2343,11 @@ function loadState(){
   catch (e) { state.readings = {}; }
   if (!state.readings || typeof state.readings !== "object") state.readings = {};
 
+  /* --- vocabulary bank --- */
+  try { state.vocabBank = JSON.parse(localStorage.getItem(LS.VOCAB_BANK)) || []; }
+  catch (e) { state.vocabBank = []; }
+  if (!Array.isArray(state.vocabBank)) state.vocabBank = [];
+
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
 
@@ -2159,6 +2375,7 @@ function saveVocabulary(){ try{ localStorage.setItem(LS.VOCABULARY, JSON.stringi
 function saveVocabExercises(){ try{ localStorage.setItem(LS.VOCAB_EXERCISES, JSON.stringify(state.vocabExercises)); }catch(e){} }
 function saveReadings(){ try{ localStorage.setItem(LS.READING, JSON.stringify(state.readings)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
+function saveVocabBank(){ try{ localStorage.setItem(LS.VOCAB_BANK, JSON.stringify(state.vocabBank)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
    9. TOPIC LOOKUP (within the current book)
@@ -2180,6 +2397,18 @@ function findTopic(id){
 function findTopicAnywhere(id){
   const local = findTopic(id);
   if (local) return local;
+  for (const b of state.books){
+    for (const s of (b.sections || [])){
+      const t = (s.topics || []).find(x => x.id === id);
+      if (t) return { topic: t, section: s, book: b };
+    }
+  }
+  return null;
+}
+
+/** Search every book for a topic id and always return the containing book. */
+function findTopicWithBook(id){
+  if (!id) return null;
   for (const b of state.books){
     for (const s of (b.sections || [])){
       const t = (s.topics || []).find(x => x.id === id);
@@ -2241,7 +2470,166 @@ function totalVocabCount(){
 }
 
 /* ---------------------------------------------------------------------------
-   10b-2. VOCABULARY EXERCISE HELPERS
+   10b-2. VOCABULARY BANK HELPERS
+   --------------------------------------------------------------------------- */
+/** Two entries are considered the same word when term + part of speech match. */
+function vocabBankKey(w){
+  return norm((w && w.term) || "") + "||" + norm((w && w.part_of_speech) || "");
+}
+
+function isInVocabBank(w){
+  const key = vocabBankKey(w);
+  return state.vocabBank.some(x => vocabBankKey(x) === key);
+}
+
+/** Copy `words` into the bank, skipping duplicates. Returns {added, skipped}. */
+function addWordsToBank(words, source){
+  const existing = new Set(state.vocabBank.map(vocabBankKey));
+  let added = 0, skipped = 0;
+
+  (words || []).forEach(w => {
+    const entry = {
+      term:           w.term || "",
+      part_of_speech: w.part_of_speech || "",
+      pronunciation:  w.pronunciation || "",
+      definition:     w.definition || "",
+      example:        w.example || "",
+      synonyms:       Array.isArray(w.synonyms) ? w.synonyms.slice() : [],
+      antonyms:       Array.isArray(w.antonyms) ? w.antonyms.slice() : [],
+      notes:          w.notes || "",
+      tags:           Array.isArray(w.tags) ? w.tags.slice() : [],
+      source:         source || "",
+      addedAt:        Date.now()
+    };
+    if (!entry.term){ skipped++; return; }
+    const key = vocabBankKey(entry);
+    if (existing.has(key)){ skipped++; return; }
+    existing.add(key);
+    state.vocabBank.push(entry);
+    added++;
+  });
+
+  if (added) saveVocabBank();
+  return { added, skipped };
+}
+
+function bankAddMessage(r){
+  if (r.added && r.skipped) return `Added ${r.added} word${r.added === 1 ? "" : "s"} to the bank · ${r.skipped} already there.`;
+  if (r.added)              return `Added ${r.added} word${r.added === 1 ? "" : "s"} to the Vocabulary Bank.`;
+  return `Nothing new added — ${r.skipped} word${r.skipped === 1 ? "" : "s"} already in the bank.`;
+}
+
+/** Friendly topic title for a source id, or an empty string if not found. */
+function topicDisplayTitle(id){
+  if (!id) return "";
+  const found = findTopicWithBook(id);
+  if (found && found.topic.title) return found.topic.title;
+  return "";
+}
+
+function vocabBankHay(w){
+  return [
+    w.term, w.part_of_speech, w.pronunciation, w.definition, w.example, w.notes,
+    (w.synonyms || []).join(" "),
+    (w.antonyms || []).join(" "),
+    (w.tags || []).join(" "),
+    w.source,
+    topicDisplayTitle(w.source)
+  ].filter(Boolean).join(" ");
+}
+
+/** The words currently ticked in the lesson's vocabulary grid. */
+function selectedVocabWords(topicId){
+  const grid = document.getElementById("vocab-grid-" + slugify(topicId));
+  if (!grid) return [];
+  const words = getVocabularyFor(topicId);
+  const out = [];
+  grid.querySelectorAll(".vocab-check").forEach(cb => {
+    if (cb.checked){
+      const i = Number(cb.dataset.index);
+      if (words[i]) out.push(words[i]);
+    }
+  });
+  return out;
+}
+
+/** Build the available filter values from the current bank. */
+function bankFilterOptions(){
+  const sources = new Map();   // id -> { id, label, book }
+  const posSet  = new Set();
+  const tagSet  = new Set();
+
+  state.vocabBank.forEach(w => {
+    const id = w.source || "";
+    if (id && !sources.has(id)){
+      const found = findTopicWithBook(id);
+      sources.set(id, {
+        id,
+        label: found ? (found.topic.title || id) : id,
+        book:  found ? bookTitle(found.book) : ""
+      });
+    }
+    if (w.part_of_speech) posSet.add(w.part_of_speech);
+    (w.tags || []).forEach(t => tagSet.add(t));
+  });
+
+  return {
+    sources: [...sources.values()].sort((a, b) => a.label.localeCompare(b.label)),
+    pos:     [...posSet].sort((a, b) => a.localeCompare(b)),
+    tags:    [...tagSet].sort((a, b) => a.localeCompare(b))
+  };
+}
+
+/** Reset filter values that no longer point at an existing option. */
+function sanitiseBankFilters(opts){
+  if (state.vocabBankFilters.source &&
+      !opts.sources.some(s => s.id === state.vocabBankFilters.source)){
+    state.vocabBankFilters.source = "";
+  }
+  const cat = state.vocabBankFilters.category;
+  if (cat){
+    const idx = cat.indexOf(":");
+    const type  = idx === -1 ? "" : cat.slice(0, idx);
+    const value = idx === -1 ? "" : cat.slice(idx + 1);
+    let exists = false;
+    if (type === "pos")      exists = opts.pos.some(p => norm(p) === value);
+    else if (type === "tag") exists = opts.tags.some(t => norm(t) === value);
+    if (!exists) state.vocabBankFilters.category = "";
+  }
+}
+
+/** Apply search + filters and return the visible list of banked words. */
+function filteredBankWords(){
+  const q = norm(state.vocabBankQuery || "");
+  const terms = q ? q.split(" ").filter(Boolean) : [];
+  const fSource = state.vocabBankFilters.source || "";
+  const fCat    = state.vocabBankFilters.category || "";
+
+  return state.vocabBank.filter(w => {
+    if (fSource && (w.source || "") !== fSource) return false;
+
+    if (fCat){
+      const idx = fCat.indexOf(":");
+      const type  = idx === -1 ? "" : fCat.slice(0, idx);
+      const value = idx === -1 ? "" : fCat.slice(idx + 1);
+      if (type === "pos"){
+        if (norm(w.part_of_speech || "") !== value) return false;
+      } else if (type === "tag"){
+        const tags = (w.tags || []).map(norm);
+        if (tags.indexOf(value) === -1) return false;
+      }
+    }
+
+    if (terms.length){
+      const h = norm(vocabBankHay(w));
+      if (!terms.every(t => h.indexOf(t) !== -1)) return false;
+    }
+    return true;
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   10b-3. VOCABULARY EXERCISE HELPERS
    --------------------------------------------------------------------------- */
 function getVocabExercisesFor(topicId){
   const bank = state.vocabExercises[topicId];
@@ -2258,7 +2646,7 @@ function totalVocabExerciseCount(){
 }
 
 /* ---------------------------------------------------------------------------
-   10b-3. READING HELPERS
+   10b-4. READING HELPERS
    --------------------------------------------------------------------------- */
 function getReadingFor(topicId){
   const bank = state.readings[topicId];
@@ -2400,22 +2788,28 @@ function updateHeader(){
 
 function updateNav(){
   const items = [
-    { id: "dashboard", label: "Dashboard",    icon: "▦" },
-    { id: "book",      label: "Books",        icon: "▤" },
-    { id: "completed", label: "Completed",    icon: "✓" },
-    { id: "settings",  label: "Settings",     icon: "⚙" }
+    { id: "dashboard",   label: "Dashboard",       icon: "▦" },
+    { id: "book",        label: "Books",           icon: "▤" },
+    { id: "vocab-bank",  label: "Vocabulary Bank", icon: "▥" },
+    { id: "completed",   label: "Completed",       icon: "✓" },
+    { id: "settings",    label: "Settings",        icon: "⚙" }
   ];
   const active = (state.view === "lesson" || state.view === "book-detail") ? "book" : state.view;
-  $("nav").innerHTML = items.map(it =>
-    `<button data-action="nav" data-view="${it.id}" class="${active === it.id ? "active" : ""}">
-       <span class="ic">${it.icon}</span><span>${it.label}</span>
-     </button>`
-  ).join("") +
+
+  $("nav").innerHTML = items.map(it => {
+    const badge = (it.id === "vocab-bank" && state.vocabBank.length)
+      ? `<span class="nav-badge">${state.vocabBank.length}</span>`
+      : "";
+    return `<button data-action="nav" data-view="${it.id}" class="${active === it.id ? "active" : ""}">
+       <span class="ic">${it.icon}</span><span>${it.label}</span>${badge}
+     </button>`;
+  }).join("") +
   `<div class="nav-sep"></div>
    <p class="side-note">${state.books.length} book${state.books.length === 1 ? "" : "s"} ·
    ${topicCount()} topics · ${Object.keys(state.lessons).length} lessons ·
    ${totalExerciseCount() + totalVocabExerciseCount()} exercises ·
-   ${totalVocabCount()} words · ${totalReadingCount()} reading passages</p>`;
+   ${totalVocabCount()} words · ${totalReadingCount()} reading passages ·
+   ${state.vocabBank.length} banked</p>`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2428,6 +2822,7 @@ function render(){
   const view = $("view");
 
   if (state.view === "settings")          view.innerHTML = settingsHTML();
+  else if (state.view === "vocab-bank")   view.innerHTML = vocabBankHTML();
   else if (!hasBooks())                   view.innerHTML = noBookHTML();
   else if (state.view === "dashboard")    view.innerHTML = dashboardHTML();
   else if (state.view === "book")         view.innerHTML = libraryHTML();
@@ -2479,6 +2874,7 @@ function noBookHTML(){
       <button class="btn primary" data-action="add-book">＋ Create a book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
       <button class="btn" data-action="import-library">Import all data</button>
+      <button class="btn ghost" data-action="nav" data-view="vocab-bank">Vocabulary Bank →</button>
       <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings →</button>
     </div>
   </div>
@@ -2565,7 +2961,17 @@ function dashboardHTML(){
   <section class="card">
     <h3>Section progress</h3>
     <ul class="sec-progress-list">${sectionRows || '<li class="muted">No sections in this book.</li>'}</ul>
-  </section>`;
+  </section>
+
+  ${state.vocabBank.length ? `
+  <section class="card continue-card">
+    <div>
+      <div class="cc-sub">Vocabulary Bank</div>
+      <div class="cc-title">${state.vocabBank.length} saved word${state.vocabBank.length === 1 ? "" : "s"}</div>
+      <div class="cc-sub">Words collected from your lessons</div>
+    </div>
+    <button class="btn" data-action="nav" data-view="vocab-bank">Open bank →</button>
+  </section>` : ""}`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -2821,6 +3227,157 @@ function completedHTML(){
     <p class="page-sub">${done.length} topic${done.length === 1 ? "" : "s"} finished in ${esc(bookTitle(currentBook()))}.</p>
   </div>
   ${sectionsHTML(items, false)}`;
+}
+
+/* ---------------------------------------------------------------------------
+   18b. VOCABULARY BANK VIEW
+   --------------------------------------------------------------------------- */
+function vocabBankHTML(){
+  const total = state.vocabBank.length;
+  const sources = new Set(state.vocabBank.map(w => w.source).filter(Boolean));
+
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Vocabulary Bank</h2>
+    <p class="page-sub" id="bankCount">
+      ${total} word${total === 1 ? "" : "s"} saved${sources.size ? ` from ${sources.size} topic${sources.size === 1 ? "" : "s"}` : ""}.
+      Add words from any lesson's Vocabulary section, then review, filter or export them here.
+    </p>
+    <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
+      <button class="btn primary" data-action="bank-export-csv" ${total ? "" : "disabled"}>⭳ Export bank as CSV</button>
+      <button class="btn" data-action="bank-export-txt" ${total ? "" : "disabled"}>⭳ Export bank as plain text</button>
+      <button class="btn ghost" data-action="nav" data-view="book">Browse books →</button>
+      ${total ? `<button class="btn ghost" data-action="bank-clear">Clear bank</button>` : ""}
+    </div>
+  </div>
+
+  ${total ? bankFilterBarHTML() : ""}
+
+  <div class="search-wrap">
+    <input id="bankSearchInput" class="search" type="search"
+           placeholder="Search the bank by term, definition, tag or source topic..."
+           value="${esc(state.vocabBankQuery)}" autocomplete="off" spellcheck="false"
+           aria-label="Search vocabulary bank">
+  </div>
+
+  <div id="bankResults"></div>`;
+}
+
+/** Build the filter bar with a Topic/Unit dropdown and a Category dropdown. */
+function bankFilterBarHTML(){
+  const opts = bankFilterOptions();
+  sanitiseBankFilters(opts);
+
+  /* ---- Topic / Unit ---- */
+  const sourceOpts = [`<option value="">All topics</option>`];
+  const byBook = new Map();
+  opts.sources.forEach(s => {
+    const key = s.book || "Other topics";
+    if (!byBook.has(key)) byBook.set(key, []);
+    byBook.get(key).push(s);
+  });
+  byBook.forEach((list, bookName) => {
+    sourceOpts.push(`<optgroup label="${esc(bookName)}">`);
+    list.forEach(s => {
+      const sel = state.vocabBankFilters.source === s.id ? " selected" : "";
+      sourceOpts.push(`<option value="${esc(s.id)}"${sel}>${esc(s.label)}</option>`);
+    });
+    sourceOpts.push(`</optgroup>`);
+  });
+
+  /* ---- Category: part of speech + tags ---- */
+  const catOpts = [`<option value="">All categories</option>`];
+  if (opts.pos.length){
+    catOpts.push(`<optgroup label="Part of speech">`);
+    opts.pos.forEach(p => {
+      const v = "pos:" + norm(p);
+      const sel = state.vocabBankFilters.category === v ? " selected" : "";
+      catOpts.push(`<option value="${esc(v)}"${sel}>${esc(p)}</option>`);
+    });
+    catOpts.push(`</optgroup>`);
+  }
+  if (opts.tags.length){
+    catOpts.push(`<optgroup label="Tag / Category">`);
+    opts.tags.forEach(t => {
+      const v = "tag:" + norm(t);
+      const sel = state.vocabBankFilters.category === v ? " selected" : "";
+      catOpts.push(`<option value="${esc(v)}"${sel}>${esc(t)}</option>`);
+    });
+    catOpts.push(`</optgroup>`);
+  }
+
+  return `<div class="bank-filters">
+    <label class="bank-filter">
+      <span class="bank-filter-label">Topic / Unit</span>
+      <select id="bankFilterSource" class="bank-filter-select">${sourceOpts.join("")}</select>
+    </label>
+    <label class="bank-filter">
+      <span class="bank-filter-label">Category</span>
+      <select id="bankFilterCategory" class="bank-filter-select">${catOpts.join("")}</select>
+    </label>
+    <button class="btn ghost tiny bank-filter-reset" data-action="bank-clear-filters">Clear filters</button>
+  </div>`;
+}
+
+function renderBankResults(){
+  const container = $("bankResults");
+  if (!container) return;
+
+  const words = state.vocabBank;
+
+  if (!words.length){
+    container.innerHTML = `
+      <div class="bank-empty">
+        <h3>Your Vocabulary Bank is empty</h3>
+        <p>Open a lesson and, in the Vocabulary section, use
+           <strong>Add all to Bank</strong> or <strong>Add selected to Bank</strong>.</p>
+        <button class="btn primary" data-action="nav" data-view="book">Browse books</button>
+      </div>`;
+    return;
+  }
+
+  const filtered = filteredBankWords();
+
+  if (!filtered.length){
+    container.innerHTML = `
+      <div class="bank-empty">
+        <h3>No words match the current filters</h3>
+        <p>Try a different search term or reset the filters above.</p>
+        <button class="btn" data-action="bank-clear-filters">Clear filters</button>
+      </div>`;
+    return;
+  }
+
+  const anyFilter = state.vocabBankFilters.source ||
+                    state.vocabBankFilters.category ||
+                    state.vocabBankQuery;
+
+  container.innerHTML = `
+    <div class="bank-bar">
+      <div class="bank-bar-info">
+        Showing <strong>${filtered.length}</strong> of <strong>${words.length}</strong>
+        word${words.length === 1 ? "" : "s"}${anyFilter ? " (filtered)" : ""}.
+      </div>
+      <button class="btn tiny" data-action="bank-export-filtered-csv">⭳ Export shown as CSV</button>
+    </div>
+    <div class="vocab-grid">
+      ${filtered.map(w => vocabCardHTML(w, {
+        removable: true,
+        bankKey: vocabBankKey(w),
+        showSource: true
+      })).join("")}
+    </div>`;
+}
+
+function updateBankCountLabel(){
+  const el = $("bankCount");
+  if (!el) return;
+  const total = state.vocabBank.length;
+  const sources = new Set(state.vocabBank.map(w => w.source).filter(Boolean));
+  el.textContent =
+    `${total} word${total === 1 ? "" : "s"} saved` +
+    (sources.size ? ` from ${sources.size} topic${sources.size === 1 ? "" : "s"}` : "") +
+    `. Add words from any lesson's Vocabulary section, then review, filter or export them here.`;
 }
 
 /* ---------------------------------------------------------------------------
@@ -3083,7 +3640,19 @@ function summaryHTML(summary){
 /* ---------------------------------------------------------------------------
    19b. VOCABULARY BLOCK
    --------------------------------------------------------------------------- */
-function vocabCardHTML(w){
+/**
+ * Render one vocabulary card.
+ *
+ * opts:
+ *   selectable {boolean}  – show a tick box (lesson view)
+ *   index      {number}   – index of the word in the topic's word list
+ *   removable  {boolean}  – show a remove button (bank view)
+ *   bankKey    {string}   – identifier used by the remove button
+ *   showSource {boolean}  – print the source topic (bank view)
+ */
+function vocabCardHTML(w, opts){
+  opts = opts || {};
+
   const pos = w.part_of_speech
     ? `<span class="vocab-pos">${esc(w.part_of_speech)}</span>` : "";
   const pron = w.pronunciation
@@ -3102,7 +3671,45 @@ function vocabCardHTML(w){
     ? `<div class="vocab-tags">${w.tags.map(t => `<span class="vocab-tag">${esc(t)}</span>`).join("")}</div>`
     : "";
 
-  return `<article class="vocab-card">
+  /* ---- Source line: friendly topic name, wrapping safely ---- */
+  let source = "";
+  if (opts.showSource && w.source){
+    const found = findTopicWithBook(w.source);
+    if (found){
+      const title = found.topic.title || w.source;
+      const bk = found.book ? bookTitle(found.book) : "";
+      source = `<div class="vocab-source" title="${esc(w.source)}">
+        <span class="vocab-source-label">From</span>
+        <span class="vocab-source-title">${esc(title)}</span>
+        ${bk ? `<span class="vocab-source-book">· ${esc(bk)}</span>` : ""}
+      </div>`;
+    } else {
+      /* Fallback: raw id, but truncated visually and allowed to wrap. */
+      source = `<div class="vocab-source" title="${esc(w.source)}">
+        <span class="vocab-source-label">From</span>
+        <span class="vocab-source-title vocab-source-id">${esc(w.source)}</span>
+      </div>`;
+    }
+  }
+
+  let control = "";
+  if (opts.selectable){
+    control = `<label class="vocab-select" title="Select this word">
+        <input type="checkbox" class="vocab-check" data-index="${esc(opts.index)}">
+      </label>`;
+  } else if (opts.removable){
+    control = `<button type="button" class="vocab-remove"
+                 data-action="bank-remove" data-key="${esc(opts.bankKey || "")}"
+                 title="Remove from the Vocabulary Bank"
+                 aria-label="Remove from the Vocabulary Bank">✕</button>`;
+  }
+
+  const cls = "vocab-card"
+    + (opts.selectable ? " selectable" : "")
+    + (opts.removable  ? " bank" : "");
+
+  return `<article class="${cls}">
+    ${control}
     <header class="vocab-head">
       <div class="vocab-term-line">
         <span class="vocab-term">${esc(w.term || "")}</span>
@@ -3115,12 +3722,37 @@ function vocabCardHTML(w){
     ${meta}
     ${note}
     ${tags}
+    ${source}
   </article>`;
+}
+
+/** Toolbar with select-all + bank / CSV actions, shown above the word grid. */
+function vocabToolbarHTML(topicId){
+  return `<div class="vocab-grid-toolbar">
+    <label class="vocab-select-all">
+      <input type="checkbox" data-action="vocab-select-all" data-topic="${esc(topicId)}">
+      <span>Select all</span>
+    </label>
+    <span class="vgt-spacer"></span>
+    <button class="btn tiny primary" data-action="bank-add-selected" data-topic="${esc(topicId)}">
+      ＋ Add selected to Bank
+    </button>
+    <button class="btn tiny" data-action="bank-add-all" data-topic="${esc(topicId)}">
+      ＋ Add all to Bank
+    </button>
+    <button class="btn tiny ghost" data-action="bank-export-selected" data-topic="${esc(topicId)}">
+      ⭳ CSV (selected)
+    </button>
+    <button class="btn tiny ghost" data-action="bank-export-all" data-topic="${esc(topicId)}">
+      ⭳ CSV (all)
+    </button>
+  </div>`;
 }
 
 function vocabularyHTML(topicId){
   const words = getVocabularyFor(topicId);
   const n = words.length;
+  const gridId = "vocab-grid-" + slugify(topicId);
 
   let html = `<section class="lesson-block" id="lesson-vocabulary">
     <h2 class="block-title">
@@ -3129,7 +3761,10 @@ function vocabularyHTML(topicId){
     </h2>`;
 
   if (n){
-    html += `<div class="vocab-grid">${words.map(vocabCardHTML).join("")}</div>`;
+    html += vocabToolbarHTML(topicId);
+    html += `<div class="vocab-grid" id="${esc(gridId)}">${
+      words.map((w, i) => vocabCardHTML(w, { selectable: true, index: i })).join("")
+    }</div>`;
   } else {
     html += `<div class="lit-none">No vocabulary loaded for this topic yet.</div>`;
   }
@@ -4005,14 +4640,33 @@ function settingsHTML(){
     </div>
   </section>
 
+  <!-- ===================== VOCABULARY BANK ===================== -->
+  <section class="card">
+    <h3>Vocabulary Bank</h3>
+    <p class="muted">
+      The bank collects words you pick from any lesson's Vocabulary section — via
+      <em>Add all to Bank</em> or <em>Add selected to Bank</em>. It has its own page in the
+      sidebar (below Books) where you can search, filter by topic/unit and category,
+      remove words, and export them as CSV or plain text.
+    </p>
+    <p class="muted">
+      Saved words: <strong>${state.vocabBank.length}</strong>.
+    </p>
+    <div class="file-row">
+      <button class="btn primary" data-action="nav" data-view="vocab-bank">Open Vocabulary Bank →</button>
+      ${state.vocabBank.length ? `<button class="btn" data-action="bank-export-csv">⭳ Export as CSV</button>` : ""}
+      ${state.vocabBank.length ? `<button class="btn ghost" data-action="bank-clear">Clear bank</button>` : ""}
+    </div>
+  </section>
+
   <!-- ===================== DATA MANAGEMENT ===================== -->
   <section class="card">
     <h3>Data management</h3>
     <p class="muted">
       <strong>Export all data</strong> saves one JSON file containing everything stored in this browser:
-      your books, lessons, exercises, vocabulary banks, vocabulary exercises, reading passages, progress,
-      plus your theme, reading options and display preferences. Use it to move your whole setup to another
-      browser or device.
+      your books, lessons, exercises, vocabulary banks, vocabulary exercises, reading passages,
+      the vocabulary bank, progress, plus your theme, reading options and display preferences.
+      Use it to move your whole setup to another browser or device.
       <br>
       <strong>Import data</strong> accepts that same full backup (with or without the settings block),
       or a plain library export, an array of books, a single book object, a progress file, or an
@@ -4031,8 +4685,8 @@ function settingsHTML(){
     </div>
     <p class="muted" style="margin-top:12px;">
       Accepted file shapes:
-      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, progress, theme, reader, prefs }</code> ·
-      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, progress }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, vocabBank, progress, theme, reader, prefs }</code> ·
+      <code>{ books, lessons, exercises, vocabulary, vocabExercises, readings, vocabBank, progress }</code> ·
       <code>[ book, book, … ]</code> ·
       <code>{ book, sections }</code> ·
       <code>{ progress, totals }</code>
@@ -4103,7 +4757,8 @@ function settingsHTML(){
   <section class="card">
     <h3>Vocabulary JSON</h3>
     <p class="muted">Optional, one file per topic. Requires <code>topic_id</code> plus a <code>words</code> array.
-      Words are displayed in the <em>Vocabulary</em> block on the topic's lesson page. Can also be imported from the lesson page.</p>
+      Words are displayed in the <em>Vocabulary</em> block on the topic's lesson page, where you can also
+      add them to the Vocabulary Bank or export them as CSV. Can also be imported from the lesson page.</p>
     <div class="file-row">
       <input type="file" id="vocabularyFile" accept=".json,application/json" multiple>
       <button class="btn" data-action="download-template" data-kind="vocabulary">Download template</button>
@@ -4179,6 +4834,7 @@ function settingsHTML(){
       · ${vocabExTopicIds.length} vocabulary exercise bank${vocabExTopicIds.length === 1 ? "" : "s"} (${totalVocabExerciseCount()} exercises)
       · ${vocabTopicIds.length} vocabulary bank${vocabTopicIds.length === 1 ? "" : "s"} (${totalVocabCount()} words)
       · ${readingTopicIds.length} reading bank${readingTopicIds.length === 1 ? "" : "s"} (${totalReadingCount()} passages)
+      · ${state.vocabBank.length} word${state.vocabBank.length === 1 ? "" : "s"} in the Vocabulary Bank
       · theme: <strong>${esc(state.theme)}</strong>
       · reader: <strong>${esc(readerFont().name)}</strong> at <strong>${state.reader.size} px</strong>
       · grammar exercises <strong>${state.prefs.hideGrammarExercises ? "hidden" : "shown"}</strong>
@@ -4213,6 +4869,11 @@ function settingsHTML(){
         <em>Reading</em> block, below the vocabulary — or paste the JSON text straight into the lesson page.</li>
       <li>Import the lesson / exercise / vocabulary / vocabulary-exercise / reading files in Settings — or
         directly from the topic's page.</li>
+      <li>In any lesson, tick words in the Vocabulary section and use
+        <em>Add selected to Bank</em> — or <em>Add all to Bank</em> — to collect them in the
+        <strong>Vocabulary Bank</strong>. Use the CSV buttons to export them.</li>
+      <li>Open the <strong>Vocabulary Bank</strong> page in the sidebar to search and filter by
+        <em>Topic / Unit</em> and <em>Category</em> (part of speech or tag).</li>
       <li>To move everything (including theme, reading options and display preferences) to another browser, use
         <em>Export all data</em> and <em>Import data</em>.</li>
     </ol>
@@ -4451,6 +5112,7 @@ function looksLikeLibrary(obj){
   if (obj.book && Array.isArray(obj.sections)) return false;    // single book handled above
   if ("books" in obj || "lessons" in obj || "exercises" in obj ||
       "vocabulary" in obj || "vocabExercises" in obj || "readings" in obj ||
+      "vocabBank" in obj ||
       "progress" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
   return false;
 }
@@ -4486,6 +5148,7 @@ function validateLibraryFile(obj){
   if (obj.vocabulary     !== undefined && !isPlainObject(obj.vocabulary))     errors.push("'vocabulary' must be an object");
   if (obj.vocabExercises !== undefined && !isPlainObject(obj.vocabExercises)) errors.push("'vocabExercises' must be an object");
   if (obj.readings       !== undefined && !isPlainObject(obj.readings))       errors.push("'readings' must be an object");
+  if (obj.vocabBank      !== undefined && !Array.isArray(obj.vocabBank))      errors.push("'vocabBank' must be an array");
   if (obj.progress       !== undefined && !isPlainObject(obj.progress))       errors.push("'progress' must be an object");
   if (obj.theme          !== undefined && typeof obj.theme !== "string")      errors.push("'theme' must be a string");
   if (obj.reader         !== undefined && !isPlainObject(obj.reader))         errors.push("'reader' must be an object");
@@ -4495,6 +5158,7 @@ function validateLibraryFile(obj){
     obj.books === undefined && obj.lessons === undefined &&
     obj.exercises === undefined && obj.vocabulary === undefined &&
     obj.vocabExercises === undefined && obj.readings === undefined &&
+    obj.vocabBank === undefined &&
     obj.progress === undefined && obj.theme === undefined &&
     obj.reader === undefined && obj.prefs === undefined;
 
@@ -4508,7 +5172,7 @@ function applyLibrary(obj){
   if (!v.ok) return { ok: false, message: "Invalid library file — " + v.errors.join("; ") };
 
   let bookCount = 0, lessonCount = 0, exCount = 0, vocabCount = 0,
-      vocabExCount = 0, readingCount = 0, progressCount = 0;
+      vocabExCount = 0, readingCount = 0, bankCount = 0, progressCount = 0;
   let themeApplied = false, readerApplied = false, prefsApplied = false;
 
   /* --- books --- */
@@ -4588,6 +5252,12 @@ function applyLibrary(obj){
     if (readingCount) saveReadings();
   }
 
+  /* --- vocabulary bank (merged, duplicates skipped) --- */
+  if (obj && !Array.isArray(obj) && Array.isArray(obj.vocabBank)){
+    const r = addWordsToBank(obj.vocabBank, "");
+    bankCount = r.added;
+  }
+
   /* --- progress (optional) --- */
   if (obj && !Array.isArray(obj) && obj.progress && typeof obj.progress === "object"){
     Object.keys(obj.progress).forEach(id => {
@@ -4654,6 +5324,7 @@ function applyLibrary(obj){
   if (vocabExCount)  parts.push(`${vocabExCount} vocabulary exercise bank${vocabExCount === 1 ? "" : "s"}`);
   if (vocabCount)    parts.push(`${vocabCount} vocabulary bank${vocabCount === 1 ? "" : "s"}`);
   if (readingCount)  parts.push(`${readingCount} reading bank${readingCount === 1 ? "" : "s"}`);
+  if (bankCount)     parts.push(`${bankCount} new word${bankCount === 1 ? "" : "s"} in the Vocabulary Bank`);
   if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
   if (themeApplied)  parts.push("theme");
   if (readerApplied) parts.push("reading options");
@@ -4701,13 +5372,14 @@ function exportAllData(){
     vocabulary: state.vocabulary,
     vocabExercises: state.vocabExercises,
     readings: state.readings,
+    vocabBank: state.vocabBank,
     progress: state.progress,
     totals: progressStats()
   };
 
   const stamp = new Date().toISOString().slice(0,10);
   downloadJSON(data, `grammar-all-data-${stamp}.json`);
-  toast("All data exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages, progress, theme, reading options and display preferences.");
+  toast("All data exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages, the vocabulary bank, progress, theme, reading options and display preferences.");
 }
 
 async function handleFiles(fileList){
@@ -4967,6 +5639,129 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    /* ---------------- VOCABULARY SELECTION ---------------- */
+    case "vocab-select-all": {
+      const topicId = el.dataset.topic;
+      const grid = document.getElementById("vocab-grid-" + slugify(topicId));
+      if (!grid) break;
+      const on = !!el.checked;
+      grid.querySelectorAll(".vocab-check").forEach(cb => { cb.checked = on; });
+      break;
+    }
+
+    /* ---------------- VOCABULARY BANK — add from a lesson ---------------- */
+    case "bank-add-all": {
+      const topicId = el.dataset.topic;
+      const words = getVocabularyFor(topicId);
+      if (!words.length){ toast("There is no vocabulary to add for this topic.", "err"); break; }
+      const r = addWordsToBank(words, topicId);
+      updateNav();
+      toast(bankAddMessage(r));
+      break;
+    }
+
+    case "bank-add-selected": {
+      const topicId = el.dataset.topic;
+      const words = selectedVocabWords(topicId);
+      if (!words.length){ toast("Tick at least one word first.", "err"); break; }
+      const r = addWordsToBank(words, topicId);
+      updateNav();
+      toast(bankAddMessage(r));
+      break;
+    }
+
+    /* ---------------- VOCABULARY BANK — CSV export from a lesson ---------------- */
+    case "bank-export-all": {
+      const topicId = el.dataset.topic;
+      const words = getVocabularyFor(topicId);
+      if (!words.length){ toast("There is no vocabulary to export for this topic.", "err"); break; }
+      downloadCSV(wordsToCSV(words), slugify(topicId) + "-vocabulary.csv");
+      toast(`Exported ${words.length} word${words.length === 1 ? "" : "s"} as CSV.`);
+      break;
+    }
+
+    case "bank-export-selected": {
+      const topicId = el.dataset.topic;
+      const words = selectedVocabWords(topicId);
+      if (!words.length){ toast("Tick at least one word first.", "err"); break; }
+      downloadCSV(wordsToCSV(words), slugify(topicId) + "-vocabulary-selected.csv");
+      toast(`Exported ${words.length} selected word${words.length === 1 ? "" : "s"} as CSV.`);
+      break;
+    }
+
+    /* ---------------- VOCABULARY BANK — view actions ---------------- */
+    case "bank-remove": {
+      const key = el.dataset.key;
+      const before = state.vocabBank.length;
+      state.vocabBank = state.vocabBank.filter(w => vocabBankKey(w) !== key);
+      if (state.vocabBank.length === before) break;
+      saveVocabBank();
+      updateNav();
+      /* Re-render the whole bank page so filter options stay in sync. */
+      if (state.view === "vocab-bank") render();
+      else { updateBankCountLabel(); renderBankResults(); }
+      toast("Word removed from the Vocabulary Bank.");
+      break;
+    }
+
+    case "bank-clear-filters": {
+      state.vocabBankQuery = "";
+      state.vocabBankFilters.source = "";
+      state.vocabBankFilters.category = "";
+      if (state.view === "vocab-bank") render();
+      break;
+    }
+
+    case "bank-export-csv": {
+      if (!state.vocabBank.length){ toast("The Vocabulary Bank is empty.", "err"); break; }
+      downloadCSV(wordsToCSV(state.vocabBank), "vocabulary-bank.csv");
+      toast(`Exported ${state.vocabBank.length} word${state.vocabBank.length === 1 ? "" : "s"} as CSV.`);
+      break;
+    }
+
+    case "bank-export-filtered-csv": {
+      const list = filteredBankWords();
+      if (!list.length){ toast("Nothing to export.", "err"); break; }
+      downloadCSV(wordsToCSV(list), "vocabulary-bank-selection.csv");
+      toast(`Exported ${list.length} word${list.length === 1 ? "" : "s"} as CSV.`);
+      break;
+    }
+
+    case "bank-export-txt": {
+      if (!state.vocabBank.length){ toast("The Vocabulary Bank is empty.", "err"); break; }
+      const lines = state.vocabBank.map(w => {
+        const parts = [w.term];
+        if (w.part_of_speech) parts.push(`(${w.part_of_speech})`);
+        if (w.pronunciation)  parts.push(w.pronunciation);
+        let line = parts.join(" ");
+        if (w.definition) line += " — " + w.definition;
+        if (w.example)    line += `\n    e.g. ${w.example}`;
+        return line;
+      });
+      const blob = new Blob([lines.join("\n\n")], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "vocabulary-bank.txt";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast(`Exported ${state.vocabBank.length} word${state.vocabBank.length === 1 ? "" : "s"} as plain text.`);
+      break;
+    }
+
+    case "bank-clear": {
+      if (!state.vocabBank.length){ toast("The Vocabulary Bank is already empty."); break; }
+      if (!confirm(`Remove all ${state.vocabBank.length} word(s) from the Vocabulary Bank?\n\nThis does not affect the vocabulary of the lessons themselves.`)) return;
+      state.vocabBank = [];
+      saveVocabBank();
+      updateNav();
+      render();
+      toast("Vocabulary Bank cleared.");
+      break;
+    }
+
     /* ---------------- READING OPTIONS ---------------- */
     case "toggle-reader": {
       state.readerOpen = !state.readerOpen;
@@ -5212,14 +6007,15 @@ document.addEventListener("click", (ev) => {
         vocabulary: state.vocabulary,
         vocabExercises: state.vocabExercises,
         readings: state.readings,
+        vocabBank: state.vocabBank,
         progress: state.progress
       }, "grammar-library.json");
-      toast("Library exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages and progress.");
+      toast("Library exported — books, lessons, exercises, vocabulary, vocabulary exercises, reading passages, the vocabulary bank and progress.");
       break;
     }
 
     case "clear-all": {
-      if (!confirm("Clear all data? This removes every book, all lessons, all exercise, vocabulary and reading banks and all progress. Theme, reading options and display preferences are kept.")) return;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise, vocabulary, vocabulary-bank and reading data and all progress. Theme, reading options and display preferences are kept.")) return;
       state.books = [];
       state.currentBookId = null;
       state.lessons = {};
@@ -5227,6 +6023,9 @@ document.addEventListener("click", (ev) => {
       state.vocabulary = {};
       state.vocabExercises = {};
       state.readings = {};
+      state.vocabBank = [];
+      state.vocabBankQuery = "";
+      state.vocabBankFilters = { source: "", category: "" };
       state.progress = {};
       state.currentTopicId = null;
       try {
@@ -5238,6 +6037,7 @@ document.addEventListener("click", (ev) => {
         localStorage.removeItem(LS.VOCABULARY);
         localStorage.removeItem(LS.VOCAB_EXERCISES);
         localStorage.removeItem(LS.READING);
+        localStorage.removeItem(LS.VOCAB_BANK);
         localStorage.removeItem(LS.PROGRESS);
       } catch (e){}
       state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
@@ -5283,12 +6083,18 @@ document.addEventListener("input", (ev) => {
     return;
   }
 
+  if (t.id === "bankSearchInput"){
+    state.vocabBankQuery = t.value;
+    renderBankResults();
+    return;
+  }
+
   if (t.classList && t.classList.contains("size-slider")){
     setReaderSize(Number(t.value), false);
   }
 });
 
-/* change events: slider commit + preference checkboxes + every file input */
+/* change events: slider commit + preference checkboxes + filter selects + file inputs */
 document.addEventListener("change", (ev) => {
   const t = ev.target;
   if (!t) return;
@@ -5301,6 +6107,24 @@ document.addEventListener("change", (ev) => {
       savePrefs();
       render();
     }
+    return;
+  }
+
+  /* ---- select-all tick box in the vocabulary toolbar ---- */
+  if (t.dataset && t.dataset.action === "vocab-select-all"){
+    /* handled on click; nothing else to do here */
+    return;
+  }
+
+  /* ---- vocabulary bank filters ---- */
+  if (t.id === "bankFilterSource"){
+    state.vocabBankFilters.source = t.value;
+    renderBankResults();
+    return;
+  }
+  if (t.id === "bankFilterCategory"){
+    state.vocabBankFilters.category = t.value;
+    renderBankResults();
     return;
   }
 
@@ -5385,6 +6209,21 @@ function bindDynamicInputs(){
         if (e.key === "Enter"){
           const first = document.querySelector(".topic-card");
           if (first) openTopic(first.dataset.id);
+        }
+      });
+    }
+  }
+
+  if (state.view === "vocab-bank"){
+    renderBankResults();
+    const input = $("bankSearchInput");
+    if (input){
+      /* keep the caret position stable while filtering */
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Escape"){
+          input.value = "";
+          state.vocabBankQuery = "";
+          renderBankResults();
         }
       });
     }
