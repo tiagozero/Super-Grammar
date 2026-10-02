@@ -584,6 +584,10 @@ button{font:inherit;}
 .sub-block-title .exercise-count{margin-left:0;}
 .sub-block-title .block-toggle{margin-left:auto;}
 
+/* per-block update / paste / export tools */
+.block-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto;}
+.block-tools + .block-toggle{margin-left:0;}
+
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:520px;}
 .tbl th{
@@ -1498,6 +1502,10 @@ html[data-theme="dark"] .bank-filter-select:focus{
    A full "all data" export/import round-trips everything at once:
      books + lessons + exercises + vocabulary + vocab exercises + reading +
      vocabulary bank + progress + theme + reader prefs + display prefs.
+
+   Grammar & vocabulary exercise banks can also be updated per-block from a
+   lesson page: use "↻ Update" to replace/append from a JSON file, "⌨ Paste"
+   to replace or append pasted JSON, and "⭳ Export" to save that bank alone.
 
    Vocabulary Bank
    ---------------
@@ -2597,13 +2605,159 @@ function buildLessonBundle(id){
 }
 
 /** Small status bar used under each block (replaces the old per-block import bars). */
-function blockBarHTML(topicId, note, clearAction, clearLabel){
+function blockBarHTML(topicId, note, buttons){
+  const list = (buttons || []).filter(Boolean);
   return `<div class="exercise-import-bar">
     <div class="exercise-import-note">
       <strong>${esc(topicId)}</strong><br>${esc(note)}
     </div>
-    ${clearAction ? `<button class="btn ghost" data-action="${esc(clearAction)}" data-id="${esc(topicId)}">${esc(clearLabel)}</button>` : ""}
+    ${list.map(b => `<button class="btn ghost" data-action="${esc(b.action)}" data-id="${esc(topicId)}">${esc(b.label)}</button>`).join("")}
   </div>`;
+}
+
+/* ---------------------------------------------------------------------------
+   10d. PER-BLOCK EXERCISE UPDATING  (grammar + vocabulary exercises)
+   --------------------------------------------------------------------------- */
+function currentExercisesFor(topicId, kind){
+  return kind === "vocabulary" ? getVocabExercisesFor(topicId) : getExercisesFor(topicId);
+}
+
+/** Pull an exercise array out of a raw array, an exercise-bank file or a lesson bundle. */
+function extractExerciseList(obj, kind){
+  if (Array.isArray(obj)) return obj;
+  if (!isPlainObj(obj)) return null;
+  if (Array.isArray(obj.exercises)) return obj.exercises;
+  if (kind === "vocabulary"){
+    if (isPlainObj(obj.vocabulary) && Array.isArray(obj.vocabulary.exercises)) return obj.vocabulary.exercises;
+  } else {
+    if (isPlainObj(obj.lesson) && Array.isArray(obj.lesson.exercises)) return obj.lesson.exercises;
+  }
+  return null;
+}
+
+/** Grammar exercises live inside the lesson when one exists, otherwise in their own bank. */
+function setGrammarExercises(topicId, exercises){
+  if (state.lessons[topicId]){
+    state.lessons[topicId].exercises = exercises;
+    if (state.exercises[topicId]){ delete state.exercises[topicId]; saveExercises(); }
+    saveLessons();
+  } else if (exercises.length){
+    state.exercises[topicId] = {
+      topic_id: topicId,
+      kind: "exercises",
+      title: "Exercises — " + (topicDisplayTitle(topicId) || topicId),
+      exercises
+    };
+    saveExercises();
+  } else {
+    delete state.exercises[topicId];
+    saveExercises();
+  }
+}
+
+function setVocabExercises(topicId, exercises){
+  if (exercises.length){
+    state.vocabExercises[topicId] = {
+      topic_id: topicId,
+      kind: "vocabulary_exercises",
+      title: "Vocabulary exercises — " + (topicDisplayTitle(topicId) || topicId),
+      exercises
+    };
+  } else {
+    delete state.vocabExercises[topicId];
+  }
+  saveVocabExercises();
+}
+
+/** mode: "replace" (default) or "append". Returns the new total. */
+function applyExercises(topicId, kind, incoming, mode){
+  const current = currentExercisesFor(topicId, kind);
+  const list = mode === "append" ? current.concat(incoming) : incoming;
+  if (kind === "vocabulary") setVocabExercises(topicId, list);
+  else setGrammarExercises(topicId, list);
+  return list.length;
+}
+
+/** Small toolbar shown in the Exercises / Vocabulary exercises block headings. */
+function exerciseToolsHTML(topicId, kind){
+  const uid = slugify(topicId) + "-" + kind;
+  const has = currentExercisesFor(topicId, kind).length > 0;
+  return `<span class="block-tools">
+    <label class="btn tiny" title="Import a JSON file and update these exercises">
+      ↻ Update
+      <input type="file" class="ex-file-input" accept=".json,application/json" multiple hidden
+             data-topic="${esc(topicId)}" data-kind="${esc(kind)}">
+    </label>
+    <button class="btn tiny ghost" data-action="toggle-paste" data-target="ex-paste-${esc(uid)}"
+            data-label-show="⌨ Paste" data-label-hide="▾ Hide paste">⌨ Paste</button>
+    <button class="btn tiny ghost" data-action="export-exercises"
+            data-id="${esc(topicId)}" data-kind="${esc(kind)}" ${has ? "" : "disabled"}>⭳ Export</button>
+  </span>`;
+}
+
+function exercisePasteHTML(topicId, kind, wrapId, areaId){
+  const example = kind === "vocabulary"
+    ? '{ "topic_id": "' + topicId + '", "kind": "vocabulary_exercises", "exercises": [ { "type": "multiple_choice", "question": "...", "options": ["a", "b"], "answer": 0 } ] }'
+    : '{ "topic_id": "' + topicId + '", "exercises": [ { "type": "fill_blank", "sentence": "She {{blank}} here.", "answer": ["works"] } ] }';
+
+  return `<div class="paste-wrap" id="${esc(wrapId)}" hidden>
+    <textarea class="paste" id="${esc(areaId)}" placeholder='${esc(example)}'></textarea>
+    <div class="file-row">
+      <button class="btn primary tiny" data-action="import-ex-paste" data-mode="replace"
+              data-topic="${esc(topicId)}" data-kind="${esc(kind)}" data-target="${esc(areaId)}">Replace with pasted</button>
+      <button class="btn tiny" data-action="import-ex-paste" data-mode="append"
+              data-topic="${esc(topicId)}" data-kind="${esc(kind)}" data-target="${esc(areaId)}">Add pasted</button>
+      <span class="muted">Accepts an array of exercises, an exercise bank file, or a full lesson JSON.</span>
+    </div>
+  </div>`;
+}
+
+/** Import one or more files as this topic's grammar / vocabulary exercise bank. */
+async function handleExerciseFiles(fileList, topicId, kind){
+  const files = [...fileList];
+  if (!files.length) return;
+
+  const label = kind === "vocabulary" ? "vocabulary exercise" : "exercise";
+  const collected = [];
+  const errors = [];
+
+  for (const file of files){
+    try {
+      const obj = JSON.parse(await file.text());
+      const list = extractExerciseList(obj, kind);
+      if (!list){ errors.push(`${file.name}: no exercise list found`); continue; }
+      if (!list.length){ errors.push(`${file.name}: the exercise list is empty`); continue; }
+      const errs = validateExerciseList(list, label);
+      if (errs.length){ errors.push(`${file.name}: ${errs.join("; ")}`); continue; }
+      collected.push(...list);
+    } catch (e){
+      errors.push(`${file.name}: ${e.message}`);
+    }
+  }
+
+  if (!collected.length){
+    toast(errors.join(" | ") || "No exercises found in the selected file(s).", "err");
+    return;
+  }
+
+  const current = currentExercisesFor(topicId, kind);
+  let mode = "replace";
+  if (current.length){
+    const replace = confirm(
+      `Update ${label}s for this topic?\n\n` +
+      `Currently loaded: ${current.length}\n` +
+      `In the selected file${files.length === 1 ? "" : "s"}: ${collected.length}\n\n` +
+      `OK — replace the current ${label}s.\n` +
+      `Cancel — add the new ones after them.`
+    );
+    mode = replace ? "replace" : "append";
+  }
+
+  const total = applyExercises(topicId, kind, collected, mode);
+  render();
+  toast(`Imported ${collected.length} ${label}${collected.length === 1 ? "" : "s"} — ` +
+        `${mode === "replace" ? "replaced" : "added"}, ${total} now loaded.` +
+        (errors.length ? " Skipped: " + errors.join("; ") : ""));
 }
 
 /* ---------------------------------------------------------------------------
@@ -3661,7 +3815,7 @@ function vocabularyHTML(topicId){
   html += blockBarHTML(topicId,
     n ? `${n} word${n === 1 ? "" : "s"} from the lesson JSON.`
       : "Add a \"vocabulary\" part to this topic's lesson JSON.",
-    n ? "clear-vocabulary" : "", "Clear vocabulary");
+    n ? [{ action: "clear-vocabulary", label: "Clear vocabulary" }] : []);
 
   html += vocabularyExercisesHTML(topicId);
 
@@ -3675,14 +3829,19 @@ function vocabularyExercisesHTML(topicId){
   const n = exercises.length;
   const hidden = !!state.prefs.hideVocabExercises;
   const bodyId = "vocab-ex-body-" + slugify(topicId);
+  const uid = slugify(topicId) + "-vocabulary";
+  const pasteWrapId = "ex-paste-" + uid;
+  const pasteAreaId = "ex-paste-area-" + uid;
 
   let html = `<h3 class="sub-block-title">
     <span>Vocabulary exercises</span>
     <span class="exercise-count">${n}</span>
+    ${exerciseToolsHTML(topicId, "vocabulary")}
     <button class="btn ghost tiny block-toggle" data-action="toggle-block"
             data-block="vocab-exercises" data-target="${esc(bodyId)}"
             aria-expanded="${hidden ? "false" : "true"}">${hidden ? "▸ Show" : "▾ Hide"}</button>
   </h3>
+  ${exercisePasteHTML(topicId, "vocabulary", pasteWrapId, pasteAreaId)}
   <div id="${esc(bodyId)}" ${hidden ? "hidden" : ""}>`;
 
   if (n){
@@ -3695,8 +3854,8 @@ function vocabularyExercisesHTML(topicId){
 
   html += blockBarHTML(topicId,
     n ? `${n} vocabulary exercise${n === 1 ? "" : "s"} from the lesson JSON.`
-      : "Add \"vocabulary.exercises\" to this topic's lesson JSON.",
-    n ? "clear-vocab-exercises" : "", "Clear vocabulary exercises");
+      : "Add \"vocabulary.exercises\" to this topic's lesson JSON, or use Update / Paste above.",
+    n ? [{ action: "clear-vocab-exercises", label: "Clear vocabulary exercises" }] : []);
 
   html += `</div>`;
   return html;
@@ -3764,7 +3923,7 @@ function readingHTML(topicId){
   html += blockBarHTML(topicId,
     n ? `${n} passage${n === 1 ? "" : "s"} from the lesson JSON.`
       : "Add a \"reading\" part to this topic's lesson JSON.",
-    n ? "clear-reading" : "", "Clear reading");
+    n ? [{ action: "clear-reading", label: "Clear reading" }] : []);
 
   html += `</div></section>`;
   return html;
@@ -3780,15 +3939,20 @@ function exercisesBlockHTML(topicId){
   const importedCount = importedExerciseCount(topicId);
   const hidden = !!state.prefs.hideGrammarExercises;
   const bodyId = "ex-body-" + slugify(topicId);
+  const uid = slugify(topicId) + "-grammar";
+  const pasteWrapId = "ex-paste-" + uid;
+  const pasteAreaId = "ex-paste-area-" + uid;
 
   let html = `<section class="lesson-block" id="lesson-exercises">
     <h2 class="block-title">
       <span>Exercises</span>
       <span class="exercise-count">${exercises.length} total</span>
+      ${exerciseToolsHTML(topicId, "grammar")}
       <button class="btn ghost tiny block-toggle" data-action="toggle-block"
               data-block="grammar-exercises" data-target="${esc(bodyId)}"
               aria-expanded="${hidden ? "false" : "true"}">${hidden ? "▸ Show" : "▾ Hide"}</button>
     </h2>
+    ${exercisePasteHTML(topicId, "grammar", pasteWrapId, pasteAreaId)}
     <div id="${esc(bodyId)}" ${hidden ? "hidden" : ""}>`;
 
   if (exercises.length){
@@ -3805,10 +3969,13 @@ function exercisesBlockHTML(topicId){
 
   const noteText = notes.length
     ? notes.join(" · ")
-    : "Add \"lesson.exercises\" to this topic's lesson JSON.";
+    : "Add \"lesson.exercises\" to this topic's lesson JSON, or use Update / Paste above.";
 
-  html += blockBarHTML(topicId, noteText,
-    importedCount ? "clear-exercises" : "", "Clear separately imported");
+  const buttons = [];
+  if (importedCount) buttons.push({ action: "clear-exercises", label: "Clear separately imported" });
+  if (lessonHasOwn)  buttons.push({ action: "clear-lesson-exercises", label: "Clear lesson exercises" });
+
+  html += blockBarHTML(topicId, noteText, buttons);
 
   html += `</div></section>`;
   return html;
@@ -4610,6 +4777,9 @@ function settingsHTML(){
         <code>vocabulary</code> (words + exercises) and <code>reading</code> (passages). Delete the parts you don't need.</li>
       <li>Import that one file in Settings — or directly from the topic's page with
         <em>Import lesson JSON</em> / <em>Paste JSON</em>.</li>
+      <li>In the <strong>Exercises</strong> and <strong>Vocabulary exercises</strong> blocks, use
+        <em>↻ Update</em> to replace a bank from a JSON file, <em>⌨ Paste</em> to replace or append
+        pasted JSON, and <em>⭳ Export</em> to save that bank on its own.</li>
       <li>In any lesson, tick words in the Vocabulary section and use
         <em>Add selected to Bank</em> — or <em>Add all to Bank</em> — to collect them in the
         <strong>Vocabulary Bank</strong>. Use the CSV buttons to export them.</li>
@@ -5756,6 +5926,50 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    /* ---------------- EXERCISE BANKS — export / import / clear ---------------- */
+    case "export-exercises": {
+      const id = el.dataset.id;
+      const kind = el.dataset.kind === "vocabulary" ? "vocabulary" : "grammar";
+      const list = currentExercisesFor(id, kind);
+      if (!list.length){ toast("There are no exercises to export for this topic.", "err"); break; }
+
+      const payload = kind === "vocabulary"
+        ? { topic_id: id, kind: "vocabulary_exercises",
+            title: "Vocabulary exercises — " + (topicDisplayTitle(id) || id), exercises: list }
+        : { topic_id: id, kind: "exercises",
+            title: "Exercises — " + (topicDisplayTitle(id) || id), exercises: list };
+
+      downloadJSON(payload, slugify(id) + (kind === "vocabulary" ? "-vocabulary-exercises.json" : "-exercises.json"));
+      toast(`Exported ${list.length} ${kind === "vocabulary" ? "vocabulary " : ""}exercise${list.length === 1 ? "" : "s"}.`);
+      break;
+    }
+
+    case "import-ex-paste": {
+      const topicId = el.dataset.topic;
+      const kind = el.dataset.kind === "vocabulary" ? "vocabulary" : "grammar";
+      const mode = el.dataset.mode === "append" ? "append" : "replace";
+      const area = $(el.dataset.target);
+
+      if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); break; }
+
+      let obj;
+      try { obj = JSON.parse(area.value); }
+      catch (e){ toast("Pasted text is not valid JSON — " + e.message, "err"); break; }
+
+      const list = extractExerciseList(obj, kind);
+      if (!list || !list.length){ toast("No exercise list found in the pasted JSON.", "err"); break; }
+
+      const errs = validateExerciseList(list, kind === "vocabulary" ? "vocabulary exercise" : "exercise");
+      if (errs.length){ toast("Invalid exercises — " + errs.join("; "), "err"); break; }
+
+      const total = applyExercises(topicId, kind, list, mode);
+      area.value = "";
+      render();
+      toast(`${mode === "replace" ? "Replaced with" : "Added"} ${list.length} ` +
+            `${kind === "vocabulary" ? "vocabulary " : ""}exercise${list.length === 1 ? "" : "s"} — ${total} now loaded.`);
+      break;
+    }
+
     case "clear-exercises": {
       const id = el.dataset.id;
       if (!confirm("Remove the imported exercise bank for this topic?")) return;
@@ -5763,6 +5977,15 @@ document.addEventListener("click", (ev) => {
       saveExercises();
       toast("Imported exercises removed.");
       render();
+      break;
+    }
+
+    case "clear-lesson-exercises": {
+      const id = el.dataset.id;
+      if (!confirm("Remove the exercises that came from this topic's lesson JSON?")) return;
+      if (state.lessons[id]){ state.lessons[id].exercises = []; saveLessons(); }
+      render();
+      toast("Lesson exercises removed.");
       break;
     }
 
@@ -6011,12 +6234,20 @@ document.addEventListener("change", (ev) => {
   }
 
   /* ---- in-page lesson bundle import ---- */
-  if (t.classList){
-    if (t.classList.contains("lesson-file-input")){
-      const files = t.files;
-      t.value = "";
-      handleFiles(files);
-    }
+  if (t.classList && t.classList.contains("lesson-file-input")){
+    const files = t.files;
+    t.value = "";
+    handleFiles(files);
+    return;
+  }
+
+  /* ---- per-block exercise update (grammar / vocabulary) ---- */
+  if (t.classList && t.classList.contains("ex-file-input")){
+    const files = t.files;
+    const topicId = t.dataset.topic;
+    const kind = t.dataset.kind === "vocabulary" ? "vocabulary" : "grammar";
+    t.value = "";
+    handleExerciseFiles(files, topicId, kind);
   }
 });
 
