@@ -323,6 +323,9 @@ button{font:inherit;}
   display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;
   margin-top:20px;padding-top:16px;border-top:1px solid var(--rule);
 }
+.json-toolbar{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;
+}
 .cover-drop{
   display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;
   padding:14px;border:1px dashed var(--rule-strong);border-radius:8px;background:#fbfaf6;
@@ -566,6 +569,47 @@ button{font:inherit;}
   padding:12px 16px;margin:16px 0 18px;background:#fbfaf6;
 }
 
+/* ---- section extras: exercises & texts below literary_examples ---- */
+.section-extras{
+  margin-top:26px;
+  padding-top:20px;
+  border-top:2px dashed var(--rule-strong);
+}
+.section-extras-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;margin-bottom:14px;
+}
+.section-extras-title{
+  font-family:var(--serif);font-size:1.05rem;font-weight:600;
+  display:flex;align-items:center;gap:9px;
+}
+.section-extras-title .count{
+  font-family:var(--sans);font-size:.7rem;font-weight:800;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);
+}
+.section-extras-sub{
+  margin-bottom:22px;
+}
+.section-extras-sub:last-child{
+  margin-bottom:0;
+}
+.section-extras-sub .section-extras-head{
+  margin-bottom:10px;
+}
+.section-extras-sub .section-extras-title{
+  font-size:.96rem;
+  font-weight:600;
+}
+.section-item{position:relative;}
+.section-item-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.section-item-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;color:var(--muted);}
+.btn.section-item-del{color:#b3261e;border-color:rgba(179,38,30,.45);}
+.btn.section-item-del:hover{background:rgba(179,38,30,.1);}
+.section-extras-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+html[data-theme="dark"] .btn.section-item-del{color:#ff8a80;border-color:rgba(255,138,128,.45);}
+.section-item + .section-item{margin-top:16px;}
+.section-texts-stack{display:flex;flex-direction:column;gap:16px;}
+
 .lesson-block{margin-bottom:38px;scroll-margin-top:90px;}
 .block-title{
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -585,7 +629,7 @@ button{font:inherit;}
 .sub-block-title .block-toggle{margin-left:auto;}
 
 /* ============================================================
-   EXERCISE SET GRID  (multiple JSON files as named sets)
+   EXERCISE SET GRID
    ============================================================ */
 .ex-set-grid{
   display:grid;
@@ -612,9 +656,7 @@ button{font:inherit;}
   transform:translateY(-1px);
   box-shadow:0 4px 12px rgba(28,27,25,.06);
 }
-.ex-set-card:focus-visible{
-  outline:2px solid var(--accent-2);outline-offset:2px;
-}
+.ex-set-card:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px;}
 .ex-set-card.active{
   border-left-color:var(--accent);
   background:var(--accent-soft);
@@ -627,10 +669,7 @@ button{font:inherit;}
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
   overflow-wrap:anywhere;
 }
-.ex-set-meta{
-  font-size:.72rem;color:var(--muted);
-  font-variant-numeric:tabular-nums;
-}
+.ex-set-meta{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums;}
 .ex-set-src{
   font-size:.66rem;color:var(--muted);
   font-family:var(--mono);
@@ -640,8 +679,7 @@ button{font:inherit;}
 .ex-set-del{
   position:absolute;top:6px;right:6px;
   width:22px;height:22px;font-size:.7rem;padding:0;
-  opacity:0;
-  transition:opacity .12s;
+  opacity:0;transition:opacity .12s;
 }
 .ex-set-card:hover .ex-set-del,
 .ex-set-card:focus-within .ex-set-del{ opacity:1; }
@@ -717,7 +755,6 @@ button{font:inherit;}
   border:1px solid rgba(47,110,165,.22);
 }
 
-/* ---- Vocabulary selection + bank controls ---- */
 .vocab-grid-toolbar{
   display:flex;flex-wrap:wrap;gap:8px;align-items:center;
   margin-bottom:14px;padding:11px 14px;
@@ -759,7 +796,6 @@ button{font:inherit;}
 }
 .vocab-remove:hover{background:var(--err-soft);color:var(--err);border-color:#e7b3ad;}
 
-/* ---- Source line: friendly name + safe wrapping ---- */
 .vocab-source{
   font-size:.7rem;color:var(--muted);letter-spacing:.03em;
   border-top:1px dashed var(--rule);padding-top:7px;margin-top:2px;
@@ -785,7 +821,6 @@ button{font:inherit;}
   color:var(--muted);
 }
 
-/* ---- Vocabulary Bank filters ---- */
 .bank-filters{
   display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
   margin-bottom:18px;padding:14px 16px;
@@ -998,7 +1033,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .template-wrap[hidden]{display:none;}
 
 /* ============================================================
-   READING OPTIONS  (font family + size for the lesson)
+   READING OPTIONS
    ============================================================ */
 .reader-panel{
   margin-top:18px;
@@ -1098,7 +1133,6 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   font-weight:800;color:var(--muted);margin-bottom:7px;
 }
 
-/* ---- Reader font & size variables applied to the lesson ---- */
 .lesson{
   font-family: var(--reader-font, var(--sans));
   font-size: var(--reader-size, 17px);
@@ -1107,6 +1141,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .lsection-title,
 .lesson .block-title,
 .lesson .sub-block-title,
+.lesson .section-extras-title,
 .lesson .cmp-title{
   font-family: inherit;
 }
@@ -1115,6 +1150,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .lsection-title { font-size: 1.24em; }
 .lesson .block-title    { font-size: 1.24em; }
 .lesson .sub-block-title{ font-size: 1.0em; }
+.lesson .section-extras-title{ font-size: 1.0em; }
 .lesson .cmp-title      { font-size: .99em; }
 .lesson .explanation    { font-size: .91em; }
 .lesson .example-list li{ font-size: .90em; }
@@ -1142,7 +1178,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .lesson .btn{ font-family: var(--sans); }
 
 /* ============================================================
-   THEME PICKER (settings)
+   THEME PICKER
    ============================================================ */
 .theme-grid{
   display:grid;
@@ -1172,15 +1208,16 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .theme-swatch-system{background:linear-gradient(135deg,#faf8f3 0 50%, #1f1f24 50% 100%);}
 
 /* ============================================================
-   MODAL
+   MODAL — optimised for fast opening
    ============================================================ */
 .modal-overlay{
   position:fixed;inset:0;z-index:200;
   display:flex;align-items:center;justify-content:center;
   padding:22px;
-  background:rgba(28,26,22,.5);
-  backdrop-filter:blur(3px);
-  animation:fade .18s ease;
+  background:rgba(28,26,22,.58);
+  animation:fade .12s ease;
+  will-change:opacity;
+  transform:translateZ(0);
 }
 .modal-overlay[hidden]{display:none;}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -1191,10 +1228,14 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   border:1px solid var(--rule-strong);
   border-radius:10px;
   box-shadow:0 30px 70px rgba(0,0,0,.3);
-  animation:pop .2s cubic-bezier(.2,.9,.3,1);
+  animation:pop .14s cubic-bezier(.2,.9,.3,1);
+  will-change:transform,opacity;
+  transform:translateZ(0);
+  contain:layout style paint;
 }
 .modal.narrow{max-width:540px;}
-@keyframes pop{from{transform:translateY(10px) scale(.99);opacity:.6}to{transform:none;opacity:1}}
+.modal.wide{max-width:880px;}
+@keyframes pop{from{transform:translate3d(0,8px,0) scale(.995);opacity:.7}to{transform:translate3d(0,0,0);opacity:1}}
 .modal-head{
   display:flex;justify-content:space-between;align-items:flex-start;gap:18px;
   padding:18px 22px;border-bottom:1px solid var(--rule);flex:0 0 auto;
@@ -1209,6 +1250,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 .modal-body{
   padding:22px 26px 28px;overflow:auto;flex:1 1 auto;
   font-family:var(--serif);font-size:1.05rem;line-height:1.85;color:#26231d;
+  overscroll-behavior:contain;
 }
 .modal-body.form-body{
   font-family:var(--sans);font-size:.92rem;line-height:1.6;color:var(--ink);
@@ -1230,6 +1272,30 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 }
 .toast.show{opacity:1;transform:translate(-50%,0);}
 .toast.err{background:#7d211a;}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table-scroll{overflow-x:auto;margin:0 -4px;}
+.tbl{
+  width:100%;border-collapse:collapse;
+  font-size:.88rem;
+}
+.tbl th{
+  text-align:left;padding:9px 12px;
+  font-size:.66rem;text-transform:uppercase;letter-spacing:.13em;
+  font-weight:800;color:var(--muted);
+  background:#fbfaf6;border-bottom:2px solid var(--rule-strong);
+  white-space:nowrap;
+}
+.tbl td{
+  padding:10px 12px;vertical-align:top;
+  border-bottom:1px solid var(--rule);color:var(--ink-soft);
+}
+.tbl tbody tr:hover{background:#fcfbf7;}
+.tbl .feat,.tbl .pat{font-weight:700;color:var(--ink);white-space:nowrap;}
+.tbl .form{font-family:var(--mono);font-size:.86em;color:var(--accent);}
+.tbl .ex{font-style:italic;}
 
 /* ============================================================
    RESPONSIVE
@@ -1276,6 +1342,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
   .add-book-card{min-height:220px;}
   .vocab-grid-toolbar .btn{flex:1 1 auto;}
   .ex-set-grid{grid-template-columns:1fr 1fr;}
+  .section-extras-head{flex-direction:column;align-items:flex-start;}
 }
 
 /* ============================================================
@@ -1446,8 +1513,8 @@ html[data-theme="dark"] .cover-flag{ background:rgba(0,0,0,.6); }
 html[data-theme="dark"] .pill.not_started{ background:#2a2a30; color:var(--muted); border-color:#3a3a42; }
 html[data-theme="dark"] .pill.in_progress{ border-color:#5a4a24; }
 html[data-theme="dark"] .pill.completed{ border-color:#2f6a4a; }
+html[data-theme="dark"] .section-extras{ border-top-color:var(--rule-strong); }
 
-/* ---- Exercise set grid — dark ---- */
 html[data-theme="dark"] .ex-set-card{
   background:var(--card); border-color:var(--rule);
 }
@@ -1463,7 +1530,6 @@ html[data-theme="dark"] .ex-set-add:hover{
   background:#22222a; border-color:var(--accent-2);
 }
 
-/* ---- Vocabulary Bank — dark ---- */
 html[data-theme="dark"] .vocab-select-all{
   background:#24242a; border-color:#3a3a42; color:var(--ink-soft);
 }
@@ -1559,36 +1625,27 @@ html[data-theme="dark"] .bank-filter-select:focus{
 /* ============================================================================
    ENGLISH GRAMMAR BOOK ENGINE  —  multi-book library edition
    ----------------------------------------------------------------------------
-   Content-independent. Everything the viewer renders comes from JSON:
+   REVISION NOTES
+   ----------------------------------------------------------------------------
+   1.  Every lesson section carries three arrays, in this order:
+         literary_examples   (MANDATORY — at least one per section)
+         exercises           (optional — topic/section exercises)
+         texts               (optional — topic/section reading texts)
+       Exercises and texts are rendered BELOW literary_examples.
 
-     • BOOK files         -> one library entry each: title, cover, sections, topics
-     • LESSON files (one per topic, a single "bundle"):
-         lesson      -> explanations, examples, literary passages, tables, grammar exercises
-         vocabulary  -> word bank (term / definition / example) + vocabulary exercises
-         reading     -> reading passages (text, glossary, questions)
+   2.  A toggle button collapses the Exercises & Texts block for each section.
+       It is HIDDEN by default and its open/closed state is kept in memory.
 
-   Exercise sets
-   -------------
-   Each topic keeps an arbitrary number of *exercise sets* per kind
-   ("grammar" or "vocabulary"). A set is a named bundle of exercises with its
-   source filename. On a lesson page, every set is shown as a card in a
-   card-grid; clicking a card makes that set the active one and displays its
-   exercises below. Sets are imported from JSON files — many at a time — and
-   each file becomes its own named set.
+   3.  The "Add exercise" and "Add text" modals include:
+         • a "Copy … template" button that copies the template JSON
+         • an "Insert into box" button that fills the textarea with it
 
-   Legacy stores (a single exercises array per topic) are migrated on load
-   into a set named "Imported exercises". Exercises that came from a lesson
-   bundle live in a set called "Lesson exercises".
+   4.  lesson.exercises is MANDATORY and must contain at least 30 exercises.
 
-   Vocabulary Bank
-   ---------------
-   • A dedicated "Vocabulary Bank" section in the sidebar, below Books.
-     Words collected from any topic live there, searchable and removable.
-   • The bank can be filtered by Topic / Unit and by Category
-     (part of speech or tag), and exported as CSV or plain text.
-   • Inside each lesson's Vocabulary section you can:
-       – add all words, or only the selected words, to the Vocabulary Bank;
-       – export all words, or only the selected words, as a CSV file.
+   5.  Modal (pop-up) CSS is optimised for speed:
+         • no backdrop-filter blur
+         • GPU-friendly transforms
+         • will-change + contain hints
    ============================================================================ */
 
 /* ---------------------------------------------------------------------------
@@ -1601,8 +1658,8 @@ const LS = {
   LESSONS:         "egb:lessons:v2",
   EXERCISES:       "egb:exercises:v2",       // legacy
   VOCAB_EXERCISES: "egb:vocab-exercises:v1", // legacy
-  EXERCISE_SETS:   "egb:exercise-sets:v1",   // new
-  ACTIVE_SETS:     "egb:active-sets:v1",     // new
+  EXERCISE_SETS:   "egb:exercise-sets:v1",
+  ACTIVE_SETS:     "egb:active-sets:v1",
   VOCABULARY:      "egb:vocabulary:v1",
   READING:         "egb:reading:v1",
   VOCAB_BANK:      "egb:vocab-bank:v1",
@@ -1613,7 +1670,15 @@ const LS = {
 };
 
 /* ---------------------------------------------------------------------------
-   2. READING FONTS
+   2. RULES
+   --------------------------------------------------------------------------- */
+/** lesson.exercises must contain at least this many exercises. */
+const GRAMMAR_EXERCISE_REQUIRED = 30;
+/** Each lesson section must contain at least this many literary examples. */
+const LITERARY_EXAMPLE_REQUIRED = 1;
+
+/* ---------------------------------------------------------------------------
+   3. READING FONTS
    --------------------------------------------------------------------------- */
 const READER_FONTS = [
   { id:"system",    name:"System UI",       stack:"system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" },
@@ -1643,7 +1708,7 @@ const DEFAULT_THEME = "light";
 const DEFAULT_PREFS = { hideGrammarExercises: false, hideVocabExercises: false };
 
 /* ---------------------------------------------------------------------------
-   3. JSON TEMPLATES
+   4. JSON TEMPLATES
    --------------------------------------------------------------------------- */
 const GRAMMAR_BOOK_TEMPLATE = {
   book: {
@@ -1676,6 +1741,32 @@ const GRAMMAR_BOOK_TEMPLATE = {
   ]
 };
 
+/** Build the required number of placeholder grammar exercises. */
+function templateExercises(n){
+  const out = [];
+  for (let i = 1; i <= n; i++){
+    out.push({
+      type: "multiple_choice",
+      question: `Exercise ${i} — choose the correct sentence.`,
+      options: [
+        "Option A — incorrect.",
+        "Option B — correct.",
+        "Option C — incorrect.",
+        "Option D — incorrect."
+      ],
+      answer: 1,
+      explanation: "Explain why option B is correct and the others are wrong."
+    });
+  }
+  return out;
+}
+
+/**
+ * Lesson JSON template.
+ *  • literary_examples is MANDATORY on every section (at least one entry).
+ *  • exercises / texts sit BELOW literary_examples inside each section.
+ *  • lesson.exercises is MANDATORY and holds 30 exercises.
+ */
 const LESSON_TEMPLATE = {
   id: "topic_id",
   title: "Lesson Title",
@@ -1694,11 +1785,16 @@ const LESSON_TEMPLATE = {
         ],
         context: "Optional context note — when this structure is typically used.",
         examples: [
-          { sentence: "This is an example sentence with the target structure.", target: "target structure", note: "Optional note." }
+          { sentence: "This is an example sentence with the target structure.",
+            target: "target structure", note: "Optional note." }
         ],
         mistakes: [
-          { wrong: "An incorrect example.", right: "The corrected example.", why: "Why the first is wrong." }
+          { wrong: "An incorrect example.",
+            right: "The corrected example.",
+            why: "Why the first is wrong." }
         ],
+
+        /* ---- MANDATORY: at least one literary example per section ---- */
         literary_examples: [
           {
             book: "Book Title",
@@ -1709,26 +1805,41 @@ const LESSON_TEMPLATE = {
             target_instances: ["phrase containing the target grammar"],
             analysis: "Grammar analysis of the passage."
           }
+        ],
+
+        /* ---- Below literary_examples: exercises for this topic ---- */
+        exercises: [
+          {
+            type: "multiple_choice",
+            question: "Choose the correct sentence for this section.",
+            options: ["Incorrect.", "Correct.", "Incorrect."],
+            answer: 1,
+            explanation: "Explain why this answer is correct."
+          }
+        ],
+
+        /* ---- Below literary_examples: reading texts for this topic ---- */
+        texts: [
+          {
+            title: "Text title",
+            author: "Author Name",
+            source: "Book or publication",
+            url: "https://www.gutenberg.org/ebooks/0000",
+            context: "Where this text comes from and why it illustrates the topic.",
+            text: "First paragraph of the text.",
+            target_instances: ["phrase containing the target grammar"],
+            glossary: [ { term: "word", definition: "meaning in this context" } ],
+            questions: [ { question: "What does the writer describe first?", answer: "A suggested answer." } ]
+          }
         ]
       }
     ],
+
     comparisons: [],
     summary: [],
-    exercises: [
-      {
-        type: "multiple_choice",
-        question: "Choose the correct sentence.",
-        options: ["Option A", "Option B (correct)", "Option C", "Option D"],
-        answer: 1,
-        explanation: "Explain why option B is correct."
-      },
-      {
-        type: "fill_blank",
-        sentence: "She {{blank}} in London since 2018. (live)",
-        answer: ["has lived", "'s lived"],
-        explanation: "Use the present perfect with 'since' + a point in time."
-      }
-    ]
+
+    /* ---- MANDATORY: exactly GRAMMAR_EXERCISE_REQUIRED exercises ---- */
+    exercises: templateExercises(GRAMMAR_EXERCISE_REQUIRED)
   },
 
   vocabulary: {
@@ -1774,10 +1885,23 @@ const LESSON_TEMPLATE = {
 };
 
 function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
-function lessonTemplateString(){ return JSON.stringify(LESSON_TEMPLATE, null, 2); }
+
+/** Make sure the exercises array is populated with the required number of items. */
+function ensureRequiredExercises(tpl){
+  if (!tpl.lesson) tpl.lesson = {};
+  if (!Array.isArray(tpl.lesson.exercises) ||
+      tpl.lesson.exercises.length < GRAMMAR_EXERCISE_REQUIRED){
+    tpl.lesson.exercises = templateExercises(GRAMMAR_EXERCISE_REQUIRED);
+  }
+  return tpl;
+}
+
+function lessonTemplateString(){
+  return JSON.stringify(ensureRequiredExercises(deepClone(LESSON_TEMPLATE)), null, 2);
+}
 
 function lessonTemplateForTopic(topicId){
-  const tpl = JSON.parse(JSON.stringify(LESSON_TEMPLATE));
+  const tpl = ensureRequiredExercises(deepClone(LESSON_TEMPLATE));
   const found = findTopicAnywhere(topicId);
   if (found){
     tpl.id = found.topic.id;
@@ -1793,7 +1917,7 @@ function lessonTemplateForTopic(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   4. STATE
+   5. STATE
    --------------------------------------------------------------------------- */
 const state = {
   books: [],
@@ -1806,11 +1930,11 @@ const state = {
   vocabBankFilters: { source: "", category: "" },
   progress: {},
 
-  /* Exercise sets: { [topicId]: { grammar: [set], vocabulary: [set] } } */
   exerciseSets: {},
-
-  /* Active set per topic+kind: { "topicId::grammar": setId } */
   activeSetIds: {},
+
+  /** Section extras open state: key = "topicId:sectionIndex" -> true when open. */
+  sectionExtrasOpen: {},
 
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
@@ -1830,7 +1954,7 @@ let editingBookId = null;
 let pendingCover = null;
 
 /* ---------------------------------------------------------------------------
-   5. UTILITIES
+   6. UTILITIES
    --------------------------------------------------------------------------- */
 const $  = (id) => document.getElementById(id);
 
@@ -1884,6 +2008,34 @@ function toast(message, type){
   toast._timer = setTimeout(() => { t.className = "toast"; }, 3400);
 }
 
+/** Robust clipboard helper used by the template copy buttons. */
+function copyTextToClipboard(text, successMsg, failMsg){
+  const succeed = () => toast(successMsg || "Copied to clipboard.");
+  const fail = () => toast(failMsg || "Could not copy automatically — select the text and copy it manually.", "err");
+
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(succeed).catch(() => {
+      if (legacyCopy(text)) succeed(); else fail();
+    });
+  } else {
+    if (legacyCopy(text)) succeed(); else fail();
+  }
+}
+function legacyCopy(text){
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch (e){ return false; }
+}
+
 function downloadJSON(obj, filename){
   const blob = new Blob([JSON.stringify(obj, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1896,7 +2048,6 @@ function downloadJSON(obj, filename){
   URL.revokeObjectURL(url);
 }
 
-/* ---- CSV helpers ---- */
 function csvCell(value){
   const s = String(value == null ? "" : value);
   if (/[",\r\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
@@ -1946,7 +2097,7 @@ function slugify(s){
 function isPlainObj(v){ return !!v && typeof v === "object" && !Array.isArray(v); }
 
 /* ---------------------------------------------------------------------------
-   6. BOOK HELPERS
+   7. BOOK HELPERS
    --------------------------------------------------------------------------- */
 function currentBook(){
   return state.books.find(b => b.id === state.currentBookId) || state.books[0] || null;
@@ -2016,7 +2167,7 @@ function ensureCurrentBook(){
 }
 
 /* ---------------------------------------------------------------------------
-   7. READING OPTIONS
+   8. READING OPTIONS
    --------------------------------------------------------------------------- */
 function readerFont(){
   return READER_FONTS.find(f => f.id === state.reader.fontId) || READER_FONTS[0];
@@ -2114,7 +2265,7 @@ function readerPanelHTML(open){
 }
 
 /* ---------------------------------------------------------------------------
-   7b. THEME
+   9. THEME
    --------------------------------------------------------------------------- */
 function applyTheme(){
   let dark = false;
@@ -2144,7 +2295,7 @@ function setTheme(theme){
 }
 
 /* ---------------------------------------------------------------------------
-   7c. DISPLAY PREFS
+   10. DISPLAY PREFS
    --------------------------------------------------------------------------- */
 function loadPrefs(){
   try {
@@ -2158,10 +2309,9 @@ function loadPrefs(){
 function savePrefs(){ try { localStorage.setItem(LS.PREFS, JSON.stringify(state.prefs)); } catch (e){} }
 
 /* ---------------------------------------------------------------------------
-   8. PERSISTENCE + MIGRATION
+   11. PERSISTENCE + MIGRATION
    --------------------------------------------------------------------------- */
 function loadState(){
-  /* --- books --- */
   try { state.books = JSON.parse(localStorage.getItem(LS.BOOKS)) || []; }
   catch (e) { state.books = []; }
   if (!Array.isArray(state.books)) state.books = [];
@@ -2181,7 +2331,6 @@ function loadState(){
   try { state.currentBookId = localStorage.getItem(LS.CURRENT) || null; }
   catch (e){ state.currentBookId = null; }
 
-  /* --- lessons / vocabulary / readings / progress --- */
   try { state.lessons = JSON.parse(localStorage.getItem(LS.LESSONS)) || {}; }
   catch (e) { state.lessons = {}; }
 
@@ -2200,7 +2349,6 @@ function loadState(){
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
 
-  /* --- exercise sets --- */
   try { state.exerciseSets = JSON.parse(localStorage.getItem(LS.EXERCISE_SETS)) || {}; }
   catch (e) { state.exerciseSets = {}; }
   if (!isPlainObj(state.exerciseSets)) state.exerciseSets = {};
@@ -2209,7 +2357,6 @@ function loadState(){
   catch (e) { state.activeSetIds = {}; }
   if (!isPlainObj(state.activeSetIds)) state.activeSetIds = {};
 
-  /* Normalise every bucket */
   Object.keys(state.exerciseSets).forEach(topicId => {
     const b = state.exerciseSets[topicId];
     if (!isPlainObj(b)){ delete state.exerciseSets[topicId]; return; }
@@ -2217,7 +2364,6 @@ function loadState(){
     if (!Array.isArray(b.vocabulary)) b.vocabulary = [];
   });
 
-  /* --- migrate legacy single-bank stores --- */
   let migrated = false;
 
   try {
@@ -2260,7 +2406,6 @@ function loadState(){
     });
   } catch (e){}
 
-  /* migrate lesson-embedded exercises into a "lesson" set */
   Object.keys(state.lessons).forEach(id => {
     const l = state.lessons[id];
     if (l && Array.isArray(l.exercises) && l.exercises.length){
@@ -2315,7 +2460,7 @@ function saveExerciseSets(){ try{ localStorage.setItem(LS.EXERCISE_SETS, JSON.st
 function saveActiveSets(){ try{ localStorage.setItem(LS.ACTIVE_SETS, JSON.stringify(state.activeSetIds)); }catch(e){} }
 
 /* ---------------------------------------------------------------------------
-   9. TOPIC LOOKUP
+   12. TOPIC LOOKUP
    --------------------------------------------------------------------------- */
 function allTopics(){
   const b = currentBook();
@@ -2371,7 +2516,7 @@ function topicDisplayTitle(id){
 }
 
 /* ---------------------------------------------------------------------------
-   10. EXERCISE SET HELPERS
+   13. EXERCISE SET HELPERS
    --------------------------------------------------------------------------- */
 function ensureSetBucket(topicId){
   if (!state.exerciseSets[topicId]) state.exerciseSets[topicId] = { grammar: [], vocabulary: [] };
@@ -2392,7 +2537,6 @@ function getSetById(topicId, kind, setId){
   return getExerciseSets(topicId, kind).find(s => s.id === setId) || null;
 }
 
-/** Pure read: current active id, or the first set's id, or null. */
 function getActiveSetId(topicId, kind){
   const sets = getExerciseSets(topicId, kind);
   if (!sets.length) return null;
@@ -2402,7 +2546,6 @@ function getActiveSetId(topicId, kind){
   return sets[0].id;
 }
 
-/** Sets the active id if it changed. Returns the id. */
 function ensureActiveSetId(topicId, kind){
   const id = getActiveSetId(topicId, kind);
   if (!id) return null;
@@ -2459,7 +2602,6 @@ function removeExerciseSet(topicId, kind, setId){
   saveActiveSets();
 }
 
-/* Active set accessors — replace the old per-topic single arrays. */
 function getExercisesFor(topicId){
   const s = getActiveExerciseSet(topicId, "grammar");
   return s && Array.isArray(s.exercises) ? s.exercises : [];
@@ -2470,7 +2612,6 @@ function getVocabExercisesFor(topicId){
   return s && Array.isArray(s.exercises) ? s.exercises : [];
 }
 
-/** Total exercise count across ALL sets of a topic (for stats). */
 function totalGrammarExercises(topicId){
   return getExerciseSets(topicId, "grammar")
     .reduce((n, s) => n + (Array.isArray(s.exercises) ? s.exercises.length : 0), 0);
@@ -2493,7 +2634,76 @@ function totalVocabExerciseCount(){
 }
 
 /* ---------------------------------------------------------------------------
-   10b. VOCABULARY HELPERS
+   14. SECTION-LEVEL EXERCISE / TEXT HELPERS
+   --------------------------------------------------------------------------- */
+function getSection(topicId, sectionIndex){
+  const lesson = state.lessons[topicId];
+  if (!lesson || !Array.isArray(lesson.sections)) return null;
+  return lesson.sections[sectionIndex] || null;
+}
+
+function sectionExercises(topicId, sectionIndex){
+  const s = getSection(topicId, sectionIndex);
+  return (s && Array.isArray(s.exercises)) ? s.exercises : [];
+}
+
+function sectionTexts(topicId, sectionIndex){
+  const s = getSection(topicId, sectionIndex);
+  return (s && Array.isArray(s.texts)) ? s.texts : [];
+}
+
+function addSectionExercise(topicId, sectionIndex, exercise){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return false;
+  if (!Array.isArray(s.exercises)) s.exercises = [];
+  s.exercises.push(exercise);
+  saveLessons();
+  return true;
+}
+
+function addSectionText(topicId, sectionIndex, text){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return false;
+  if (!Array.isArray(s.texts)) s.texts = [];
+  s.texts.push(text);
+  saveLessons();
+  return true;
+}
+
+function removeSectionExercise(topicId, sectionIndex, exIndex){
+  const s = getSection(topicId, sectionIndex);
+  if (!s || !Array.isArray(s.exercises)) return;
+  s.exercises.splice(exIndex, 1);
+  saveLessons();
+}
+
+function removeSectionText(topicId, sectionIndex, txIndex){
+  const s = getSection(topicId, sectionIndex);
+  if (!s || !Array.isArray(s.texts)) return;
+  s.texts.splice(txIndex, 1);
+  saveLessons();
+}
+
+function clearSectionExercises(topicId, sectionIndex){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return;
+  s.exercises = [];
+  saveLessons();
+}
+
+function clearSectionTexts(topicId, sectionIndex){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return;
+  s.texts = [];
+  saveLessons();
+}
+
+function sectionExtrasKey(topicId, sectionIndex){
+  return topicId + ":" + sectionIndex;
+}
+
+/* ---------------------------------------------------------------------------
+   15. VOCABULARY HELPERS
    --------------------------------------------------------------------------- */
 function getVocabularyFor(topicId){
   const v = state.vocabulary[topicId];
@@ -2504,9 +2714,6 @@ function totalVocabCount(){
   return Object.keys(state.vocabulary).reduce((sum, id) => sum + importedVocabCount(id), 0);
 }
 
-/* ---------------------------------------------------------------------------
-   10b-2. VOCABULARY BANK HELPERS
-   --------------------------------------------------------------------------- */
 function vocabBankKey(w){
   return norm((w && w.term) || "") + "||" + norm((w && w.part_of_speech) || "");
 }
@@ -2650,7 +2857,7 @@ function filteredBankWords(){
 }
 
 /* ---------------------------------------------------------------------------
-   10b-4. READING HELPERS
+   16. READING HELPERS
    --------------------------------------------------------------------------- */
 function getReadingFor(topicId){
   const bank = state.readings[topicId];
@@ -2662,7 +2869,7 @@ function totalReadingCount(){
 }
 
 /* ---------------------------------------------------------------------------
-   10c. LESSON BUNDLE
+   17. LESSON BUNDLE
    --------------------------------------------------------------------------- */
 function isLessonBundle(obj){
   return isPlainObj(obj) && !!obj.id && !!obj.title && !obj.book &&
@@ -2726,9 +2933,8 @@ function buildLessonBundle(id){
 }
 
 /* ---------------------------------------------------------------------------
-   10d. IMPORTING EXERCISE SETS  (multiple files -> multiple sets)
+   18. IMPORTING EXERCISE SETS
    --------------------------------------------------------------------------- */
-/** Pull an exercise array out of a raw array, an exercise-bank file or a lesson bundle. */
 function extractExerciseList(obj, kind){
   if (Array.isArray(obj)) return obj;
   if (!isPlainObj(obj)) return null;
@@ -2741,7 +2947,6 @@ function extractExerciseList(obj, kind){
   return null;
 }
 
-/** Try to derive a human-friendly set name from a file's JSON or its filename. */
 function deriveSetName(obj, fileName){
   if (isPlainObj(obj)){
     if (typeof obj.title === "string" && obj.title.trim()) return obj.title.trim();
@@ -2807,7 +3012,7 @@ async function handleExerciseFiles(fileList, topicId, kind){
 }
 
 /* ---------------------------------------------------------------------------
-   11. PROGRESS
+   19. PROGRESS
    --------------------------------------------------------------------------- */
 function statusOf(id){
   const p = state.progress[id];
@@ -2847,7 +3052,7 @@ function sectionStats(section){
 }
 
 /* ---------------------------------------------------------------------------
-   12. HEADER + NAV
+   20. HEADER + NAV
    --------------------------------------------------------------------------- */
 function updateHeader(){
   const b = currentBook();
@@ -2887,7 +3092,7 @@ function updateNav(){
 }
 
 /* ---------------------------------------------------------------------------
-   13. RENDER ROUTER
+   21. RENDER ROUTER
    --------------------------------------------------------------------------- */
 function render(){
   ensureCurrentBook();
@@ -2929,7 +3134,7 @@ function openBook(id){
 }
 
 /* ---------------------------------------------------------------------------
-   14. NO BOOKS VIEW
+   22. NO BOOKS VIEW
    --------------------------------------------------------------------------- */
 function noBookHTML(){
   return `
@@ -2958,9 +3163,13 @@ function noBookHTML(){
       <li>A <strong>book</strong> — created in the app, or imported from a grammar book JSON file.</li>
       <li><strong>Sections and topics</strong> inside that book — add them in the app or define them in the JSON.</li>
       <li>One <strong>lesson JSON</strong> file per topic — it holds the lesson, exercises, vocabulary,
-        vocabulary exercises and reading all together.</li>
+        vocabulary exercises and reading all together. Every lesson must provide
+        <strong>at least one literary example per section</strong> and
+        <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.</li>
       <li>Additional <strong>exercise set files</strong> (grammar or vocabulary) can be added to any
         topic at any time — each file becomes its own set, selectable from a card grid.</li>
+      <li><strong>Exercises and texts</strong> can also be added to any individual section (topic)
+        directly from the lesson page, below the section's literary examples.</li>
     </ol>
     <p class="muted" style="margin-top:14px;">
       Full templates for the book and lesson files are available in
@@ -2970,7 +3179,7 @@ function noBookHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   15. DASHBOARD VIEW
+   23. DASHBOARD VIEW
    --------------------------------------------------------------------------- */
 function dashboardHTML(){
   const b = currentBook();
@@ -3047,7 +3256,7 @@ function dashboardHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   16. LIBRARY VIEW
+   24. LIBRARY VIEW
    --------------------------------------------------------------------------- */
 function libraryHTML(){
   const n = state.books.length;
@@ -3109,7 +3318,7 @@ function addBookCardHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   17. BOOK DETAIL VIEW
+   25. BOOK DETAIL VIEW
    --------------------------------------------------------------------------- */
 function bookDetailHTML(){
   const b = currentBook();
@@ -3155,6 +3364,11 @@ function searchIndex(){
       parts.push(s.title || "");
       parts.push(Array.isArray(s.explanation) ? s.explanation.join(" ") : (s.explanation || ""));
       (s.examples || []).forEach(e => parts.push(e.sentence || ""));
+      (s.literary_examples || []).forEach(L => {
+        parts.push(L.book || "", L.author || "", L.context || "", L.passage || "", L.analysis || "");
+      });
+      (s.exercises || []).forEach(e => parts.push(e.question || e.sentence || ""));
+      (s.texts || []).forEach(t => parts.push(t.title || "", t.context || "", t.text || ""));
     });
     getVocabularyFor(topic.id).forEach(w => {
       parts.push(w.term || "", w.definition || "", w.example || "");
@@ -3249,12 +3463,22 @@ function topicCardHTML(topic, sectionId){
   const vocabCount = importedVocabCount(topic.id);
   const readingCount = importedReadingCount(topic.id);
 
+  let sectionEx = 0, sectionTx = 0;
+  if (lesson && Array.isArray(lesson.sections)){
+    lesson.sections.forEach(s => {
+      if (Array.isArray(s.exercises)) sectionEx += s.exercises.length;
+      if (Array.isArray(s.texts))     sectionTx += s.texts.length;
+    });
+  }
+
   const flags = [];
   if (lesson) flags.push("Lesson ✓");
   if (vocabCount) flags.push(vocabCount + " words");
   if (readingCount) flags.push(readingCount + " reading");
   if (gSets) flags.push(gSets + " ex. set" + (gSets === 1 ? "" : "s"));
   if (vSets) flags.push(vSets + " vocab set" + (vSets === 1 ? "" : "s"));
+  if (sectionEx) flags.push(sectionEx + " sec. ex.");
+  if (sectionTx) flags.push(sectionTx + " sec. text" + (sectionTx === 1 ? "" : "s"));
   const flagText = flags.length ? flags.join(" · ") : "No content";
 
   return `
@@ -3278,7 +3502,7 @@ function topicCardHTML(topic, sectionId){
 }
 
 /* ---------------------------------------------------------------------------
-   18. COMPLETED VIEW
+   26. COMPLETED VIEW
    --------------------------------------------------------------------------- */
 function completedHTML(){
   const done = allTopics().filter(x => statusOf(x.topic.id) === "completed");
@@ -3300,7 +3524,7 @@ function completedHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   18b. VOCABULARY BANK VIEW
+   27. VOCABULARY BANK VIEW
    --------------------------------------------------------------------------- */
 function vocabBankHTML(){
   const total = state.vocabBank.length;
@@ -3448,7 +3672,7 @@ function updateBankCountLabel(){
 }
 
 /* ---------------------------------------------------------------------------
-   19. LESSON VIEW
+   28. LESSON VIEW
    --------------------------------------------------------------------------- */
 function lessonHTML(id){
   const found = findTopic(id);
@@ -3487,7 +3711,7 @@ function lessonHTML(id){
       </div>
       <div class="paste-wrap" id="lesson-paste-wrap" hidden>
         <textarea class="paste" id="lesson-paste"
-                  placeholder='{ "id": "${esc(id)}", "title": "...", "lesson": { "sections": [] }, "vocabulary": { "words": [], "exercises": [] }, "reading": { "passages": [] } }'></textarea>
+                  placeholder='{ "id": "${esc(id)}", "title": "...", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... 30 ... ] }, "vocabulary": { "words": [], "exercises": [] }, "reading": { "passages": [] } }'></textarea>
         <div class="file-row">
           <button class="btn primary" data-action="import-lesson-paste"
                   data-topic="${esc(id)}" data-target="lesson-paste">Import pasted JSON</button>
@@ -3556,6 +3780,13 @@ function noLessonHTML(topic, hasOther){
       : "The book lists this topic, but its lesson JSON has not been imported yet."}
       One JSON file holds the lesson, exercises, vocabulary, vocabulary exercises and reading.</p>
     <p class="muted">Expected file name: <code>${esc(topic.id)}.json</code></p>
+    <p class="muted">
+      <strong>Mandatory:</strong> every section must include at least
+      <strong>${LITERARY_EXAMPLE_REQUIRED} literary example</strong>
+      (<code>literary_examples</code>), and <code>lesson.exercises</code> must contain at least
+      <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.
+      Exercises and texts for a topic live <em>below</em> <code>literary_examples</code> inside the section.
+    </p>
     <div class="file-row">
       <label class="btn primary">
         Import lesson JSON
@@ -3574,9 +3805,11 @@ function noLessonHTML(topic, hasOther){
     <div class="template-wrap" id="${esc(tplId)}" hidden>
       <p class="muted" style="margin-top:14px;">
         This template is pre-filled with the <code>id</code>, <code>title</code>,
-        <code>section</code> and <code>number</code> for <strong>${esc(topic.title)}</strong>.
-        Keep only the parts you need: <code>lesson</code>, <code>vocabulary</code>
-        (words + exercises) and <code>reading</code>. Import the file, or use <em>Paste JSON</em> above.
+        <code>section</code> and <code>number</code> for <strong>${esc(topic.title)}</strong>,
+        with a full <code>literary_examples</code> block, an <code>exercises</code> block and a
+        <code>texts</code> block on every section, plus
+        <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong> under <code>lesson.exercises</code>.
+        Import the file, or use <em>Paste JSON</em> above.
       </p>
       <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
       <div class="file-row">
@@ -3607,7 +3840,13 @@ function sectionHTML(s, index, lesson){
   if (s.context)     h += `<div class="context-box"><span class="context-label">Context</span>${esc(s.context)}</div>`;
   if (s.examples && s.examples.length) h += examplesHTML(s.examples);
   if (s.mistakes && s.mistakes.length) h += mistakesHTML(s.mistakes);
+
+  /* Literary examples — mandatory block */
   h += literaryHTML(s, lesson, index);
+
+  /* Exercises and texts, rendered BELOW literary_examples and hidden by default */
+  h += sectionExtrasHTML(s, index, lesson);
+
   h += `</section>`;
   return h;
 }
@@ -3636,7 +3875,11 @@ function literaryHTML(section, lesson, sectionIndex){
   const list = section.literary_examples || [];
 
   if (!list.length){
-    return `<div class="lit-none">No verified literary example available for this section.</div>`;
+    return `<div class="lit-none">
+      No literary example for this section.
+      <strong>Literary examples are mandatory</strong> — at least
+      ${LITERARY_EXAMPLE_REQUIRED} entry is required in <code>literary_examples</code>.
+    </div>`;
   }
 
   return list.map((L, li) => {
@@ -3664,6 +3907,107 @@ function literaryHTML(section, lesson, sectionIndex){
       <button class="btn ghost" data-action="open-passage" data-key="${esc(key)}">Read complete passage</button>
     </figure>`;
   }).join("");
+}
+
+/* ---------------------------------------------------------------------------
+   28b. SECTION EXTRAS — exercises & texts, collapsible, hidden by default
+   --------------------------------------------------------------------------- */
+function sectionExtrasHTML(s, sectionIndex, lesson){
+  const topicId = lesson.id;
+  const exercises = Array.isArray(s.exercises) ? s.exercises : [];
+  const texts     = Array.isArray(s.texts)     ? s.texts     : [];
+  const key = sectionExtrasKey(topicId, sectionIndex);
+  const isOpen = !!state.sectionExtrasOpen[key];
+  const bodyId = "sec-extras-" + slugify(topicId) + "-" + sectionIndex;
+
+  let h = `<div class="section-extras" data-section-extras="${sectionIndex}">
+    <div class="section-extras-head">
+      <h3 class="section-extras-title">
+        Exercises &amp; Texts
+        <span class="count">${exercises.length} ex · ${texts.length} text${texts.length === 1 ? "" : "s"}</span>
+      </h3>
+      <button class="btn ghost tiny" type="button"
+              data-action="toggle-section-extras"
+              data-key="${esc(key)}"
+              data-target="${esc(bodyId)}"
+              aria-expanded="${isOpen ? "true" : "false"}">
+        ${isOpen ? "▾ Hide" : "▸ Show"}
+      </button>
+    </div>
+    <div id="${esc(bodyId)}" ${isOpen ? "" : "hidden"}>`;
+
+  /* ---- Exercises subsection ---- */
+  h += `<div class="section-extras-sub">
+    <div class="section-extras-head">
+      <h4 class="section-extras-title">
+        Exercises
+        <span class="count">${exercises.length} ${exercises.length === 1 ? "exercise" : "exercises"}</span>
+      </h4>
+      <div class="section-extras-actions">
+        ${exercises.length ? `<button class="btn tiny ghost section-item-del" type="button"
+              data-action="clear-section-exercises"
+              data-topic="${esc(topicId)}" data-section="${sectionIndex}">🗑 Remove all</button>` : ""}
+        <button class="btn tiny primary" type="button"
+              data-action="add-section-exercise"
+              data-topic="${esc(topicId)}" data-section="${sectionIndex}">＋ Add exercise</button>
+      </div>
+    </div>`;
+
+  if (exercises.length){
+    h += `<div class="exercises">${exercises.map((ex, i) => `
+      <div class="section-item">
+        <div class="section-item-bar">
+          <span class="section-item-label">Exercise ${i + 1} of ${exercises.length}</span>
+          <button class="btn tiny ghost section-item-del" type="button"
+                  data-action="delete-section-exercise"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}" data-index="${i}"
+                  title="Remove this exercise" aria-label="Remove exercise ${i + 1}">✕ Remove</button>
+        </div>
+        ${exerciseHTML(ex, i, topicId, "grammar", "section:" + sectionIndex)}
+      </div>`).join("")}</div>`;
+  } else {
+    h += `<div class="lit-none" style="margin-top:0;">No exercises added to this section yet.
+      Use <strong>＋ Add exercise</strong> to paste one in.</div>`;
+  }
+  h += `</div>`;
+
+  /* ---- Texts subsection ---- */
+  h += `<div class="section-extras-sub">
+    <div class="section-extras-head">
+      <h4 class="section-extras-title">
+        Texts
+        <span class="count">${texts.length} ${texts.length === 1 ? "text" : "texts"}</span>
+      </h4>
+      <div class="section-extras-actions">
+        ${texts.length ? `<button class="btn tiny ghost section-item-del" type="button"
+              data-action="clear-section-texts"
+              data-topic="${esc(topicId)}" data-section="${sectionIndex}">🗑 Remove all</button>` : ""}
+        <button class="btn tiny primary" type="button"
+              data-action="add-section-text"
+              data-topic="${esc(topicId)}" data-section="${sectionIndex}">＋ Add text</button>
+      </div>
+    </div>`;
+
+  if (texts.length){
+    h += `<div class="section-texts-stack">${texts.map((t, i) => `
+      <div class="section-item">
+        <div class="section-item-bar">
+          <span class="section-item-label">Text ${i + 1} of ${texts.length}</span>
+          <button class="btn tiny ghost section-item-del" type="button"
+                  data-action="delete-section-text"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}" data-index="${i}"
+                  title="Remove this text" aria-label="Remove text ${i + 1}">✕ Remove</button>
+        </div>
+        ${readingPassageHTML(t, i)}
+      </div>`).join("")}</div>`;
+  } else {
+    h += `<div class="lit-none" style="margin-top:0;">No texts added to this section yet.
+      Use <strong>＋ Add text</strong> to paste one in.</div>`;
+  }
+  h += `</div>`;
+
+  h += `</div></div>`;
+  return h;
 }
 
 function comparisonsHTML(comparisons){
@@ -3719,7 +4063,7 @@ function summaryHTML(summary){
 }
 
 /* ---------------------------------------------------------------------------
-   19b. VOCABULARY BLOCK
+   29. VOCABULARY BLOCK
    --------------------------------------------------------------------------- */
 function vocabCardHTML(w, opts){
   opts = opts || {};
@@ -3854,12 +4198,8 @@ function vocabularyHTML(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   19c. EXERCISE SET GRID — shared by grammar + vocabulary
+   30. EXERCISE SET GRID
    --------------------------------------------------------------------------- */
-/**
- * Card grid showing every exercise set of a topic, with a card for
- * "add set" that opens the file picker for multiple JSON files.
- */
 function exerciseSetGridHTML(topicId, kind){
   const sets = getExerciseSets(topicId, kind);
   const activeId = ensureActiveSetId(topicId, kind);
@@ -3901,7 +4241,7 @@ function exSetCardHTML(topicId, kind, set, isActive){
 }
 
 /* ---------------------------------------------------------------------------
-   19d. VOCABULARY EXERCISES BLOCK
+   31. VOCABULARY EXERCISES BLOCK
    --------------------------------------------------------------------------- */
 function vocabularyExercisesHTML(topicId){
   const kind = "vocabulary";
@@ -3943,7 +4283,7 @@ function vocabularyExercisesHTML(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   19e. READING BLOCK
+   32. READING BLOCK
    --------------------------------------------------------------------------- */
 function readingPassageHTML(p, index){
   const head = `<div class="lit-head">
@@ -3983,7 +4323,7 @@ function readingPassageHTML(p, index){
 function readingHTML(topicId){
   const passages = getReadingFor(topicId);
   const n = passages.length;
-  const bodyId      = "reading-body-" + slugify(topicId);
+  const bodyId = "reading-body-" + slugify(topicId);
 
   let html = `<section class="lesson-block" id="lesson-reading">
     <h2 class="block-title">
@@ -4016,7 +4356,7 @@ function readingHTML(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   20. EXERCISES BLOCK  (grammar exercises)
+   33. EXERCISES BLOCK (grammar sets)
    --------------------------------------------------------------------------- */
 function exercisesBlockHTML(topicId){
   const kind = "grammar";
@@ -4059,21 +4399,22 @@ function exercisesBlockHTML(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   21. EXERCISES RENDERERS
+   34. EXERCISE RENDERERS
    --------------------------------------------------------------------------- */
-function exerciseHTML(ex, i, lessonId, bank){
+function exerciseHTML(ex, i, lessonId, bank, ctx){
   const type = ex.type || "multiple_choice";
   const b = bank || "grammar";
-  if (type === "multiple_choice")      return mcHTML(ex, i, b);
-  if (type === "fill_blank")           return fillHTML(ex, i, b);
-  if (type === "matching_definition")  return matchHTML(ex, i, lessonId, b);
-  return `<div class="exercise" data-ex="${i}" data-bank="${esc(b)}">
+  const c = ctx || "";
+  if (type === "multiple_choice")      return mcHTML(ex, i, b, c);
+  if (type === "fill_blank")           return fillHTML(ex, i, b, c);
+  if (type === "matching_definition")  return matchHTML(ex, i, lessonId, b, c);
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(b)}" data-ctx="${esc(c)}">
     <div class="ex-feedback err">Unsupported exercise type: <strong>${esc(type)}</strong></div>
   </div>`;
 }
 
-function mcHTML(ex, i, bank){
-  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="multiple_choice">
+function mcHTML(ex, i, bank, ctx){
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-ctx="${esc(ctx || "")}" data-type="multiple_choice">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Multiple choice</span></div>
     <p class="ex-question">${esc(ex.question || ex.sentence || "")}</p>
     <div class="options">
@@ -4085,7 +4426,7 @@ function mcHTML(ex, i, bank){
   </div>`;
 }
 
-function fillHTML(ex, i, bank){
+function fillHTML(ex, i, bank, ctx){
   const sentence = ex.sentence || ex.question || "";
   const parts = String(sentence).split("{{blank}}");
   const blanks = parts.length - 1;
@@ -4098,7 +4439,7 @@ function fillHTML(ex, i, bank){
     }
   });
 
-  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="fill_blank">
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-ctx="${esc(ctx || "")}" data-type="fill_blank">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Fill in the blank</span></div>
     <p class="ex-question fill-sentence">${body}</p>
     <div class="ex-actions"><button class="btn" data-action="check-exercise">Check answer</button></div>
@@ -4118,12 +4459,12 @@ function matchOrder(key, n){
   return matchOrders[key];
 }
 
-function matchHTML(ex, i, lessonId, bank){
+function matchHTML(ex, i, lessonId, bank, ctx){
   const pairs = ex.pairs || [];
-  const setId = getActiveSetId(lessonId, bank) || "default";
+  const setId = ctx || getActiveSetId(lessonId, bank) || "default";
   const order = matchOrder(`${lessonId}:${bank}:${setId}:${i}`, pairs.length);
 
-  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-type="matching_definition">
+  return `<div class="exercise" data-ex="${i}" data-bank="${esc(bank)}" data-ctx="${esc(ctx || "")}" data-type="matching_definition">
     <div class="ex-head"><span class="ex-num">${i + 1}</span><span class="ex-type">Matching</span></div>
     <p class="ex-question">${esc(ex.question || "Match each item with its definition.")}</p>
     <div class="match-grid">
@@ -4157,15 +4498,25 @@ function feedback(card, cls, html){
   fb.innerHTML = html;
 }
 
-function checkExercise(card){
+/** Resolve the exercise object for a rendered card — set-based or section-based. */
+function resolveExercise(card){
   const i = Number(card.dataset.ex);
   const bank = card.dataset.bank === "vocabulary" ? "vocabulary" : "grammar";
-  const exercises = bank === "vocabulary"
-    ? getVocabExercisesFor(state.currentTopicId)
-    : getExercisesFor(state.currentTopicId);
+  const ctx = card.dataset.ctx || "";
+  const topicId = state.currentTopicId;
 
-  if (!exercises[i]) return;
-  const ex = exercises[i];
+  if (ctx.indexOf("section:") === 0){
+    const si = Number(ctx.slice(8));
+    const list = sectionExercises(topicId, si);
+    return list[i] || null;
+  }
+  const list = bank === "vocabulary" ? getVocabExercisesFor(topicId) : getExercisesFor(topicId);
+  return list[i] || null;
+}
+
+function checkExercise(card){
+  const ex = resolveExercise(card);
+  if (!ex) return;
   const type = card.dataset.type;
 
   if (type === "multiple_choice"){
@@ -4240,7 +4591,7 @@ function checkExercise(card){
 }
 
 /* ---------------------------------------------------------------------------
-   22. PASSAGE MODAL
+   35. PASSAGE MODAL
    --------------------------------------------------------------------------- */
 function openPassage(key){
   const data = passageStore.get(key);
@@ -4267,7 +4618,7 @@ function closeModal(){
 }
 
 /* ---------------------------------------------------------------------------
-   23. FORM MODAL
+   36. FORM MODAL
    --------------------------------------------------------------------------- */
 function openFormModal({ title, sub, body, onSubmit }){
   $("formModalTitle").textContent = title || "";
@@ -4601,7 +4952,287 @@ function deleteTopic(topicId){
 }
 
 /* ---------------------------------------------------------------------------
-   24. SETTINGS VIEW
+   37. ADD / DELETE SECTION-LEVEL EXERCISES & TEXTS
+   --------------------------------------------------------------------------- */
+const EXERCISE_PLACEHOLDER = `{
+  "type": "multiple_choice",
+  "question": "Choose the correct sentence.",
+  "options": ["She go to work every day.", "She goes to work every day.", "She going to work."],
+  "answer": 1,
+  "explanation": "With he/she/it we add -s in the present simple."
+}`;
+
+const TEXT_PLACEHOLDER = `{
+  "title": "Text title",
+  "author": "Author Name",
+  "source": "Book or publication",
+  "url": "https://www.gutenberg.org/ebooks/0000",
+  "context": "Where this text comes from and why it illustrates the topic.",
+  "text": "First paragraph of the text.\\n\\nSecond paragraph.",
+  "target_instances": ["phrase containing the target grammar"],
+  "glossary": [ { "term": "word", "definition": "meaning in this context" } ],
+  "questions": [ { "question": "What does the writer describe first?", "answer": "A suggested answer." } ]
+}`;
+
+/** Parse pasted JSON into a LIST of items. Accepts one object, an array,
+    or {key:[...]}; repairs trailing commas and a missing closing ] or }. */
+function parsePastedList(raw, listKey){
+  let txt = String(raw).trim();
+  const attempt = (t) => { try { return { ok:true, v: JSON.parse(t) }; } catch(e){ return { ok:false, e }; } };
+  let r = attempt(txt);
+  if (!r.ok){
+    let fixed = txt.replace(/,\s*$/, "");               /* trailing comma at the end */
+    fixed = fixed.replace(/,(\s*[\]}])/g, "$1");        /* trailing commas before ] or } */
+    r = attempt(fixed);
+    if (!r.ok && fixed.charAt(0) === "[") r = attempt(fixed + "]");   /* missing closing ] */
+    if (!r.ok && fixed.charAt(0) === "[") r = attempt(fixed + "}]");
+    if (!r.ok) return { error: r.e && r.e.message ? r.e.message : "could not parse" };
+  }
+  let v = r.v;
+  if (isPlainObj(v) && Array.isArray(v[listKey])) v = v[listKey];
+  return { list: Array.isArray(v) ? v : [v] };
+}
+
+/* ---- Topic-aware templates: built from the topic's own examples ---- */
+function topicTemplateContext(topicId, sectionIndex){
+  const lesson = state.lessons[topicId] || {};
+  const found  = (typeof findTopicAnywhere === "function") ? findTopicAnywhere(topicId) : null;
+  const topicTitle = (found && found.topic && found.topic.title) || lesson.title || topicId || "this topic";
+  const secs = Array.isArray(lesson.sections) ? lesson.sections : [];
+  const cur  = secs[sectionIndex] || {};
+  const ordered = [cur].concat(secs.filter((x, i) => i !== sectionIndex));   /* this section first */
+  const examples = [], lit = [];
+  ordered.forEach(sec => {
+    if (!sec || typeof sec !== "object") return;
+    (Array.isArray(sec.examples) ? sec.examples : []).forEach(e => {
+      if (typeof e === "string" && e.trim()) examples.push({ sentence: e.trim(), target: "", note: "" });
+      else if (e && e.sentence) examples.push({
+        sentence: String(e.sentence), target: e.target ? String(e.target) : "", note: e.note ? String(e.note) : "" });
+    });
+    (Array.isArray(sec.literary_examples) ? sec.literary_examples : []).forEach(L => {
+      if (L && L.passage) lit.push(L);
+    });
+  });
+  return { topicTitle, sectionTitle: cur.title || "", examples, lit };
+}
+
+function blankOutExample(e){
+  const sent = e.sentence;
+  if (e.target){
+    const re = new RegExp(e.target.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    const m = sent.match(re);
+    if (m) return { sentence: sent.replace(re, "{{blank}}"), answer: m[0] };
+  }
+  const words = sent.replace(/[.!?]+$/, "").split(/\s+/);
+  const last = words[words.length - 1] || "";
+  const idx = sent.lastIndexOf(last);
+  return { sentence: sent.slice(0, idx) + "{{blank}}" + sent.slice(idx + last.length), answer: last };
+}
+
+function sectionExerciseTemplate(topicId, sectionIndex){
+  const c = topicTemplateContext(topicId, sectionIndex);
+  const ex = c.examples;
+  const out = [];
+
+  /* 1 — multiple choice (built only from the topic's Examples) */
+  const targeted = ex.filter(e => e.target);
+  const distinct = [];
+  targeted.forEach(e => { if (!distinct.some(d => d.target.toLowerCase() === e.target.toLowerCase())) distinct.push(e); });
+  if (distinct.length >= 2){
+    const right = distinct[0];
+    const others = distinct.slice(1, 3).map(e => e.target);
+    const opts = [others[0], right.target].concat(others.slice(1));
+    out.push({ type: "multiple_choice",
+      question: `Which phrase in this sentence shows ${c.topicTitle}? "${right.sentence}"`,
+      options: opts, answer: 1,
+      explanation: right.note || `"${right.target}" is the ${c.topicTitle} structure in this sentence.` });
+  } else if (ex.length){
+    out.push({ type: "multiple_choice",
+      question: `Which sentence correctly shows ${ex[0].target || c.topicTitle}?`,
+      options: ["Write an incorrect version here.", ex[0].sentence, "Write another incorrect version here."],
+      answer: 1, explanation: ex[0].note || "Explain why this answer is correct." });
+  } else {
+    out.push({ type: "multiple_choice",
+      question: `Choose the correct sentence for: ${c.topicTitle}.`,
+      options: ["Incorrect sentence.", "Correct sentence.", "Incorrect sentence."],
+      answer: 1, explanation: "Explain why this answer is correct." });
+  }
+
+  /* 2 — fill in the blank (an example sentence with its target blanked out) */
+  if (ex.length){
+    const b = blankOutExample(ex[ex.length > 1 ? 1 : 0]);   /* a different example than the multiple-choice one */
+    out.push({ type: "fill_blank", sentence: b.sentence, answer: b.answer,
+      explanation: `This sentence is an example of ${c.topicTitle}.` });
+  } else {
+    out.push({ type: "fill_blank", sentence: "Write a sentence with a {{blank}} here.", answer: "word",
+      explanation: `Explain the rule for ${c.topicTitle}.` });
+  }
+
+  /* 3 — matching (target structure → its note or example) */
+  const pairs = ex.filter(e => e.target).slice(0, 3)
+    .map(e => ({ term: e.target, definition: e.note || e.sentence }));
+  out.push({ type: "matching_definition",
+    question: `Match each ${c.topicTitle} item with its meaning or example.`,
+    pairs: pairs.length >= 2 ? pairs
+      : [ { term: "term 1", definition: "definition 1" }, { term: "term 2", definition: "definition 2" } ] });
+
+  return JSON.stringify(out, null, 2);
+}
+
+function sectionTextTemplate(topicId, sectionIndex){
+  const c = topicTemplateContext(topicId, sectionIndex);
+  const L = c.lit[0] || null;
+  const ex = c.examples.slice(0, 4);
+  let body, targets, fromLit = false;
+  if (ex.length){
+    body = ex.map(e => e.sentence).join(" ") + "\n\n(Add more paragraphs here.)";
+    targets = ex.map(e => e.target).filter(Boolean);
+  } else if (L){
+    fromLit = true;
+    body = String(L.passage);
+    targets = Array.isArray(L.target_instances) ? L.target_instances : [];
+  } else {
+    body = "First paragraph of the text.\n\nSecond paragraph.";
+    targets = [];
+  }
+  const withNote = c.examples.filter(e => e.target).slice(0, 2);
+  const glossary = withNote.length
+    ? withNote.map(e => ({ term: e.target, definition: e.note || "meaning in this context" }))
+    : [ { term: "word", definition: "meaning in this context" } ];
+  const t0 = targets[0];
+  const tpl = {
+    title: `${c.topicTitle} in context`,
+    author: fromLit && L.author ? L.author : "Author Name",
+    source: fromLit && L.book ? L.book : "Book or publication",
+    url: fromLit && L.url ? L.url : "https://www.gutenberg.org/ebooks/0000",
+    context: `A short text built from the examples of "${c.topicTitle}"${c.sectionTitle ? " (" + c.sectionTitle + ")" : ""}. Replace it with your own text or a passage from a book.`,
+    text: body,
+    target_instances: targets.length ? targets : ["phrase containing the target grammar"],
+    glossary,
+    questions: [
+      { question: t0 ? `Find the examples of "${t0}" in the text. What do they show about ${c.topicTitle}?`
+                     : `Find the examples of ${c.topicTitle} in the text.`,
+        answer: "A suggested answer." },
+      { question: "What is the text about?", answer: "A suggested answer." }
+    ]
+  };
+  return JSON.stringify(tpl, null, 2);
+}
+
+function openAddSectionExercise(topicId, sectionIndex){
+  if (!getSection(topicId, sectionIndex)){
+    toast("This section is not loaded yet — import the lesson JSON first.", "err");
+    return;
+  }
+
+  openFormModal({
+    title: "Add exercise to section",
+    sub: "Paste one exercise (or a list of them) as JSON. The template is pre-filled from this topic's own examples.",
+    body: `
+      <div class="field">
+        <label for="secExJson">Exercise JSON</label>
+        <div class="json-toolbar">
+          <button type="button" class="btn ghost tiny" data-action="copy-exercise-template"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}">
+            ⧉ Copy exercise template
+          </button>
+          <button type="button" class="btn ghost tiny" data-action="fill-exercise-template" data-target="secExJson"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}">
+            ↧ Insert into box
+          </button>
+        </div>
+        <textarea id="secExJson" class="paste" style="min-height:220px" spellcheck="false"
+                  placeholder='${esc(sectionExerciseTemplate(topicId, sectionIndex))}'></textarea>
+      </div>
+      <p class="muted">
+        Supported types: <code>multiple_choice</code>, <code>fill_blank</code> (use
+        <code>{{blank}}</code> in the sentence) and <code>matching_definition</code>.
+      </p>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Add exercise</button>
+      </div>`,
+    onSubmit: () => {
+      const raw = ($("secExJson") ? $("secExJson").value : "").trim();
+      if (!raw){ toast("Paste an exercise first.", "err"); return; }
+      const parsed = parsePastedList(raw, "exercises");
+      if (parsed.error){ toast("Invalid JSON — " + parsed.error, "err"); return; }
+      const list = parsed.list;
+      if (!list.length){ toast("The exercise list is empty.", "err"); return; }
+      const errs = validateExerciseList(list, "exercise");
+      if (errs.length){ toast(errs.join("; "), "err"); return; }
+      for (const ex of list){
+        if (!addSectionExercise(topicId, sectionIndex, ex)){
+          toast("Could not add the exercise — section not found.", "err");
+          return;
+        }
+      }
+      state.sectionExtrasOpen[sectionExtrasKey(topicId, sectionIndex)] = true;
+      closeFormModal();
+      render();
+      toast(list.length === 1 ? "Exercise added to the section." : list.length + " exercises added to the section.");
+    }
+  });
+}
+
+function openAddSectionText(topicId, sectionIndex){
+  if (!getSection(topicId, sectionIndex)){
+    toast("This section is not loaded yet — import the lesson JSON first.", "err");
+    return;
+  }
+
+  openFormModal({
+    title: "Add text to section",
+    sub: "Paste one text (or a list of texts) as JSON. The template is pre-filled from this topic's own examples.",
+    body: `
+      <div class="field">
+        <label for="secTxJson">Text JSON</label>
+        <div class="json-toolbar">
+          <button type="button" class="btn ghost tiny" data-action="copy-text-template"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}">
+            ⧉ Copy text template
+          </button>
+          <button type="button" class="btn ghost tiny" data-action="fill-text-template" data-target="secTxJson"
+                  data-topic="${esc(topicId)}" data-section="${sectionIndex}">
+            ↧ Insert into box
+          </button>
+        </div>
+        <textarea id="secTxJson" class="paste" style="min-height:240px" spellcheck="false"
+                  placeholder='${esc(sectionTextTemplate(topicId, sectionIndex))}'></textarea>
+      </div>
+      <p class="muted">
+        <code>text</code> is required. <code>glossary</code>, <code>questions</code> and
+        <code>target_instances</code> are optional.
+      </p>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Add text</button>
+      </div>`,
+    onSubmit: () => {
+      const raw = ($("secTxJson") ? $("secTxJson").value : "").trim();
+      if (!raw){ toast("Paste a text first.", "err"); return; }
+      const parsed = parsePastedList(raw, "texts");
+      if (parsed.error){ toast("Invalid JSON — " + parsed.error, "err"); return; }
+      const list = parsed.list;
+      if (!list.length){ toast("The text list is empty.", "err"); return; }
+      const errs = validatePassageList(list, "text");
+      if (errs.length){ toast(errs.join("; "), "err"); return; }
+      for (const tx of list){
+        if (!addSectionText(topicId, sectionIndex, tx)){
+          toast("Could not add the text — section not found.", "err");
+          return;
+        }
+      }
+      state.sectionExtrasOpen[sectionExtrasKey(topicId, sectionIndex)] = true;
+      closeFormModal();
+      render();
+      toast(list.length === 1 ? "Text added to the section." : list.length + " texts added to the section.");
+    }
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   38. SETTINGS VIEW
    --------------------------------------------------------------------------- */
 function settingsHTML(){
   const messages = state.importMessages.map(m =>
@@ -4618,6 +5249,11 @@ function settingsHTML(){
 
   const setTopicIds = Object.keys(state.exerciseSets);
   const orphanSets = setTopicIds.filter(id => !findTopicAnywhere(id));
+
+  let totalSets = 0;
+  Object.values(state.exerciseSets).forEach(b => {
+    totalSets += (b.grammar ? b.grammar.length : 0) + (b.vocabulary ? b.vocabulary.length : 0);
+  });
 
   const bookList = state.books.length
     ? state.books.map(b => {
@@ -4663,7 +5299,8 @@ function settingsHTML(){
   <section class="card">
     <h3>Lesson display</h3>
     <p class="muted">Hide exercise blocks on lesson pages when you want to read the grammar only.
-      Each block also has its own <em>Hide</em> / <em>Show</em> button on the lesson page.</p>
+      Each block also has its own <em>Hide</em> / <em>Show</em> button on the lesson page.
+      Section-level <em>Exercises &amp; Texts</em> start hidden and can be opened per section.</p>
     <div class="file-row">
       <label class="btn ${state.prefs.hideGrammarExercises ? "primary" : ""}"
              style="cursor:pointer;">
@@ -4680,6 +5317,25 @@ function settingsHTML(){
         Hide vocabulary exercises
       </label>
     </div>
+  </section>
+
+  <section class="card">
+    <h3>Lesson content requirements</h3>
+    <p class="muted">
+      Every lesson section must contain at least
+      <strong>${LITERARY_EXAMPLE_REQUIRED} literary example</strong> in
+      <code>literary_examples</code>. Exercises and texts for a topic are stored on the section,
+      <em>below</em> <code>literary_examples</code>, in the <code>exercises</code> and
+      <code>texts</code> arrays. In addition, <code>lesson.exercises</code> must contain at least
+      <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.
+    </p>
+    <p class="muted">
+      Lessons that do not satisfy these requirements will be rejected on import.
+      You can add extra exercises and texts to any individual topic from the lesson page, using
+      the buttons that appear below each section's literary examples. Both the
+      <em>Exercises &amp; Texts</em> block and the <em>＋ Add …</em> modals include a
+      <strong>Copy template</strong> button.
+    </p>
   </section>
 
   <section class="card">
@@ -4702,7 +5358,7 @@ function settingsHTML(){
     <p class="muted">
       Currently loaded: <strong>${setTopicIds.length}</strong> topic${setTopicIds.length === 1 ? "" : "s"} with sets ·
       <strong>${totalExerciseCount() + totalVocabExerciseCount()}</strong> exercises across
-      <strong>${Object.values(state.exerciseSets).reduce((n, b) => n + (b.grammar ? b.grammar.length : 0) + (b.vocabulary ? b.vocabulary.length : 0), 0)}</strong> set${1 === 1 ? "" : ""}s.
+      <strong>${totalSets}</strong> sets.
     </p>
   </section>
 
@@ -4714,9 +5370,7 @@ function settingsHTML(){
       sidebar (below Books) where you can search, filter by topic/unit and category,
       remove words, and export them as CSV or plain text.
     </p>
-    <p class="muted">
-      Saved words: <strong>${state.vocabBank.length}</strong>.
-    </p>
+    <p class="muted">Saved words: <strong>${state.vocabBank.length}</strong>.</p>
     <div class="file-row">
       <button class="btn primary" data-action="nav" data-view="vocab-bank">Open Vocabulary Bank →</button>
       ${state.vocabBank.length ? `<button class="btn" data-action="bank-export-csv">⭳ Export as CSV</button>` : ""}
@@ -4787,11 +5441,12 @@ function settingsHTML(){
   <section class="card">
     <h3>Lesson JSON <span class="exercise-count">one file per topic</span></h3>
     <p class="muted">A single file carries everything for a topic. The <code>id</code> must match a topic
-      <code>id</code> in a book. Every part is optional — a part that is present replaces what is stored for
-      that topic, a part that is missing is left untouched. You can select several files at once.</p>
+      <code>id</code> in a book.</p>
     <ul class="muted" style="padding-left:20px;line-height:1.9;">
-      <li><code>lesson.sections / comparisons / summary</code> — the explanation</li>
-      <li><code>lesson.exercises</code> — becomes the "Lesson exercises" set</li>
+      <li><code>lesson.sections[].literary_examples</code> — <strong>mandatory</strong>, at least one entry per section</li>
+      <li><code>lesson.sections[].exercises</code> — <strong>below</strong> <code>literary_examples</code>: exercises for this topic</li>
+      <li><code>lesson.sections[].texts</code> — <strong>below</strong> <code>literary_examples</code>: reading texts for this topic</li>
+      <li><code>lesson.exercises</code> — <strong>mandatory</strong>, at least ${GRAMMAR_EXERCISE_REQUIRED} grammar exercises (becomes the "Lesson exercises" set)</li>
       <li><code>vocabulary.words</code> and <code>vocabulary.exercises</code> — word bank + practice</li>
       <li><code>reading.passages</code> — reading, with glossary and questions</li>
     </ul>
@@ -4805,13 +5460,14 @@ function settingsHTML(){
       <div class="template-box">${esc(lessonTemplateString())}</div>
     </div>
     <p class="muted" style="margin-top:12px;">Older flat lesson files (<code>sections</code> at the top level) and
-      the previous separate exercise / vocabulary / reading files are still accepted.</p>
+      the previous separate exercise / vocabulary / reading files are still accepted, provided they
+      satisfy the mandatory literary-example and 30-exercise rules.</p>
   </section>
 
   <section class="card">
     <h3>Paste JSON</h3>
     <p class="muted">Paste a grammar book, a lesson bundle, or a full library / all-data backup. The type is detected automatically.</p>
-    <textarea class="paste" id="pasteArea" placeholder='{ "id": "present_simple", "title": "Present Simple", "lesson": { "sections": [ ... ] }, "vocabulary": { "words": [ ... ] }, "reading": { "passages": [ ... ] } }'></textarea>
+    <textarea class="paste" id="pasteArea" placeholder='{ "id": "present_simple", "title": "Present Simple", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... 30 ... ] }, "vocabulary": { "words": [ ... ] }, "reading": { "passages": [ ... ] } }'></textarea>
     <div class="file-row">
       <button class="btn primary" data-action="import-paste">Import pasted JSON</button>
     </div>
@@ -4854,12 +5510,17 @@ function settingsHTML(){
       <li>Open the book and press <em>Add section</em>, then <em>Add topic</em> inside that section.</li>
       <li>Download the <strong>Lesson template</strong> (or open any topic's page and use
         <em>Download as JSON file</em>).</li>
-      <li>Fill in the single file: <code>lesson</code>, <code>vocabulary</code> and <code>reading</code>.
-        Import it in Settings — or directly from the topic's page with <em>Import lesson JSON</em>.</li>
-      <li>On a topic page, use <em>＋ Add exercise set</em> or <em>＋ Add vocabulary exercise set</em>
-        to import one or more JSON files. Each file becomes its own card in the set grid; click a card
-        to switch the exercises shown below.</li>
-      <li>Delete a set with the small ✕ on its card.</li>
+      <li>Fill in the single file. Every section needs at least one
+        <code>literary_examples</code> entry, and <code>lesson.exercises</code> needs at least
+        ${GRAMMAR_EXERCISE_REQUIRED} exercises.</li>
+      <li>Import it in Settings — or directly from the topic's page with <em>Import lesson JSON</em>.</li>
+      <li>On a topic page, use <em>＋ Add exercise</em> or <em>＋ Add text</em> below any section's
+        literary examples to append extra content to that individual topic. Use the
+        <em>Exercises &amp; Texts</em> toggle to show or hide the block, and the
+        <em>Copy template</em> button to grab a starting point.</li>
+      <li>Use <em>＋ Add exercise set</em> or <em>＋ Add vocabulary exercise set</em> to import one or
+        more JSON files. Each file becomes its own card in the set grid; click a card to switch the
+        exercises shown below. Delete a set with the small ✕ on its card.</li>
       <li>In any lesson, tick words in the Vocabulary section and use
         <em>Add selected to Bank</em> — or <em>Add all to Bank</em> — to collect them in the
         <strong>Vocabulary Bank</strong>.</li>
@@ -4870,7 +5531,7 @@ function settingsHTML(){
 }
 
 /* ---------------------------------------------------------------------------
-   25. JSON IMPORT VALIDATION + APPLY
+   39. JSON IMPORT VALIDATION + APPLY
    --------------------------------------------------------------------------- */
 function validateBook(obj){
   const errors = [];
@@ -4893,13 +5554,43 @@ function validateBook(obj){
   return { ok: errors.length === 0, errors };
 }
 
+/** Make exercise objects forgiving: find the type under common spellings,
+    or infer it from the exercise's shape. Mutates ex so the fixed type is stored. */
+function normalizeExercise(ex){
+  if (!ex || typeof ex !== "object" || Array.isArray(ex)) return ex;
+  let t = ex.type;
+  if (t === undefined || t === null || t === ""){
+    t = ex.Type !== undefined ? ex.Type
+      : ex.exercise_type !== undefined ? ex.exercise_type
+      : ex.exerciseType !== undefined ? ex.exerciseType
+      : ex.kind;
+  }
+  if (typeof t === "string" && t.trim()){
+    const k = t.trim().toLowerCase().replace(/[\s\-]+/g, "_");
+    if (/^(multiple_choice|multiplechoice|mcq|mc|choice|multi_choice)$/.test(k)) t = "multiple_choice";
+    else if (/^(fill_blank|fill_in_the_blank|fill_in_blank|fill_the_blank|fillblank|gap_fill|cloze|blank)$/.test(k)) t = "fill_blank";
+    else if (/^(matching_definition|matching|match|matching_definitions|match_definition)$/.test(k)) t = "matching_definition";
+    else t = k;
+  } else {
+    /* no type given — infer it from the fields present */
+    if (Array.isArray(ex.pairs)) t = "matching_definition";
+    else if (typeof ex.sentence === "string" && ex.sentence.indexOf("{{blank}}") !== -1) t = "fill_blank";
+    else if (Array.isArray(ex.options) || Array.isArray(ex.choices)) t = "multiple_choice";
+    else t = undefined;
+  }
+  if (t) ex.type = t;
+  if (t === "multiple_choice" && !Array.isArray(ex.options) && Array.isArray(ex.choices)) ex.options = ex.choices;
+  return ex;
+}
+
 function validateExerciseList(list, label){
   const errors = [];
   list.forEach((ex, i) => {
     const at = `${label} ${i + 1}`;
     if (!ex || typeof ex !== "object"){ errors.push(`${at} is not an object`); return; }
+    normalizeExercise(ex);
     const t = ex.type;
-    if (!t){ errors.push(`${at} has no 'type'`); return; }
+    if (!t){ errors.push(`${at} has no 'type' (and it could not be guessed — add "type": "multiple_choice", "fill_blank" or "matching_definition")`); return; }
     if (t === "multiple_choice"){
       if (!Array.isArray(ex.options) || ex.options.length < 2)
         errors.push(`${at}: multiple_choice needs at least 2 options`);
@@ -4931,13 +5622,33 @@ function validateWordList(list){
   return errors;
 }
 
-function validatePassageList(list){
+function validatePassageList(list, label){
   const errors = [];
+  const at = label ? (i) => `${label} ${i + 1}` : (i) => `passage ${i + 1}`;
   list.forEach((p, i) => {
-    if (!p || typeof p !== "object"){ errors.push(`passage ${i + 1} is not an object`); return; }
-    if (!p.text) errors.push(`passage ${i + 1} has no 'text'`);
-    if (p.glossary && !Array.isArray(p.glossary)) errors.push(`passage ${i + 1}: 'glossary' must be an array`);
-    if (p.questions && !Array.isArray(p.questions)) errors.push(`passage ${i + 1}: 'questions' must be an array`);
+    if (!p || typeof p !== "object"){ errors.push(`${at(i)} is not an object`); return; }
+    if (!p.text){
+      const alt = p.passage || p.content || p.body || p.paragraphs;
+      if (alt) p.text = Array.isArray(alt) ? alt.join("\n\n") : String(alt);
+    }
+    if (!p.text) errors.push(`${at(i)} has no 'text'`);
+    if (p.glossary && !Array.isArray(p.glossary)) errors.push(`${at(i)}: 'glossary' must be an array`);
+    if (p.questions && !Array.isArray(p.questions)) errors.push(`${at(i)}: 'questions' must be an array`);
+  });
+  return errors;
+}
+
+function validateLiteraryExampleList(list, label){
+  const errors = [];
+  if (!Array.isArray(list) || !list.length){
+    errors.push(`${label} must contain at least ${LITERARY_EXAMPLE_REQUIRED} literary example`);
+    return errors;
+  }
+  list.forEach((L, i) => {
+    if (!L || typeof L !== "object"){ errors.push(`${label} ${i + 1} is not an object`); return; }
+    if (!L.book)    errors.push(`${label} ${i + 1} has no 'book'`);
+    if (!L.author)  errors.push(`${label} ${i + 1} has no 'author'`);
+    if (!L.passage) errors.push(`${label} ${i + 1} has no 'passage'`);
   });
   return errors;
 }
@@ -4956,31 +5667,57 @@ function validateLessonBundle(obj){
   if (errors.length) return { ok: false, errors };
 
   const p = splitLessonBundle(obj);
+
   const mustBeArray = (val, name) => {
     if (val === undefined) return false;
     if (!Array.isArray(val)){ errors.push(`'${name}' must be an array`); return false; }
     return true;
   };
 
+  /* ---- lesson.sections ---- */
   if (mustBeArray(p.sections, "lesson.sections")){
-    p.sections.forEach((s, i) => { if (!s || typeof s !== "object") errors.push(`lesson section ${i + 1} is not an object`); });
+    if (!p.sections.length){
+      errors.push("'lesson.sections' must contain at least one section");
+    }
+    p.sections.forEach((s, i) => {
+      const at = `lesson.sections[${i + 1}]`;
+      if (!s || typeof s !== "object"){ errors.push(`${at} is not an object`); return; }
+
+      /* literary_examples — mandatory */
+      errors.push(...validateLiteraryExampleList(s.literary_examples, `${at}.literary_examples`));
+
+      /* exercises / texts — optional but must be arrays of the right shape */
+      if (s.exercises !== undefined){
+        if (!Array.isArray(s.exercises)) errors.push(`${at}: 'exercises' must be an array`);
+        else if (s.exercises.length)
+          errors.push(...validateExerciseList(s.exercises, `${at}.exercise`));
+      }
+      if (s.texts !== undefined){
+        if (!Array.isArray(s.texts)) errors.push(`${at}: 'texts' must be an array`);
+        else if (s.texts.length)
+          errors.push(...validatePassageList(s.texts, `${at}.text`));
+      }
+    });
   }
+
   mustBeArray(p.comparisons, "lesson.comparisons");
   mustBeArray(p.summary, "lesson.summary");
-  if (mustBeArray(p.exercises, "lesson.exercises"))
+
+  /* ---- lesson.exercises — mandatory, at least GRAMMAR_EXERCISE_REQUIRED ---- */
+  if (p.exercises === undefined){
+    errors.push(`'lesson.exercises' is mandatory and must contain at least ${GRAMMAR_EXERCISE_REQUIRED} grammar exercises`);
+  } else if (mustBeArray(p.exercises, "lesson.exercises")){
     errors.push(...validateExerciseList(p.exercises, "lesson exercise"));
+    if (p.exercises.length < GRAMMAR_EXERCISE_REQUIRED)
+      errors.push(`'lesson.exercises' must contain at least ${GRAMMAR_EXERCISE_REQUIRED} exercises (found ${p.exercises.length})`);
+  }
+
   if (mustBeArray(p.words, "vocabulary.words"))
     errors.push(...validateWordList(p.words));
   if (mustBeArray(p.vocabExercises, "vocabulary.exercises"))
     errors.push(...validateExerciseList(p.vocabExercises, "vocabulary exercise"));
   if (mustBeArray(p.passages, "reading.passages"))
     errors.push(...validatePassageList(p.passages));
-
-  const len = (a) => Array.isArray(a) ? a.length : 0;
-  const empty = !len(p.sections) && !len(p.comparisons) && !len(p.summary) && !len(p.exercises) &&
-                !len(p.words) && !len(p.vocabExercises) && !len(p.passages);
-  if (empty && !errors.length)
-    errors.push("the file has no content — add lesson.sections, vocabulary.words, reading.passages or exercises");
 
   return { ok: errors.length === 0, errors };
 }
@@ -5049,11 +5786,10 @@ function applyLessonBundle(obj){
       sections:    p.sections    || [],
       comparisons: p.comparisons || [],
       summary:     p.summary     || [],
-      exercises:   []          /* moved to the "lesson" set below */
+      exercises:   [] /* moved to the "lesson" set below */
     };
     saveLessons();
 
-    /* lesson exercises become a special "lesson" set */
     if (p.exercises !== undefined){
       const existing = getExerciseSets(id, "grammar").find(s => s.id === "lesson");
       if (p.exercises && p.exercises.length){
@@ -5063,7 +5799,6 @@ function applyLessonBundle(obj){
           saveExerciseSets();
         } else {
           ensureSetBucket(id);
-          /* put it first so it appears at the front of the grid */
           state.exerciseSets[id].grammar.unshift({
             id: "lesson",
             name: "Lesson exercises",
@@ -5082,6 +5817,15 @@ function applyLessonBundle(obj){
 
     parts.push(`${n(p.sections)} section${n(p.sections) === 1 ? "" : "s"}`);
     if (n(p.exercises)) parts.push(`${n(p.exercises)} lesson exercise${n(p.exercises) === 1 ? "" : "s"}`);
+
+    /* count section-level extras for the confirmation message */
+    let secEx = 0, secTx = 0;
+    (p.sections || []).forEach(s => {
+      if (s && Array.isArray(s.exercises)) secEx += s.exercises.length;
+      if (s && Array.isArray(s.texts))     secTx += s.texts.length;
+    });
+    if (secEx) parts.push(`${secEx} section exercise${secEx === 1 ? "" : "s"}`);
+    if (secTx) parts.push(`${secTx} section text${secTx === 1 ? "" : "s"}`);
   }
 
   /* vocabulary */
@@ -5323,7 +6067,6 @@ function applyLibrary(obj){
       readingCount = 0, bankCount = 0, progressCount = 0;
   let themeApplied = false, readerApplied = false, prefsApplied = false;
 
-  /* --- books --- */
   let incomingBooks = [];
   if (Array.isArray(obj)) incomingBooks = obj;
   else if (Array.isArray(obj.books)) incomingBooks = obj.books;
@@ -5340,7 +6083,6 @@ function applyLibrary(obj){
     bookCount++;
   });
 
-  /* --- lessons --- */
   if (obj && !Array.isArray(obj) && obj.lessons && typeof obj.lessons === "object"){
     Object.keys(obj.lessons).forEach(id => {
       const lesson = obj.lessons[id];
@@ -5352,7 +6094,6 @@ function applyLibrary(obj){
     if (lessonCount) saveLessons();
   }
 
-  /* --- exercise sets (new format) --- */
   if (obj && !Array.isArray(obj) && isPlainObj(obj.exerciseSets)){
     Object.keys(obj.exerciseSets).forEach(id => {
       const b = obj.exerciseSets[id];
@@ -5365,7 +6106,6 @@ function applyLibrary(obj){
     if (setCount) saveExerciseSets();
   }
 
-  /* --- legacy: exercises / vocabExercises objects -> sets --- */
   if (obj && !Array.isArray(obj) && isPlainObj(obj.exercises)){
     Object.keys(obj.exercises).forEach(id => {
       const bank = obj.exercises[id];
@@ -5397,7 +6137,6 @@ function applyLibrary(obj){
     });
   }
 
-  /* --- vocabulary --- */
   if (obj && !Array.isArray(obj) && obj.vocabulary && typeof obj.vocabulary === "object"){
     Object.keys(obj.vocabulary).forEach(id => {
       const bank = obj.vocabulary[id];
@@ -5409,7 +6148,6 @@ function applyLibrary(obj){
     if (vocabCount) saveVocabulary();
   }
 
-  /* --- reading --- */
   if (obj && !Array.isArray(obj) && obj.readings && typeof obj.readings === "object"){
     Object.keys(obj.readings).forEach(id => {
       const bank = obj.readings[id];
@@ -5421,13 +6159,11 @@ function applyLibrary(obj){
     if (readingCount) saveReadings();
   }
 
-  /* --- vocabulary bank --- */
   if (obj && !Array.isArray(obj) && Array.isArray(obj.vocabBank)){
     const r = addWordsToBank(obj.vocabBank, "");
     bankCount = r.added;
   }
 
-  /* --- progress --- */
   if (obj && !Array.isArray(obj) && obj.progress && typeof obj.progress === "object"){
     Object.keys(obj.progress).forEach(id => {
       const p = obj.progress[id];
@@ -5439,7 +6175,6 @@ function applyLibrary(obj){
     if (progressCount) saveProgress();
   }
 
-  /* --- theme --- */
   if (obj && !Array.isArray(obj) && typeof obj.theme === "string" &&
       THEMES.indexOf(obj.theme) !== -1){
     state.theme = obj.theme;
@@ -5448,7 +6183,6 @@ function applyLibrary(obj){
     themeApplied = true;
   }
 
-  /* --- reader --- */
   if (obj && !Array.isArray(obj) && obj.reader && typeof obj.reader === "object"){
     let changed = false;
     if (typeof obj.reader.fontId === "string" &&
@@ -5467,7 +6201,6 @@ function applyLibrary(obj){
     }
   }
 
-  /* --- display prefs --- */
   if (obj && !Array.isArray(obj) && obj.prefs && typeof obj.prefs === "object"){
     if (typeof obj.prefs.hideGrammarExercises === "boolean" ||
         typeof obj.prefs.hideVocabExercises === "boolean"){
@@ -5602,7 +6335,7 @@ async function handleLibraryFiles(fileList){
 }
 
 /* ---------------------------------------------------------------------------
-   26. EVENTS
+   40. EVENTS
    --------------------------------------------------------------------------- */
 document.addEventListener("click", (ev) => {
 
@@ -5661,6 +6394,107 @@ document.addEventListener("click", (ev) => {
     case "edit-topic":      editTopic(el.dataset.id); break;
     case "delete-topic":    deleteTopic(el.dataset.id); break;
     case "open-topic":      openTopic(el.dataset.id); break;
+
+    /* ---------------- SECTION EXTRAS TOGGLE ---------------- */
+    case "toggle-section-extras": {
+      const key = el.dataset.key;
+      const body = $(el.dataset.target);
+      if (!body) break;
+      const nowOpen = body.hidden;
+      body.hidden = !nowOpen;
+      state.sectionExtrasOpen[key] = nowOpen;
+      el.textContent = nowOpen ? "▾ Hide" : "▸ Show";
+      el.setAttribute("aria-expanded", String(nowOpen));
+      break;
+    }
+
+    /* ---------------- SECTION EXERCISES / TEXTS ---------------- */
+    case "add-section-exercise": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      openAddSectionExercise(topicId, si);
+      break;
+    }
+    case "add-section-text": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      openAddSectionText(topicId, si);
+      break;
+    }
+    case "delete-section-exercise": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      const i  = Number(el.dataset.index);
+      if (!confirm("Remove this exercise from the section?")) break;
+      removeSectionExercise(topicId, si, i);
+      render();
+      toast("Exercise removed.");
+      break;
+    }
+    case "clear-section-exercises": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      const n = sectionExercises(topicId, si).length;
+      if (!n) break;
+      if (!confirm("Remove all " + n + " exercise" + (n === 1 ? "" : "s") + " from this section?")) break;
+      clearSectionExercises(topicId, si);
+      render();
+      toast("All exercises removed from the section.");
+      break;
+    }
+    case "clear-section-texts": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      const n = sectionTexts(topicId, si).length;
+      if (!n) break;
+      if (!confirm("Remove all " + n + " text" + (n === 1 ? "" : "s") + " from this section?")) break;
+      clearSectionTexts(topicId, si);
+      render();
+      toast("All texts removed from the section.");
+      break;
+    }
+    case "delete-section-text": {
+      const topicId = el.dataset.topic;
+      const si = Number(el.dataset.section);
+      const i  = Number(el.dataset.index);
+      if (!confirm("Remove this text from the section?")) break;
+      removeSectionText(topicId, si, i);
+      render();
+      toast("Text removed.");
+      break;
+    }
+
+    /* ---------------- COPY / FILL TEMPLATES ---------------- */
+    case "copy-exercise-template":
+      copyTextToClipboard(el.dataset.topic
+        ? sectionExerciseTemplate(el.dataset.topic, Number(el.dataset.section))
+        : EXERCISE_PLACEHOLDER, "Exercise template copied to clipboard.");
+      break;
+    case "copy-text-template":
+      copyTextToClipboard(el.dataset.topic
+        ? sectionTextTemplate(el.dataset.topic, Number(el.dataset.section))
+        : TEXT_PLACEHOLDER, "Text template copied to clipboard.");
+      break;
+    case "fill-exercise-template": {
+      const ta = $(el.dataset.target || "secExJson");
+      if (ta){
+        ta.value = el.dataset.topic
+          ? sectionExerciseTemplate(el.dataset.topic, Number(el.dataset.section))
+          : EXERCISE_PLACEHOLDER;
+        ta.focus();
+      }
+      break;
+    }
+    case "fill-text-template": {
+      const ta = $(el.dataset.target || "secTxJson");
+      if (ta){
+        ta.value = el.dataset.topic
+          ? sectionTextTemplate(el.dataset.topic, Number(el.dataset.section))
+          : TEXT_PLACEHOLDER;
+        ta.focus();
+      }
+      break;
+    }
 
     /* ---------------- FORM MODAL ---------------- */
     case "form-submit":
@@ -5780,7 +6614,7 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
-    /* ---------------- VOCABULARY BANK — add from a lesson ---------------- */
+    /* ---------------- VOCABULARY BANK ---------------- */
     case "bank-add-all": {
       const topicId = el.dataset.topic;
       const words = getVocabularyFor(topicId);
@@ -5921,7 +6755,7 @@ document.addEventListener("click", (ev) => {
         downloadJSON(GRAMMAR_BOOK_TEMPLATE, "grammar-book.template.json");
         toast("Grammar book template downloaded.");
       } else if (kind === "lesson"){
-        const tpl = id ? lessonTemplateForTopic(id) : LESSON_TEMPLATE;
+        const tpl = id ? lessonTemplateForTopic(id) : ensureRequiredExercises(deepClone(LESSON_TEMPLATE));
         const filename = (id ? id : "lesson") + ".template.json";
         downloadJSON(tpl, filename);
         toast("Lesson template downloaded" + (id ? " for " + id : "") + ".");
@@ -5983,36 +6817,7 @@ document.addEventListener("click", (ev) => {
     case "copy-template": {
       const target = $(el.dataset.target);
       if (!target){ toast("Template not found.", "err"); break; }
-      const text = target.textContent || "";
-
-      const succeed = () => toast("Template JSON copied to clipboard.");
-      const fail = () => toast("Could not copy automatically — select the text and copy it manually.", "err");
-
-      if (navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(succeed).catch(() => {
-          try {
-            const r = document.createRange();
-            r.selectNodeContents(target);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(r);
-            document.execCommand("copy");
-            sel.removeAllRanges();
-            succeed();
-          } catch (e){ fail(); }
-        });
-      } else {
-        try {
-          const r = document.createRange();
-          r.selectNodeContents(target);
-          const sel = window.getSelection();
-          sel.removeAllRanges();
-          sel.addRange(r);
-          document.execCommand("copy");
-          sel.removeAllRanges();
-          succeed();
-        } catch (e){ fail(); }
-      }
+      copyTextToClipboard(target.textContent || "", "Template JSON copied to clipboard.");
       break;
     }
 
@@ -6094,6 +6899,7 @@ document.addEventListener("click", (ev) => {
       state.lessons = {};
       state.exerciseSets = {};
       state.activeSetIds = {};
+      state.sectionExtrasOpen = {};
       state.vocabulary = {};
       state.readings = {};
       state.vocabBank = [];
@@ -6140,14 +6946,12 @@ document.addEventListener("keydown", (ev) => {
     if (!$("modal").hidden){ closeModal(); return; }
   }
   if (ev.key === "Enter" || ev.key === " "){
-    /* topic card */
     const card = ev.target.closest && ev.target.closest(".topic-card");
     if (card && ev.target === card){
       ev.preventDefault();
       openTopic(card.dataset.id);
       return;
     }
-    /* exercise set card */
     const setCard = ev.target.closest && ev.target.closest(".ex-set-card");
     if (setCard && ev.target === setCard){
       ev.preventDefault();
@@ -6263,7 +7067,6 @@ document.addEventListener("change", (ev) => {
     return;
   }
 
-  /* per-block exercise set import (multiple files, each becomes a set) */
   if (t.classList && t.classList.contains("ex-file-input")){
     const files = t.files;
     const topicId = t.dataset.topic;
@@ -6275,7 +7078,7 @@ document.addEventListener("change", (ev) => {
 });
 
 /* ---------------------------------------------------------------------------
-   27. DYNAMIC INPUT BINDING
+   41. DYNAMIC INPUT BINDING
    --------------------------------------------------------------------------- */
 function bindDynamicInputs(){
   if (state.view === "book-detail" && hasBook()){
@@ -6307,7 +7110,7 @@ function bindDynamicInputs(){
 }
 
 /* ---------------------------------------------------------------------------
-   28. INIT
+   42. INIT
    --------------------------------------------------------------------------- */
 (function init(){
   loadState();
