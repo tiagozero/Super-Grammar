@@ -1655,7 +1655,7 @@ html[data-theme="dark"] .bank-filter-select:focus{
          • a "Copy … template" button that copies the template JSON
          • an "Insert into box" button that fills the textarea with it
 
-   4.  lesson.exercises is MANDATORY and must contain at least 30 exercises.
+   4.  lesson.exercises is OPTIONAL (no minimum number of exercises).
 
    5.  Modal (pop-up) CSS is optimised for speed:
          • no backdrop-filter blur
@@ -1688,8 +1688,8 @@ const LS = {
 /* ---------------------------------------------------------------------------
    2. RULES
    --------------------------------------------------------------------------- */
-/** lesson.exercises must contain at least this many exercises. */
-const GRAMMAR_EXERCISE_REQUIRED = 30;
+/** Number of sample exercises placed in lesson templates (lesson.exercises is optional, no minimum). */
+const GRAMMAR_EXERCISE_REQUIRED = 3;
 /** Each lesson section must contain at least this many literary examples. */
 const LITERARY_EXAMPLE_REQUIRED = 1;
 
@@ -1781,7 +1781,7 @@ function templateExercises(n){
  * Lesson JSON template.
  *  • literary_examples is MANDATORY on every section (at least one entry).
  *  • exercises / texts sit BELOW literary_examples inside each section.
- *  • lesson.exercises is MANDATORY and holds 30 exercises.
+ *  • lesson.exercises is OPTIONAL — any number, including none.
  */
 const LESSON_TEMPLATE = {
   id: "topic_id",
@@ -1851,10 +1851,46 @@ const LESSON_TEMPLATE = {
       }
     ],
 
-    comparisons: [],
-    summary: [],
+    /* ---- Comparison: contrast two structures side by side (optional; use [] to leave out).
+            Shown as a table with three columns: Feature | structure 1 | structure 2.
+            Put " vs " in the title and the two column headings are taken from it,
+            or set label_1 / label_2 yourself. target_1 / target_2 = words to highlight. ---- */
+    comparisons: [
+      {
+        title: "Structure 1 vs Structure 2",
+        label_1: "Structure 1",
+        label_2: "Structure 2",
+        rows: [
+          { feature: "Form",
+            structure_1: "Example sentence using structure 1.",
+            target_1: ["structure 1"],
+            structure_2: "Example sentence using structure 2.",
+            target_2: ["structure 2"] },
+          { feature: "Use",
+            structure_1: "When or why structure 1 is used.",
+            target_1: [],
+            structure_2: "When or why structure 2 is used.",
+            target_2: [] }
+        ]
+      }
+    ],
 
-    /* ---- MANDATORY: exactly GRAMMAR_EXERCISE_REQUIRED exercises ---- */
+    /* ---- Summary: quick-reference table at the end of the lesson (optional; use [] to leave out).
+            Columns: Pattern | Form | Use | Example. target = words in the example to highlight. ---- */
+    summary: [
+      { pattern: "Affirmative",
+        form: "subject + verb + object",
+        use: "To state a fact or a habit.",
+        example: "She walks to school every day.",
+        target: ["walks"] },
+      { pattern: "Negative",
+        form: "subject + do not / does not + verb",
+        use: "To say something is not true.",
+        example: "She does not walk to school.",
+        target: ["does not walk"] }
+    ],
+
+    /* ---- OPTIONAL: lesson-wide exercises (any number, or [] for none). Sample items shown. ---- */
     exercises: templateExercises(GRAMMAR_EXERCISE_REQUIRED)
   },
 
@@ -1903,11 +1939,10 @@ const LESSON_TEMPLATE = {
 
 function bookTemplateString(){ return JSON.stringify(GRAMMAR_BOOK_TEMPLATE, null, 2); }
 
-/** Make sure the exercises array is populated with the required number of items. */
+/** Make sure the template has an exercises array with a few sample items. */
 function ensureRequiredExercises(tpl){
   if (!tpl.lesson) tpl.lesson = {};
-  if (!Array.isArray(tpl.lesson.exercises) ||
-      tpl.lesson.exercises.length < GRAMMAR_EXERCISE_REQUIRED){
+  if (!Array.isArray(tpl.lesson.exercises)){
     tpl.lesson.exercises = templateExercises(GRAMMAR_EXERCISE_REQUIRED);
   }
   return tpl;
@@ -3206,8 +3241,7 @@ function noBookHTML(){
       <li><strong>Sections and topics</strong> inside that book — add them in the app or define them in the JSON.</li>
       <li>One <strong>lesson JSON</strong> file per topic — it holds the lesson, exercises, vocabulary,
         vocabulary exercises and reading all together. Every lesson must provide
-        <strong>at least one literary example per section</strong> and
-        <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.</li>
+        <strong>at least one literary example per section</strong>. Grammar exercises are optional.</li>
       <li>Additional <strong>exercise set files</strong> (grammar or vocabulary) can be added to any
         topic at any time — each file becomes its own set, selectable from a card grid.</li>
       <li><strong>Exercises and texts</strong> can also be added to any individual section (topic)
@@ -3748,6 +3782,8 @@ function lessonHTML(id){
         </label>
         <button class="btn ghost" data-action="toggle-paste" data-target="lesson-paste-wrap"
                 data-label-show="⌨ Paste JSON" data-label-hide="▾ Hide paste box">⌨ Paste JSON</button>
+        ${lesson ? `<button class="btn ghost" data-action="toggle-template" data-target="lessonTpl-head-${esc(slugify(id))}"
+                data-label-show="▸ Show lesson template" data-label-hide="▾ Hide lesson template">▸ Show lesson template</button>` : ""}
         ${hasTopicContent(id) ? `<button class="btn ghost" data-action="export-lesson" data-id="${esc(id)}">Export lesson JSON</button>` : ""}
         <button class="btn ghost" data-action="toggle-reader">
           Aa ${state.readerOpen ? "Hide options" : "Reading options"}
@@ -3755,13 +3791,14 @@ function lessonHTML(id){
       </div>
       <div class="paste-wrap" id="lesson-paste-wrap" hidden>
         <textarea class="paste" id="lesson-paste"
-                  placeholder='{ "id": "${esc(id)}", "title": "...", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... 30 ... ] }, "vocabulary": { "words": [], "exercises": [] }, "reading": { "passages": [] } }'></textarea>
+                  placeholder='{ "id": "${esc(id)}", "title": "...", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... ] }, "vocabulary": { "words": [], "exercises": [] }, "reading": { "passages": [] } }'></textarea>
         <div class="file-row">
           <button class="btn primary" data-action="import-lesson-paste"
                   data-topic="${esc(id)}" data-target="lesson-paste">Import pasted JSON</button>
           <span class="muted"><code>id</code> and <code>title</code> are filled in automatically when missing.</span>
         </div>
       </div>
+      ${lesson ? lessonTemplatePanelHTML(topic) : ""}
       ${readerPanelHTML(state.readerOpen === true)}
     </div>`;
 
@@ -3790,6 +3827,24 @@ function lessonHTML(id){
   </article>`;
 
   return html;
+}
+
+/** Lesson JSON template shown in the lesson header once a lesson has been imported. */
+function lessonTemplatePanelHTML(topic){
+  const tplId = "lessonTpl-head-" + slugify(topic.id);
+  const boxId = tplId + "-box";
+  const tplText = JSON.stringify(lessonTemplateForTopic(topic.id), null, 2);
+  return `<div class="template-wrap" id="${esc(tplId)}" hidden>
+    <p class="muted" style="margin-top:14px;">
+      Lesson JSON template for <strong>${esc(topic.title)}</strong> — use it as a guide for new content or to
+      fill in missing parts. Import the finished file, or use <em>Paste JSON</em>.
+    </p>
+    <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
+    <div class="file-row">
+      <button class="btn tiny" data-action="copy-template" data-target="${esc(boxId)}">Copy JSON</button>
+      <button class="btn tiny ghost" data-action="download-template" data-kind="lesson" data-id="${esc(topic.id)}">Download</button>
+    </div>
+  </div>`;
 }
 
 function shortTitle(t){
@@ -3829,8 +3884,7 @@ function noLessonHTML(topic, hasOther){
     <p class="muted">
       <strong>Mandatory:</strong> every section must include at least
       <strong>${LITERARY_EXAMPLE_REQUIRED} literary example</strong>
-      (<code>literary_examples</code>), and <code>lesson.exercises</code> must contain at least
-      <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.
+      (<code>literary_examples</code>). <code>lesson.exercises</code> is optional.
       Exercises and texts for a topic live <em>below</em> <code>literary_examples</code> inside the section.
     </p>
     <div class="file-row">
@@ -3854,7 +3908,7 @@ function noLessonHTML(topic, hasOther){
         <code>section</code> and <code>number</code> for <strong>${esc(topic.title)}</strong>,
         with a full <code>literary_examples</code> block, an <code>exercises</code> block and a
         <code>texts</code> block on every section, plus
-        <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong> under <code>lesson.exercises</code>.
+        sample grammar exercises under <code>lesson.exercises</code> (optional — delete or leave empty).
         Import the file, or use <em>Paste JSON</em> above.
       </p>
       <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
@@ -5745,8 +5799,7 @@ function settingsHTML(){
       <strong>${LITERARY_EXAMPLE_REQUIRED} literary example</strong> in
       <code>literary_examples</code>. Exercises and texts for a topic are stored on the section,
       <em>below</em> <code>literary_examples</code>, in the <code>exercises</code> and
-      <code>texts</code> arrays. In addition, <code>lesson.exercises</code> must contain at least
-      <strong>${GRAMMAR_EXERCISE_REQUIRED} grammar exercises</strong>.
+      <code>texts</code> arrays. <code>lesson.exercises</code> is optional.
     </p>
     <p class="muted">
       Lessons that do not satisfy these requirements will be rejected on import.
@@ -5865,7 +5918,7 @@ function settingsHTML(){
       <li><code>lesson.sections[].literary_examples</code> — <strong>mandatory</strong>, at least one entry per section</li>
       <li><code>lesson.sections[].exercises</code> — <strong>below</strong> <code>literary_examples</code>: exercises for this topic</li>
       <li><code>lesson.sections[].texts</code> — <strong>below</strong> <code>literary_examples</code>: reading texts for this topic</li>
-      <li><code>lesson.exercises</code> — <strong>mandatory</strong>, at least ${GRAMMAR_EXERCISE_REQUIRED} grammar exercises (becomes the "Lesson exercises" set)</li>
+      <li><code>lesson.exercises</code> — <strong>optional</strong>, any number of grammar exercises (becomes the "Lesson exercises" set)</li>
       <li><code>vocabulary.words</code> and <code>vocabulary.exercises</code> — word bank + practice</li>
       <li><code>reading.passages</code> — reading, with glossary and questions</li>
     </ul>
@@ -5880,13 +5933,13 @@ function settingsHTML(){
     </div>
     <p class="muted" style="margin-top:12px;">Older flat lesson files (<code>sections</code> at the top level) and
       the previous separate exercise / vocabulary / reading files are still accepted, provided they
-      satisfy the mandatory literary-example and 30-exercise rules.</p>
+      satisfy the mandatory literary-example rule.</p>
   </section>
 
   <section class="card">
     <h3>Paste JSON</h3>
     <p class="muted">Paste a grammar book, a lesson bundle, or a full library / all-data backup. The type is detected automatically.</p>
-    <textarea class="paste" id="pasteArea" placeholder='{ "id": "present_simple", "title": "Present Simple", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... 30 ... ] }, "vocabulary": { "words": [ ... ] }, "reading": { "passages": [ ... ] } }'></textarea>
+    <textarea class="paste" id="pasteArea" placeholder='{ "id": "present_simple", "title": "Present Simple", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... ] }, "vocabulary": { "words": [ ... ] }, "reading": { "passages": [ ... ] } }'></textarea>
     <div class="file-row">
       <button class="btn primary" data-action="import-paste">Import pasted JSON</button>
     </div>
@@ -5930,8 +5983,7 @@ function settingsHTML(){
       <li>Download the <strong>Lesson template</strong> (or open any topic's page and use
         <em>Download as JSON file</em>).</li>
       <li>Fill in the single file. Every section needs at least one
-        <code>literary_examples</code> entry, and <code>lesson.exercises</code> needs at least
-        ${GRAMMAR_EXERCISE_REQUIRED} exercises.</li>
+        <code>literary_examples</code> entry. <code>lesson.exercises</code> is optional.</li>
       <li>Import it in Settings — or directly from the topic's page with <em>Import lesson JSON</em>.</li>
       <li>On a topic page, use <em>＋ Add exercise</em> or <em>＋ Add reading</em> below any section's
         literary examples to append extra content to that individual topic. Use the
@@ -6122,13 +6174,9 @@ function validateLessonBundle(obj){
   mustBeArray(p.comparisons, "lesson.comparisons");
   mustBeArray(p.summary, "lesson.summary");
 
-  /* ---- lesson.exercises — mandatory, at least GRAMMAR_EXERCISE_REQUIRED ---- */
-  if (p.exercises === undefined){
-    errors.push(`'lesson.exercises' is mandatory and must contain at least ${GRAMMAR_EXERCISE_REQUIRED} grammar exercises`);
-  } else if (mustBeArray(p.exercises, "lesson.exercises")){
+  /* ---- lesson.exercises — optional, any number ---- */
+  if (p.exercises !== undefined && mustBeArray(p.exercises, "lesson.exercises")){
     errors.push(...validateExerciseList(p.exercises, "lesson exercise"));
-    if (p.exercises.length < GRAMMAR_EXERCISE_REQUIRED)
-      errors.push(`'lesson.exercises' must contain at least ${GRAMMAR_EXERCISE_REQUIRED} exercises (found ${p.exercises.length})`);
   }
 
   if (mustBeArray(p.words, "vocabulary.words"))
