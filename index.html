@@ -1636,7 +1636,7 @@ html[data-theme="dark"] .bank-filter-select:focus{
    2.  A toggle button collapses the Exercises & Texts block for each section.
        It is HIDDEN by default and its open/closed state is kept in memory.
 
-   3.  The "Add exercise" and "Add text" modals include:
+   3.  The "Add exercise" and "Add reading" modals include:
          • a "Copy … template" button that copies the template JSON
          • an "Insert into box" button that fills the textarea with it
 
@@ -1845,15 +1845,16 @@ const LESSON_TEMPLATE = {
   vocabulary: {
     words: [
       {
-        term: "routine",
-        part_of_speech: "noun",
-        pronunciation: "/ruːˈtiːn/",
-        definition: "a usual or fixed way of doing things",
-        example: "My morning routine starts at 6 a.m.",
-        synonyms: ["habit", "practice"],
+        section: "form",
+        term: "target structure",
+        part_of_speech: "phrase",
+        pronunciation: "",
+        definition: "Optional note.",
+        example: "This is an example sentence with the target structure.",
+        synonyms: [],
         antonyms: [],
-        notes: "Often used with 'daily' or 'morning'.",
-        tags: ["daily life"]
+        notes: "",
+        tags: ["Lesson Title"]
       }
     ],
     exercises: [
@@ -1935,6 +1936,7 @@ const state = {
 
   /** Section extras open state: key = "topicId:sectionIndex" -> true when open. */
   sectionExtrasOpen: {},
+  subClosed: {},
 
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
@@ -2705,6 +2707,25 @@ function sectionExtrasKey(topicId, sectionIndex){
 /* ---------------------------------------------------------------------------
    15. VOCABULARY HELPERS
    --------------------------------------------------------------------------- */
+function sectionIdOf(topicId, si){
+  const secs = (state.lessons[topicId] && state.lessons[topicId].sections) || [];
+  const sec = secs[si];
+  return (sec && sec.id) ? String(sec.id) : "sec" + (si + 1);
+}
+/** Does word w belong to section si? Untagged / unknown-section words fall into the first section. */
+function wordInSection(topicId, w, si){
+  const secs = (state.lessons[topicId] && state.lessons[topicId].sections) || [];
+  const ids = secs.map((_, i) => sectionIdOf(topicId, i));
+  const tag = w && w.section != null ? String(w.section) : "";
+  if (tag && ids.indexOf(tag) > -1) return ids.indexOf(tag) === si;
+  return si === 0;
+}
+/** [{w, i}] — words of one section with their index in the topic's full list. */
+function getSectionVocab(topicId, si){
+  return getVocabularyFor(topicId)
+    .map((w, i) => ({ w, i }))
+    .filter(x => wordInSection(topicId, x.w, si));
+}
 function getVocabularyFor(topicId){
   const v = state.vocabulary[topicId];
   return (v && Array.isArray(v.words)) ? v.words : [];
@@ -2770,8 +2791,8 @@ function vocabBankHay(w){
   ].filter(Boolean).join(" ");
 }
 
-function selectedVocabWords(topicId){
-  const grid = document.getElementById("vocab-grid-" + slugify(topicId));
+function selectedVocabWords(topicId, si){
+  const grid = document.getElementById("vocab-grid-" + slugify(topicId) + "-" + (si || 0));
   if (!grid) return [];
   const words = getVocabularyFor(topicId);
   const out = [];
@@ -3722,9 +3743,13 @@ function lessonHTML(id){
     </div>`;
 
   html += tocHTML(lesson, id);
+  if (lesson && Array.isArray(lesson.sections) && lesson.sections.length){
+    const anyOpen = lesson.sections.some((_, i) => state.sectionExtrasOpen[sectionExtrasKey(id, i)]);
+    html += `<div style="display:flex;justify-content:flex-end;margin:0 0 10px;">
+      <button class="btn ghost tiny" type="button" data-action="toggle-all-workbooks">${anyOpen ? "▾ Hide all workbooks" : "▸ Show all workbooks"}</button>
+    </div>`;
+  }
   html += lesson ? lessonContentHTML(lesson) : noLessonHTML(topic, hasTopicContent(id));
-  html += vocabularyHTML(id);
-  html += readingHTML(id);
   html += exercisesBlockHTML(id);
 
   html += `
@@ -3757,8 +3782,6 @@ function tocHTML(lesson, topicId){
     });
   }
 
-  items.push(`<li><a href="#lesson-vocabulary">Vocabulary</a></li>`);
-  items.push(`<li><a href="#lesson-reading">Reading</a></li>`);
   items.push(`<li><a href="#lesson-exercises">Exercises</a></li>`);
 
   return `<nav class="toc" aria-label="Lesson contents">
@@ -3912,6 +3935,19 @@ function literaryHTML(section, lesson, sectionIndex){
 /* ---------------------------------------------------------------------------
    28b. SECTION EXTRAS — exercises & texts, collapsible, hidden by default
    --------------------------------------------------------------------------- */
+function subKey(topicId, sectionIndex, kind){ return topicId + ":" + sectionIndex + ":" + kind; }
+function subToggleBtn(topicId, sectionIndex, kind){
+  const k = subKey(topicId, sectionIndex, kind);
+  const closed = !!state.subClosed[k];
+  return `<button class="btn tiny ghost" type="button" data-action="toggle-sub"
+            data-key="${esc(k)}" data-target="sub-body-${esc(slugify(k))}"
+            aria-expanded="${closed ? "false" : "true"}">${closed ? "▸ Show" : "▾ Hide"}</button>`;
+}
+function subBodyOpen(topicId, sectionIndex, kind){
+  const k = subKey(topicId, sectionIndex, kind);
+  return `<div id="sub-body-${esc(slugify(k))}" ${state.subClosed[k] ? "hidden" : ""}>`;
+}
+
 function sectionExtrasHTML(s, sectionIndex, lesson){
   const topicId = lesson.id;
   const exercises = Array.isArray(s.exercises) ? s.exercises : [];
@@ -3923,8 +3959,8 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
   let h = `<div class="section-extras" data-section-extras="${sectionIndex}">
     <div class="section-extras-head">
       <h3 class="section-extras-title">
-        Exercises &amp; Texts
-        <span class="count">${exercises.length} ex · ${texts.length} text${texts.length === 1 ? "" : "s"}</span>
+        Workbook
+        <span class="count">${exercises.length} ex · ${texts.length} reading${texts.length === 1 ? "" : "s"}${" · " + getSectionVocab(topicId, sectionIndex).length + " words"}</span>
       </h3>
       <button class="btn ghost tiny" type="button"
               data-action="toggle-section-extras"
@@ -3944,6 +3980,7 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
         <span class="count">${exercises.length} ${exercises.length === 1 ? "exercise" : "exercises"}</span>
       </h4>
       <div class="section-extras-actions">
+        ${subToggleBtn(topicId, sectionIndex, "ex")}
         ${exercises.length ? `<button class="btn tiny ghost section-item-del" type="button"
               data-action="clear-section-exercises"
               data-topic="${esc(topicId)}" data-section="${sectionIndex}">🗑 Remove all</button>` : ""}
@@ -3952,6 +3989,7 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
               data-topic="${esc(topicId)}" data-section="${sectionIndex}">＋ Add exercise</button>
       </div>
     </div>`;
+  h += subBodyOpen(topicId, sectionIndex, "ex");
 
   if (exercises.length){
     h += `<div class="exercises">${exercises.map((ex, i) => `
@@ -3969,42 +4007,47 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
     h += `<div class="lit-none" style="margin-top:0;">No exercises added to this section yet.
       Use <strong>＋ Add exercise</strong> to paste one in.</div>`;
   }
-  h += `</div>`;
+  h += `</div></div>`;
 
   /* ---- Texts subsection ---- */
   h += `<div class="section-extras-sub">
     <div class="section-extras-head">
       <h4 class="section-extras-title">
-        Texts
-        <span class="count">${texts.length} ${texts.length === 1 ? "text" : "texts"}</span>
+        Reading
+        <span class="count">${texts.length} ${texts.length === 1 ? "reading" : "readings"}</span>
       </h4>
       <div class="section-extras-actions">
+        ${subToggleBtn(topicId, sectionIndex, "rd")}
         ${texts.length ? `<button class="btn tiny ghost section-item-del" type="button"
               data-action="clear-section-texts"
               data-topic="${esc(topicId)}" data-section="${sectionIndex}">🗑 Remove all</button>` : ""}
         <button class="btn tiny primary" type="button"
               data-action="add-section-text"
-              data-topic="${esc(topicId)}" data-section="${sectionIndex}">＋ Add text</button>
+              data-topic="${esc(topicId)}" data-section="${sectionIndex}">＋ Add reading</button>
       </div>
     </div>`;
+  h += subBodyOpen(topicId, sectionIndex, "rd");
 
   if (texts.length){
     h += `<div class="section-texts-stack">${texts.map((t, i) => `
       <div class="section-item">
         <div class="section-item-bar">
-          <span class="section-item-label">Text ${i + 1} of ${texts.length}</span>
+          <span class="section-item-label">Reading ${i + 1} of ${texts.length}</span>
           <button class="btn tiny ghost section-item-del" type="button"
                   data-action="delete-section-text"
                   data-topic="${esc(topicId)}" data-section="${sectionIndex}" data-index="${i}"
-                  title="Remove this text" aria-label="Remove text ${i + 1}">✕ Remove</button>
+                  title="Remove this reading" aria-label="Remove reading ${i + 1}">✕ Remove</button>
         </div>
         ${readingPassageHTML(t, i)}
       </div>`).join("")}</div>`;
   } else {
-    h += `<div class="lit-none" style="margin-top:0;">No texts added to this section yet.
-      Use <strong>＋ Add text</strong> to paste one in.</div>`;
+    h += `<div class="lit-none" style="margin-top:0;">No readings added to this section yet.
+      Use <strong>＋ Add reading</strong> to paste one in.</div>`;
   }
-  h += `</div>`;
+  h += `</div></div>`;
+
+  /* ---- Vocabulary subsection (per section) ---- */
+  h += vocabularyBodyHTML(topicId, sectionIndex);
 
   h += `</div></div>`;
   return h;
@@ -4139,26 +4182,133 @@ function vocabCardHTML(w, opts){
   </article>`;
 }
 
-function vocabToolbarHTML(topicId){
+function vocabToolbarHTML(topicId, si){
+  si = si || 0;
   return `<div class="vocab-grid-toolbar">
     <label class="vocab-select-all">
-      <input type="checkbox" data-action="vocab-select-all" data-topic="${esc(topicId)}">
+      <input type="checkbox" data-action="vocab-select-all" data-topic="${esc(topicId)}" data-section="${si}">
       <span>Select all</span>
     </label>
     <span class="vgt-spacer"></span>
-    <button class="btn tiny primary" data-action="bank-add-selected" data-topic="${esc(topicId)}">
+    <button class="btn tiny primary" data-action="bank-add-selected" data-topic="${esc(topicId)}" data-section="${si}">
       ＋ Add selected to Bank
     </button>
-    <button class="btn tiny" data-action="bank-add-all" data-topic="${esc(topicId)}">
+    <button class="btn tiny" data-action="bank-add-all" data-topic="${esc(topicId)}" data-section="${si}">
       ＋ Add all to Bank
     </button>
-    <button class="btn tiny ghost" data-action="bank-export-selected" data-topic="${esc(topicId)}">
+    <button class="btn tiny ghost" data-action="bank-export-selected" data-topic="${esc(topicId)}" data-section="${si}">
       ⭳ CSV (selected)
     </button>
-    <button class="btn tiny ghost" data-action="bank-export-all" data-topic="${esc(topicId)}">
+    <button class="btn tiny ghost" data-action="bank-export-all" data-topic="${esc(topicId)}" data-section="${si}">
       ⭳ CSV (all)
     </button>
   </div>`;
+}
+
+function openEditVocabulary(topicId, si){
+  si = si || 0;
+  const secId = sectionIdOf(topicId, si);
+  const existing = getSectionVocab(topicId, si).length;
+  openFormModal({
+    title: existing ? "Replace / Update vocabulary" : "Add vocabulary",
+    sub: "This changes the vocabulary of this section only. Paste a JSON word list (or a { words: [...] } object) or choose a .json file. The template is built from this section's Examples.",
+    body: `
+      <div class="field">
+        <label>Mode</label>
+        <label style="display:block;margin:4px 0;"><input type="radio" name="vocabMode" value="replace" ${existing ? "" : "checked"}>
+          <strong>Replace</strong> — discard the current ${existing} word${existing === 1 ? "" : "s"} and use the new list</label>
+        <label style="display:block;margin:4px 0;"><input type="radio" name="vocabMode" value="update" ${existing ? "checked" : ""}>
+          <strong>Update</strong> — add new words and overwrite existing ones with the same term + part of speech</label>
+      </div>
+      <div class="field">
+        <label for="vocabJson">Vocabulary JSON</label>
+        <div class="json-toolbar">
+          <button type="button" class="btn ghost tiny" data-action="copy-vocab-template"
+                  data-topic="${esc(topicId)}" data-section="${si}">⧉ Copy vocabulary template</button>
+          <button type="button" class="btn ghost tiny" data-action="fill-vocab-template" data-target="vocabJson"
+                  data-topic="${esc(topicId)}" data-section="${si}">↧ Insert into box</button>
+          <input type="file" id="vocabFile" accept=".json,application/json" style="font-size:.8rem;">
+        </div>
+        <textarea id="vocabJson" class="paste" style="min-height:220px" spellcheck="false"
+          placeholder='${esc(sectionVocabTemplate(topicId, si))}'></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Apply</button>
+      </div>`,
+    onSubmit: () => {
+      const raw = ($("vocabJson") ? $("vocabJson").value : "").trim();
+      if (!raw){ toast("Paste a word list or choose a file first.", "err"); return; }
+      const parsed = parsePastedList(raw, "words");
+      if (parsed.error){ toast("Invalid JSON — " + parsed.error, "err"); return; }
+      const list = parsed.list;
+      if (!list.length){ toast("The word list is empty.", "err"); return; }
+      const errs = validateWordList(list);
+      if (errs.length){ toast(errs.join("; "), "err"); return; }
+      const modeEl = document.querySelector('input[name="vocabMode"]:checked');
+      const mode = modeEl ? modeEl.value : "replace";
+      const cur = state.vocabulary[topicId];
+      const base = cur && typeof cur === "object" ? cur : { topic_id: topicId, title: "Vocabulary", words: [] };
+      const tagged = list.map(w => Object.assign({}, w, { section: secId }));
+      const all = getVocabularyFor(topicId).slice();
+      let secWords = getSectionVocab(topicId, si).map(x => x.w);
+      const others = all.filter(w => !wordInSection(topicId, w, si));
+      if (mode === "update"){
+        tagged.forEach(w => {
+          const k = vocabBankKey(w);
+          const i = secWords.findIndex(x => vocabBankKey(x) === k);
+          if (i >= 0) secWords[i] = w; else secWords.push(w);
+        });
+      } else {
+        secWords = tagged;
+      }
+      /* keep the first section's words first so untagged legacy words stay in place */
+      const words = si === 0 ? secWords.concat(others) : others.concat(secWords);
+      state.vocabulary[topicId] = Object.assign({}, base, { topic_id: topicId, words });
+      saveVocabulary();
+      closeFormModal();
+      render();
+      toast((mode === "update" ? "Vocabulary updated" : "Vocabulary replaced") + " — " + secWords.length + " word" + (secWords.length === 1 ? "" : "s") + " in this section.");
+    }
+  });
+}
+
+function vocabularyBodyHTML(topicId, si){
+  si = si || 0;
+  const items = getSectionVocab(topicId, si);
+  const n = items.length;
+  const gridId = "vocab-grid-" + slugify(topicId) + "-" + si;
+  let html = `<div class="section-extras-sub" id="lesson-vocabulary-${si}">
+    <div class="section-extras-head">
+      <h4 class="section-extras-title">
+        Vocabulary
+        <span class="count">${n} word${n === 1 ? "" : "s"}</span>
+      </h4>
+      <div class="section-extras-actions">
+        ${subToggleBtn(topicId, si, "vc")}
+        <button class="btn tiny primary" type="button" data-action="edit-vocabulary"
+                data-topic="${esc(topicId)}" data-section="${si}">${n ? "⟳ Replace / Update" : "＋ Add vocabulary"}</button>
+      </div>
+    </div>`;
+  html += subBodyOpen(topicId, si, "vc");
+  if (n){
+    html += vocabToolbarHTML(topicId, si);
+    html += `<div class="vocab-grid" id="${esc(gridId)}">${
+      items.map(x => vocabCardHTML(x.w, { selectable: true, index: x.i })).join("")
+    }</div>`;
+    html += `<div class="exercise-import-bar">
+      <div class="exercise-import-note">
+        <strong>${esc(topicId)}</strong><br>
+        ${n} word${n === 1 ? "" : "s"} in this section.
+      </div>
+      <button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}" data-section="${si}">Clear vocabulary</button>
+    </div>`;
+  } else {
+    html += `<div class="lit-none" style="margin-top:0;">No vocabulary for this section yet.
+      Use <strong>＋ Add vocabulary</strong> to paste a word list.</div>`;
+  }
+  html += `</div></div>`;
+  return html;
 }
 
 function vocabularyHTML(topicId){
@@ -5079,6 +5229,49 @@ function sectionExerciseTemplate(topicId, sectionIndex){
   return JSON.stringify(out, null, 2);
 }
 
+function sectionVocabTemplate(topicId, sectionIndex){
+  const lesson = state.lessons[topicId] || {};
+  const found  = (typeof findTopicAnywhere === "function") ? findTopicAnywhere(topicId) : null;
+  const topicTitle = (found && found.topic && found.topic.title) || lesson.title || topicId || "this topic";
+  const sec = (Array.isArray(lesson.sections) ? lesson.sections : [])[sectionIndex] || {};
+  const secId = sectionIdOf(topicId, sectionIndex);
+
+  /* Built ONLY from this section's Examples (no mistakes, no literary examples). */
+  const ex = (Array.isArray(sec.examples) ? sec.examples : []).map(e => {
+    if (typeof e === "string") return { sentence: e.trim(), target: "", note: "" };
+    return e && e.sentence ? { sentence: String(e.sentence), target: e.target ? String(e.target) : "", note: e.note ? String(e.note) : "" } : null;
+  }).filter(e => e && e.sentence);
+
+  const words = [], seen = new Set();
+  ex.forEach(e => {
+    let term = e.target;
+    if (!term){
+      const ws = e.sentence.replace(/[.,!?;:"()]/g, "").split(/\s+/).filter(w => w.length > 3);
+      term = ws.sort((a, b) => b.length - a.length)[0] || "";
+    }
+    const k = term.toLowerCase();
+    if (!term || seen.has(k)) return;
+    seen.add(k);
+    words.push({
+      section: secId,
+      term,
+      part_of_speech: /\s/.test(term) ? "phrase" : "",
+      pronunciation: "",
+      definition: e.note || "Write the definition here.",
+      example: e.sentence,
+      synonyms: [],
+      antonyms: [],
+      notes: "",
+      tags: [topicTitle]
+    });
+  });
+  if (!words.length){
+    words.push({ section: secId, term: "word", part_of_speech: "", pronunciation: "", definition: "Write the definition here.",
+      example: "Write an example sentence here.", synonyms: [], antonyms: [], notes: "", tags: [topicTitle] });
+  }
+  return JSON.stringify(words, null, 2);
+}
+
 function sectionTextTemplate(topicId, sectionIndex){
   const c = topicTemplateContext(topicId, sectionIndex);
   const L = c.lit[0] || null;
@@ -5182,15 +5375,15 @@ function openAddSectionText(topicId, sectionIndex){
   }
 
   openFormModal({
-    title: "Add text to section",
-    sub: "Paste one text (or a list of texts) as JSON. The template is pre-filled from this topic's own examples.",
+    title: "Add reading to section",
+    sub: "Paste one reading (or a list of readings) as JSON. The template is pre-filled from this topic's own examples.",
     body: `
       <div class="field">
-        <label for="secTxJson">Text JSON</label>
+        <label for="secTxJson">Reading JSON</label>
         <div class="json-toolbar">
           <button type="button" class="btn ghost tiny" data-action="copy-text-template"
                   data-topic="${esc(topicId)}" data-section="${sectionIndex}">
-            ⧉ Copy text template
+            ⧉ Copy reading template
           </button>
           <button type="button" class="btn ghost tiny" data-action="fill-text-template" data-target="secTxJson"
                   data-topic="${esc(topicId)}" data-section="${sectionIndex}">
@@ -5206,27 +5399,27 @@ function openAddSectionText(topicId, sectionIndex){
       </p>
       <div class="form-actions">
         <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
-        <button type="button" class="btn primary" data-action="form-submit">Add text</button>
+        <button type="button" class="btn primary" data-action="form-submit">Add reading</button>
       </div>`,
     onSubmit: () => {
       const raw = ($("secTxJson") ? $("secTxJson").value : "").trim();
-      if (!raw){ toast("Paste a text first.", "err"); return; }
+      if (!raw){ toast("Paste a reading first.", "err"); return; }
       const parsed = parsePastedList(raw, "texts");
       if (parsed.error){ toast("Invalid JSON — " + parsed.error, "err"); return; }
       const list = parsed.list;
-      if (!list.length){ toast("The text list is empty.", "err"); return; }
+      if (!list.length){ toast("The reading list is empty.", "err"); return; }
       const errs = validatePassageList(list, "text");
       if (errs.length){ toast(errs.join("; "), "err"); return; }
       for (const tx of list){
         if (!addSectionText(topicId, sectionIndex, tx)){
-          toast("Could not add the text — section not found.", "err");
+          toast("Could not add the reading — section not found.", "err");
           return;
         }
       }
       state.sectionExtrasOpen[sectionExtrasKey(topicId, sectionIndex)] = true;
       closeFormModal();
       render();
-      toast(list.length === 1 ? "Text added to the section." : list.length + " texts added to the section.");
+      toast(list.length === 1 ? "Reading added to the section." : list.length + " readings added to the section.");
     }
   });
 }
@@ -5300,7 +5493,7 @@ function settingsHTML(){
     <h3>Lesson display</h3>
     <p class="muted">Hide exercise blocks on lesson pages when you want to read the grammar only.
       Each block also has its own <em>Hide</em> / <em>Show</em> button on the lesson page.
-      Section-level <em>Exercises &amp; Texts</em> start hidden and can be opened per section.</p>
+      Section-level <em>Workbook</em> start hidden and can be opened per section.</p>
     <div class="file-row">
       <label class="btn ${state.prefs.hideGrammarExercises ? "primary" : ""}"
              style="cursor:pointer;">
@@ -5333,7 +5526,7 @@ function settingsHTML(){
       Lessons that do not satisfy these requirements will be rejected on import.
       You can add extra exercises and texts to any individual topic from the lesson page, using
       the buttons that appear below each section's literary examples. Both the
-      <em>Exercises &amp; Texts</em> block and the <em>＋ Add …</em> modals include a
+      <em>Workbook</em> block and the <em>＋ Add …</em> modals include a
       <strong>Copy template</strong> button.
     </p>
   </section>
@@ -5514,9 +5707,9 @@ function settingsHTML(){
         <code>literary_examples</code> entry, and <code>lesson.exercises</code> needs at least
         ${GRAMMAR_EXERCISE_REQUIRED} exercises.</li>
       <li>Import it in Settings — or directly from the topic's page with <em>Import lesson JSON</em>.</li>
-      <li>On a topic page, use <em>＋ Add exercise</em> or <em>＋ Add text</em> below any section's
+      <li>On a topic page, use <em>＋ Add exercise</em> or <em>＋ Add reading</em> below any section's
         literary examples to append extra content to that individual topic. Use the
-        <em>Exercises &amp; Texts</em> toggle to show or hide the block, and the
+        <em>Workbook</em> toggle to show or hide the block, and the
         <em>Copy template</em> button to grab a starting point.</li>
       <li>Use <em>＋ Add exercise set</em> or <em>＋ Add vocabulary exercise set</em> to import one or
         more JSON files. Each file becomes its own card in the set grid; click a card to switch the
@@ -6447,20 +6640,20 @@ document.addEventListener("click", (ev) => {
       const si = Number(el.dataset.section);
       const n = sectionTexts(topicId, si).length;
       if (!n) break;
-      if (!confirm("Remove all " + n + " text" + (n === 1 ? "" : "s") + " from this section?")) break;
+      if (!confirm("Remove all " + n + " reading" + (n === 1 ? "" : "s") + " from this section?")) break;
       clearSectionTexts(topicId, si);
       render();
-      toast("All texts removed from the section.");
+      toast("All readings removed from the section.");
       break;
     }
     case "delete-section-text": {
       const topicId = el.dataset.topic;
       const si = Number(el.dataset.section);
       const i  = Number(el.dataset.index);
-      if (!confirm("Remove this text from the section?")) break;
+      if (!confirm("Remove this reading from the section?")) break;
       removeSectionText(topicId, si, i);
       render();
-      toast("Text removed.");
+      toast("Reading removed.");
       break;
     }
 
@@ -6475,6 +6668,15 @@ document.addEventListener("click", (ev) => {
         ? sectionTextTemplate(el.dataset.topic, Number(el.dataset.section))
         : TEXT_PLACEHOLDER, "Text template copied to clipboard.");
       break;
+    case "copy-vocab-template":
+      copyTextToClipboard(sectionVocabTemplate(el.dataset.topic, Number(el.dataset.section || 0)),
+        "Vocabulary template copied to clipboard.");
+      break;
+    case "fill-vocab-template": {
+      const ta = $(el.dataset.target || "vocabJson");
+      if (ta){ ta.value = sectionVocabTemplate(el.dataset.topic, Number(el.dataset.section || 0)); ta.focus(); }
+      break;
+    }
     case "fill-exercise-template": {
       const ta = $(el.dataset.target || "secExJson");
       if (ta){
@@ -6607,7 +6809,7 @@ document.addEventListener("click", (ev) => {
     /* ---------------- VOCABULARY SELECTION ---------------- */
     case "vocab-select-all": {
       const topicId = el.dataset.topic;
-      const grid = document.getElementById("vocab-grid-" + slugify(topicId));
+      const grid = document.getElementById("vocab-grid-" + slugify(topicId) + "-" + (el.dataset.section || 0));
       if (!grid) break;
       const on = !!el.checked;
       grid.querySelectorAll(".vocab-check").forEach(cb => { cb.checked = on; });
@@ -6617,8 +6819,8 @@ document.addEventListener("click", (ev) => {
     /* ---------------- VOCABULARY BANK ---------------- */
     case "bank-add-all": {
       const topicId = el.dataset.topic;
-      const words = getVocabularyFor(topicId);
-      if (!words.length){ toast("There is no vocabulary to add for this topic.", "err"); break; }
+      const words = getSectionVocab(topicId, Number(el.dataset.section || 0)).map(x => x.w);
+      if (!words.length){ toast("There is no vocabulary to add for this section.", "err"); break; }
       const r = addWordsToBank(words, topicId);
       updateNav();
       toast(bankAddMessage(r));
@@ -6627,7 +6829,7 @@ document.addEventListener("click", (ev) => {
 
     case "bank-add-selected": {
       const topicId = el.dataset.topic;
-      const words = selectedVocabWords(topicId);
+      const words = selectedVocabWords(topicId, Number(el.dataset.section || 0));
       if (!words.length){ toast("Tick at least one word first.", "err"); break; }
       const r = addWordsToBank(words, topicId);
       updateNav();
@@ -6637,8 +6839,8 @@ document.addEventListener("click", (ev) => {
 
     case "bank-export-all": {
       const topicId = el.dataset.topic;
-      const words = getVocabularyFor(topicId);
-      if (!words.length){ toast("There is no vocabulary to export for this topic.", "err"); break; }
+      const words = getSectionVocab(topicId, Number(el.dataset.section || 0)).map(x => x.w);
+      if (!words.length){ toast("There is no vocabulary to export for this section.", "err"); break; }
       downloadCSV(wordsToCSV(words), slugify(topicId) + "-vocabulary.csv");
       toast(`Exported ${words.length} word${words.length === 1 ? "" : "s"} as CSV.`);
       break;
@@ -6646,7 +6848,7 @@ document.addEventListener("click", (ev) => {
 
     case "bank-export-selected": {
       const topicId = el.dataset.topic;
-      const words = selectedVocabWords(topicId);
+      const words = selectedVocabWords(topicId, Number(el.dataset.section || 0));
       if (!words.length){ toast("Tick at least one word first.", "err"); break; }
       downloadCSV(wordsToCSV(words), slugify(topicId) + "-vocabulary-selected.csv");
       toast(`Exported ${words.length} selected word${words.length === 1 ? "" : "s"} as CSV.`);
@@ -6829,10 +7031,49 @@ document.addEventListener("click", (ev) => {
       break;
     }
 
+    case "toggle-sub": {
+      const body = $(el.dataset.target);
+      if (!body) break;
+      const nowOpen = body.hidden;
+      body.hidden = !nowOpen;
+      state.subClosed[el.dataset.key] = !nowOpen;
+      el.textContent = nowOpen ? "▾ Hide" : "▸ Show";
+      el.setAttribute("aria-expanded", String(nowOpen));
+      break;
+    }
+
+    case "edit-vocabulary": {
+      openEditVocabulary(el.dataset.topic, Number(el.dataset.section || 0));
+      break;
+    }
+
+    case "toggle-all-workbooks": {
+      const btns = Array.from(document.querySelectorAll('[data-action="toggle-section-extras"]'));
+      const anyOpen = btns.some(b => b.getAttribute("aria-expanded") === "true");
+      btns.forEach(b => {
+        const body = $(b.dataset.target);
+        if (!body) return;
+        body.hidden = anyOpen;
+        state.sectionExtrasOpen[b.dataset.key] = !anyOpen;
+        b.textContent = anyOpen ? "▸ Show" : "▾ Hide";
+        b.setAttribute("aria-expanded", String(!anyOpen));
+      });
+      el.textContent = anyOpen ? "▸ Show all workbooks" : "▾ Hide all workbooks";
+      break;
+    }
+
     case "clear-vocabulary": {
       const id = el.dataset.id;
-      if (!confirm("Remove the imported vocabulary for this topic?")) return;
-      delete state.vocabulary[id];
+      const hasSec = el.dataset.section !== undefined;
+      if (!confirm(hasSec ? "Remove the vocabulary of this section?" : "Remove the imported vocabulary for this topic?")) return;
+      if (hasSec){
+        const si = Number(el.dataset.section);
+        const keep = getVocabularyFor(id).filter(w => !wordInSection(id, w, si));
+        if (keep.length) state.vocabulary[id] = Object.assign({}, state.vocabulary[id], { words: keep });
+        else delete state.vocabulary[id];
+      } else {
+        delete state.vocabulary[id];
+      }
       saveVocabulary();
       toast("Vocabulary removed.");
       render();
@@ -6900,6 +7141,7 @@ document.addEventListener("click", (ev) => {
       state.exerciseSets = {};
       state.activeSetIds = {};
       state.sectionExtrasOpen = {};
+      state.subClosed = {};
       state.vocabulary = {};
       state.readings = {};
       state.vocabBank = [];
@@ -7067,6 +7309,13 @@ document.addEventListener("change", (ev) => {
     return;
   }
 
+  if (t.id === "vocabFile" && t.files && t.files[0]){
+    const f = t.files[0];
+    const rd = new FileReader();
+    rd.onload = () => { const ta = $("vocabJson"); if (ta) ta.value = String(rd.result || ""); };
+    rd.readAsText(f);
+    return;
+  }
   if (t.classList && t.classList.contains("ex-file-input")){
     const files = t.files;
     const topicId = t.dataset.topic;
