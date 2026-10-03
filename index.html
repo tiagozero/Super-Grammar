@@ -1561,6 +1561,12 @@ html[data-theme="dark"] .bank-filter-select:focus{
   }
 }
 
+/* ---- workbook sets ---- */
+.wb-sets{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px;}
+.wb-set{font:inherit;font-size:.82rem;padding:4px 11px;border-radius:999px;border:1px solid var(--rule-strong);background:transparent;color:inherit;cursor:pointer;}
+.wb-set .count{opacity:.6;margin-left:4px;}
+.wb-set.active{background:var(--accent-soft, rgba(127,127,127,.2));border-color:currentColor;font-weight:650;}
+.wb-set.add{border-style:dashed;opacity:.85;}
 /* ---- final exam ---- */
 .exam-view .ex-actions{display:none;}
 .exam-q{margin-bottom:18px;}
@@ -1988,6 +1994,8 @@ const state = {
   /** Section extras open state: key = "topicId:sectionIndex" -> true when open. */
   sectionExtrasOpen: {},
   subClosed: {},
+  /** active set per workbook part: key = topic:section:ex|vc */
+  wbSet: {},
 
   /** Final exams: current exam in progress + last results per section. */
   exam: null,
@@ -2699,9 +2707,50 @@ function getSection(topicId, sectionIndex){
   return lesson.sections[sectionIndex] || null;
 }
 
-function sectionExercises(topicId, sectionIndex){
+function wbSetKey(topicId, sectionIndex, kind){ return topicId + ":" + sectionIndex + ":" + kind; }
+
+/** [{id, title, exercises}] — "main" is section.exercises, the rest are section.exercise_sets. */
+function sectionExerciseSets(topicId, sectionIndex){
   const s = getSection(topicId, sectionIndex);
-  return (s && Array.isArray(s.exercises)) ? s.exercises : [];
+  const out = [{ id: "main", title: "Main", exercises: (s && Array.isArray(s.exercises)) ? s.exercises : [] }];
+  if (s && Array.isArray(s.exercise_sets)){
+    s.exercise_sets.forEach(x => {
+      if (x && x.id) out.push({ id: String(x.id), title: x.title || x.id, exercises: Array.isArray(x.exercises) ? x.exercises : [] });
+    });
+  }
+  return out;
+}
+function activeExerciseSet(topicId, sectionIndex){
+  const id = state.wbSet[wbSetKey(topicId, sectionIndex, "ex")];
+  return sectionExerciseSets(topicId, sectionIndex).some(x => x.id === id) ? id : "main";
+}
+/** The real array behind a set (created when missing). */
+function exerciseArrayFor(topicId, sectionIndex, setId, create){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return null;
+  setId = setId || activeExerciseSet(topicId, sectionIndex);
+  if (setId === "main"){
+    if (!Array.isArray(s.exercises) && create) s.exercises = [];
+    return Array.isArray(s.exercises) ? s.exercises : null;
+  }
+  const set = (s.exercise_sets || []).find(x => String(x.id) === setId);
+  if (!set) return null;
+  if (!Array.isArray(set.exercises)) set.exercises = [];
+  return set.exercises;
+}
+function createExerciseSet(topicId, sectionIndex, title){
+  const s = getSection(topicId, sectionIndex);
+  if (!s) return null;
+  if (!Array.isArray(s.exercise_sets)) s.exercise_sets = [];
+  let base = slugify(title) || "set", id = base, n = 2;
+  while (id === "main" || s.exercise_sets.some(x => String(x.id) === id)) id = base + "-" + (n++);
+  s.exercise_sets.push({ id, title, exercises: [] });
+  saveLessons();
+  return id;
+}
+
+function sectionExercises(topicId, sectionIndex, setId){
+  return exerciseArrayFor(topicId, sectionIndex, setId, false) || [];
 }
 
 function sectionTexts(topicId, sectionIndex){
@@ -2709,11 +2758,10 @@ function sectionTexts(topicId, sectionIndex){
   return (s && Array.isArray(s.texts)) ? s.texts : [];
 }
 
-function addSectionExercise(topicId, sectionIndex, exercise){
-  const s = getSection(topicId, sectionIndex);
-  if (!s) return false;
-  if (!Array.isArray(s.exercises)) s.exercises = [];
-  s.exercises.push(exercise);
+function addSectionExercise(topicId, sectionIndex, exercise, setId){
+  const arr = exerciseArrayFor(topicId, sectionIndex, setId, true);
+  if (!arr) return false;
+  arr.push(exercise);
   saveLessons();
   return true;
 }
@@ -2728,9 +2776,9 @@ function addSectionText(topicId, sectionIndex, text){
 }
 
 function removeSectionExercise(topicId, sectionIndex, exIndex){
-  const s = getSection(topicId, sectionIndex);
-  if (!s || !Array.isArray(s.exercises)) return;
-  s.exercises.splice(exIndex, 1);
+  const arr = exerciseArrayFor(topicId, sectionIndex, null, false);
+  if (!arr) return;
+  arr.splice(exIndex, 1);
   saveLessons();
 }
 
@@ -2742,9 +2790,9 @@ function removeSectionText(topicId, sectionIndex, txIndex){
 }
 
 function clearSectionExercises(topicId, sectionIndex){
-  const s = getSection(topicId, sectionIndex);
-  if (!s) return;
-  s.exercises = [];
+  const arr = exerciseArrayFor(topicId, sectionIndex, null, false);
+  if (!arr) return;
+  arr.length = 0;
   saveLessons();
 }
 
@@ -2775,11 +2823,25 @@ function wordInSection(topicId, w, si){
   if (tag && ids.indexOf(tag) > -1) return ids.indexOf(tag) === si;
   return si === 0;
 }
-/** [{w, i}] — words of one section with their index in the topic's full list. */
-function getSectionVocab(topicId, si){
+/** [{w, i}] — words of one section (optionally only one set; setName "" = Main). */
+function getSectionVocab(topicId, si, setName){
   return getVocabularyFor(topicId)
     .map((w, i) => ({ w, i }))
-    .filter(x => wordInSection(topicId, x.w, si));
+    .filter(x => wordInSection(topicId, x.w, si) &&
+                 (setName === undefined || String(x.w.set || "") === setName));
+}
+/** Set names used in a section, Main first. */
+function vocabSetNames(topicId, si){
+  const names = [""];
+  getSectionVocab(topicId, si).forEach(x => {
+    const n = String(x.w.set || "");
+    if (names.indexOf(n) === -1) names.push(n);
+  });
+  return names;
+}
+function activeVocabSet(topicId, si){
+  const v = state.wbSet[wbSetKey(topicId, si, "vc")];
+  return (v !== undefined && vocabSetNames(topicId, si).indexOf(v) > -1) ? v : "";
 }
 function getVocabularyFor(topicId){
   const v = state.vocabulary[topicId];
@@ -3860,6 +3922,11 @@ function tocHTML(lesson, topicId){
     });
   }
 
+  if (lesson && Array.isArray(lesson.comparisons) && lesson.comparisons.length)
+    items.push(`<li><a href="#lesson-comparison">Comparison</a></li>`);
+  if (lesson && Array.isArray(lesson.summary) && lesson.summary.length)
+    items.push(`<li><a href="#lesson-summary">Summary</a></li>`);
+
   items.push(`<li><a href="#lesson-exercises">Exercises</a></li>`);
 
   return `<nav class="toc" aria-label="Lesson contents">
@@ -4012,6 +4079,17 @@ function literaryHTML(section, lesson, sectionIndex){
 /* ---------------------------------------------------------------------------
    28b. SECTION EXTRAS — exercises & texts, collapsible, hidden by default
    --------------------------------------------------------------------------- */
+function wbSetBarHTML(kind, topicId, sectionIndex, sets, activeId){
+  const base = `data-topic="${esc(topicId)}" data-section="${sectionIndex}" data-kind="${kind}"`;
+  return `<div class="wb-sets" role="tablist">
+    ${sets.map(x => `<button type="button" class="wb-set ${x.id === activeId ? "active" : ""}" role="tab"
+        aria-selected="${x.id === activeId}" data-action="select-wb-set" ${base} data-set="${esc(x.id)}">${esc(x.title)} <span class="count">${x.count}</span></button>`).join("")}
+    <button type="button" class="wb-set add" data-action="${kind === "ex" ? "new-exercise-set" : "new-vocab-set"}" ${base}>＋ New set</button>
+    ${activeId !== "main" ? `<button type="button" class="btn tiny ghost" data-action="rename-wb-set" ${base} data-set="${esc(activeId)}">✎ Rename</button>
+    <button type="button" class="btn tiny ghost section-item-del" data-action="delete-wb-set" ${base} data-set="${esc(activeId)}">🗑 Delete set</button>` : ""}
+  </div>`;
+}
+
 function subKey(topicId, sectionIndex, kind){ return topicId + ":" + sectionIndex + ":" + kind; }
 function subToggleBtn(topicId, sectionIndex, kind){
   const k = subKey(topicId, sectionIndex, kind);
@@ -4027,7 +4105,10 @@ function subBodyOpen(topicId, sectionIndex, kind){
 
 function sectionExtrasHTML(s, sectionIndex, lesson){
   const topicId = lesson.id;
-  const exercises = Array.isArray(s.exercises) ? s.exercises : [];
+  const exSets    = sectionExerciseSets(topicId, sectionIndex);
+  const exActive  = activeExerciseSet(topicId, sectionIndex);
+  const exercises = (exSets.find(x => x.id === exActive) || exSets[0]).exercises;
+  const exTotal   = exSets.reduce((n, x) => n + x.exercises.length, 0);
   const texts     = Array.isArray(s.texts)     ? s.texts     : [];
   const key = sectionExtrasKey(topicId, sectionIndex);
   const isOpen = !!state.sectionExtrasOpen[key];
@@ -4037,7 +4118,7 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
     <div class="section-extras-head">
       <h3 class="section-extras-title">
         Workbook
-        <span class="count">${exercises.length} ex · ${texts.length} reading${texts.length === 1 ? "" : "s"}${" · " + getSectionVocab(topicId, sectionIndex).length + " words"}</span>
+        <span class="count">${exTotal} ex · ${texts.length} reading${texts.length === 1 ? "" : "s"}${" · " + getSectionVocab(topicId, sectionIndex).length + " words"}</span>
       </h3>
       <button class="btn ghost tiny" type="button"
               data-action="toggle-section-extras"
@@ -4054,7 +4135,7 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
     <div class="section-extras-head">
       <h4 class="section-extras-title">
         Exercises
-        <span class="count">${exercises.length} ${exercises.length === 1 ? "exercise" : "exercises"}</span>
+        <span class="count">${exTotal} ${exTotal === 1 ? "exercise" : "exercises"}${exSets.length > 1 ? " · " + exSets.length + " sets" : ""}</span>
       </h4>
       <div class="section-extras-actions">
         ${subToggleBtn(topicId, sectionIndex, "ex")}
@@ -4067,21 +4148,23 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
       </div>
     </div>`;
   h += subBodyOpen(topicId, sectionIndex, "ex");
+  h += wbSetBarHTML("ex", topicId, sectionIndex,
+        exSets.map(x => ({ id: x.id, title: x.title, count: x.exercises.length })), exActive);
 
   if (exercises.length){
     h += `<div class="exercises">${exercises.map((ex, i) => `
       <div class="section-item">
         <div class="section-item-bar">
-          <span class="section-item-label">Exercise ${i + 1} of ${exercises.length}</span>
+          <span class="section-item-label">Exercise ${i + 1} of ${exercises.length}${exActive !== "main" ? " · " + esc((exSets.find(x => x.id === exActive) || {}).title || "") : ""}</span>
           <button class="btn tiny ghost section-item-del" type="button"
                   data-action="delete-section-exercise"
                   data-topic="${esc(topicId)}" data-section="${sectionIndex}" data-index="${i}"
                   title="Remove this exercise" aria-label="Remove exercise ${i + 1}">✕ Remove</button>
         </div>
-        ${exerciseHTML(ex, i, topicId, "grammar", "section:" + sectionIndex)}
+        ${exerciseHTML(ex, i, topicId, "grammar", "section:" + sectionIndex + ":" + exActive)}
       </div>`).join("")}</div>`;
   } else {
-    h += `<div class="lit-none" style="margin-top:0;">No exercises added to this section yet.
+    h += `<div class="lit-none" style="margin-top:0;">No exercises in this set yet.
       Use <strong>＋ Add exercise</strong> to paste one in.</div>`;
   }
   h += `</div></div>`;
@@ -4131,7 +4214,7 @@ function sectionExtrasHTML(s, sectionIndex, lesson){
 }
 
 function comparisonsHTML(comparisons){
-  return `<section class="lesson-block">
+  return `<section class="lesson-block" id="lesson-comparison">
     <h2 class="block-title">Comparison</h2>
     ${comparisons.map(c => {
       let l1 = "Structure 1", l2 = "Structure 2";
@@ -4162,7 +4245,7 @@ function comparisonsHTML(comparisons){
 }
 
 function summaryHTML(summary){
-  return `<section class="lesson-block">
+  return `<section class="lesson-block" id="lesson-summary">
     <h2 class="block-title">Summary</h2>
     <div class="card">
       <div class="table-scroll">
@@ -4282,14 +4365,20 @@ function vocabToolbarHTML(topicId, si){
   </div>`;
 }
 
-function openEditVocabulary(topicId, si){
+function openEditVocabulary(topicId, si, opts){
   si = si || 0;
+  opts = opts || {};
   const secId = sectionIdOf(topicId, si);
-  const existing = getSectionVocab(topicId, si).length;
+  const activeSet = opts.newSet ? "" : activeVocabSet(topicId, si);
+  const existing = opts.newSet ? 0 : getSectionVocab(topicId, si, activeSet).length;
   openFormModal({
-    title: existing ? "Replace / Update vocabulary" : "Add vocabulary",
-    sub: "This changes the vocabulary of this section only. Paste a JSON word list (or a { words: [...] } object) or choose a .json file. The template is built from this section's Examples.",
+    title: opts.newSet ? "New vocabulary set" : (existing ? "Replace / Update vocabulary" : "Add vocabulary") + (activeSet ? " — " + activeSet : ""),
+    sub: "This changes the vocabulary of " + (opts.newSet ? "a new set in" : "the selected set of") + " this section only. Paste a JSON word list (or a { words: [...] } object) or choose a .json file. The template is built from this section's Examples.",
     body: `
+      ${opts.newSet ? `<div class="field">
+        <label for="vocabSetTitle">Set name</label>
+        <input id="vocabSetTitle" type="text" placeholder="e.g. Review words" autocomplete="off">
+      </div>` : ""}
       <div class="field">
         <label>Mode</label>
         <label style="display:block;margin:4px 0;"><input type="radio" name="vocabMode" value="replace" ${existing ? "" : "checked"}>
@@ -4324,12 +4413,24 @@ function openEditVocabulary(topicId, si){
       if (errs.length){ toast(errs.join("; "), "err"); return; }
       const modeEl = document.querySelector('input[name="vocabMode"]:checked');
       const mode = modeEl ? modeEl.value : "replace";
+      let setName = activeSet;
+      if (opts.newSet){
+        setName = ($("vocabSetTitle") ? $("vocabSetTitle").value : "").trim();
+        if (!setName){ toast("Give the new set a name.", "err"); return; }
+        if (vocabSetNames(topicId, si).some(n => n.toLowerCase() === setName.toLowerCase()) || setName.toLowerCase() === "main"){
+          toast("A set with that name already exists in this section.", "err"); return;
+        }
+      }
       const cur = state.vocabulary[topicId];
       const base = cur && typeof cur === "object" ? cur : { topic_id: topicId, title: "Vocabulary", words: [] };
-      const tagged = list.map(w => Object.assign({}, w, { section: secId }));
+      const tagged = list.map(w => {
+        const t = Object.assign({}, w, { section: secId });
+        if (setName) t.set = setName; else delete t.set;
+        return t;
+      });
       const all = getVocabularyFor(topicId).slice();
-      let secWords = getSectionVocab(topicId, si).map(x => x.w);
-      const others = all.filter(w => !wordInSection(topicId, w, si));
+      let secWords = getSectionVocab(topicId, si, setName).map(x => x.w);
+      const others = all.filter(w => !(wordInSection(topicId, w, si) && String(w.set || "") === setName));
       if (mode === "update"){
         tagged.forEach(w => {
           const k = vocabBankKey(w);
@@ -4343,23 +4444,28 @@ function openEditVocabulary(topicId, si){
       const words = si === 0 ? secWords.concat(others) : others.concat(secWords);
       state.vocabulary[topicId] = Object.assign({}, base, { topic_id: topicId, words });
       saveVocabulary();
+      state.wbSet[wbSetKey(topicId, si, "vc")] = setName;
+      state.sectionExtrasOpen[sectionExtrasKey(topicId, si)] = true;
       closeFormModal();
       render();
-      toast((mode === "update" ? "Vocabulary updated" : "Vocabulary replaced") + " — " + secWords.length + " word" + (secWords.length === 1 ? "" : "s") + " in this section.");
+      toast((mode === "update" ? "Vocabulary updated" : "Vocabulary replaced") + " — " + secWords.length + " word" + (secWords.length === 1 ? "" : "s") + " in " + (setName ? "set “" + setName + "”." : "this section."));
     }
   });
 }
 
 function vocabularyBodyHTML(topicId, si){
   si = si || 0;
-  const items = getSectionVocab(topicId, si);
+  const allItems = getSectionVocab(topicId, si);
+  const setNames = vocabSetNames(topicId, si);
+  const activeSet = activeVocabSet(topicId, si);
+  const items = getSectionVocab(topicId, si, activeSet);
   const n = items.length;
   const gridId = "vocab-grid-" + slugify(topicId) + "-" + si;
   let html = `<div class="section-extras-sub" id="lesson-vocabulary-${si}">
     <div class="section-extras-head">
       <h4 class="section-extras-title">
         Vocabulary
-        <span class="count">${n} word${n === 1 ? "" : "s"}</span>
+        <span class="count">${allItems.length} word${allItems.length === 1 ? "" : "s"}${setNames.length > 1 ? " · " + setNames.length + " sets" : ""}</span>
       </h4>
       <div class="section-extras-actions">
         ${subToggleBtn(topicId, si, "vc")}
@@ -4368,6 +4474,10 @@ function vocabularyBodyHTML(topicId, si){
       </div>
     </div>`;
   html += subBodyOpen(topicId, si, "vc");
+  html += wbSetBarHTML("vc", topicId, si,
+    setNames.map(nm => ({ id: nm === "" ? "main" : nm, title: nm === "" ? "Main" : nm,
+                          count: getSectionVocab(topicId, si, nm).length })),
+    activeSet === "" ? "main" : activeSet);
   if (n){
     html += vocabToolbarHTML(topicId, si);
     html += `<div class="vocab-grid" id="${esc(gridId)}">${
@@ -4378,7 +4488,7 @@ function vocabularyBodyHTML(topicId, si){
         <strong>${esc(topicId)}</strong><br>
         ${n} word${n === 1 ? "" : "s"} in this section.
       </div>
-      <button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}" data-section="${si}">Clear vocabulary</button>
+      <button class="btn ghost" data-action="clear-vocabulary" data-id="${esc(topicId)}" data-section="${si}" data-set="${esc(activeSet)}">Clear ${activeSet ? "this set" : "vocabulary"}</button>
     </div>`;
   } else {
     html += `<div class="lit-none" style="margin-top:0;">No vocabulary for this section yet.
@@ -4738,8 +4848,9 @@ function resolveExercise(card){
   }
 
   if (ctx.indexOf("section:") === 0){
-    const si = Number(ctx.slice(8));
-    const list = sectionExercises(topicId, si);
+    const parts = ctx.slice(8).split(":");
+    const si = Number(parts[0]);
+    const list = sectionExercises(topicId, si, parts[1] || "main");
     return list[i] || null;
   }
   const list = bank === "vocabulary" ? getVocabExercisesFor(topicId) : getExercisesFor(topicId);
@@ -4862,7 +4973,11 @@ function topicExamExercises(topicId){
   getExerciseSets(topicId, "grammar").forEach(set => (set.exercises || []).forEach(add));
   const lesson = state.lessons[topicId];
   if (lesson && Array.isArray(lesson.sections)){
-    lesson.sections.forEach(sec => (Array.isArray(sec && sec.exercises) ? sec.exercises : []).forEach(add));
+    lesson.sections.forEach(sec => {
+      (Array.isArray(sec && sec.exercises) ? sec.exercises : []).forEach(add);
+      (Array.isArray(sec && sec.exercise_sets) ? sec.exercise_sets : []).forEach(st =>
+        (Array.isArray(st && st.exercises) ? st.exercises : []).forEach(add));
+    });
   }
   return out;
 }
@@ -5592,16 +5707,23 @@ function sectionTextTemplate(topicId, sectionIndex){
   return JSON.stringify(tpl, null, 2);
 }
 
-function openAddSectionExercise(topicId, sectionIndex){
+function openAddSectionExercise(topicId, sectionIndex, opts){
+  opts = opts || {};
+  const _sets = sectionExerciseSets(topicId, sectionIndex);
+  const _act = _sets.find(x => x.id === activeExerciseSet(topicId, sectionIndex)) || _sets[0];
   if (!getSection(topicId, sectionIndex)){
     toast("This section is not loaded yet — import the lesson JSON first.", "err");
     return;
   }
 
   openFormModal({
-    title: "Add exercise to section",
+    title: opts.newSet ? "New exercise set" : "Add exercise to “" + _act.title + "”",
     sub: "Paste one exercise (or a list of them) as JSON. The template is pre-filled from this topic's own examples.",
     body: `
+      ${opts.newSet ? `<div class="field">
+        <label for="exSetTitle">Set name</label>
+        <input id="exSetTitle" type="text" placeholder="e.g. Practice test 1" autocomplete="off">
+      </div>` : ""}
       <div class="field">
         <label for="secExJson">Exercise JSON</label>
         <div class="json-toolbar">
@@ -5634,8 +5756,18 @@ function openAddSectionExercise(topicId, sectionIndex){
       if (!list.length){ toast("The exercise list is empty.", "err"); return; }
       const errs = validateExerciseList(list, "exercise");
       if (errs.length){ toast(errs.join("; "), "err"); return; }
+      let targetSet = null;
+      if (opts.newSet){
+        const title = ($("exSetTitle") ? $("exSetTitle").value : "").trim();
+        if (!title){ toast("Give the new set a name.", "err"); return; }
+        if (_sets.some(x => x.title.toLowerCase() === title.toLowerCase())){
+          toast("A set with that name already exists in this section.", "err"); return;
+        }
+        targetSet = createExerciseSet(topicId, sectionIndex, title);
+        state.wbSet[wbSetKey(topicId, sectionIndex, "ex")] = targetSet;
+      }
       for (const ex of list){
-        if (!addSectionExercise(topicId, sectionIndex, ex)){
+        if (!addSectionExercise(topicId, sectionIndex, ex, targetSet)){
           toast("Could not add the exercise — section not found.", "err");
           return;
         }
@@ -6162,6 +6294,18 @@ function validateLessonBundle(obj){
         if (!Array.isArray(s.exercises)) errors.push(`${at}: 'exercises' must be an array`);
         else if (s.exercises.length)
           errors.push(...validateExerciseList(s.exercises, `${at}.exercise`));
+      }
+      if (s.exercise_sets !== undefined){
+        if (!Array.isArray(s.exercise_sets)) errors.push(`${at}: 'exercise_sets' must be an array`);
+        else s.exercise_sets.forEach((st, k) => {
+          const at2 = `${at}.exercise_set ${k + 1}`;
+          if (!st || typeof st !== "object" || !Array.isArray(st.exercises)){
+            errors.push(`${at2}: must be an object with an 'exercises' array`); return;
+          }
+          if (!st.id) st.id = slugify(st.title || ("set-" + (k + 1))) || ("set-" + (k + 1));
+          if (!st.title) st.title = st.id;
+          if (st.exercises.length) errors.push(...validateExerciseList(st.exercises, `${at2}.exercise`));
+        });
       }
       if (s.texts !== undefined){
         if (!Array.isArray(s.texts)) errors.push(`${at}: 'texts' must be an array`);
@@ -6907,6 +7051,67 @@ document.addEventListener("click", (ev) => {
       openAddSectionExercise(topicId, si);
       break;
     }
+    case "select-wb-set": {
+      const k = wbSetKey(el.dataset.topic, Number(el.dataset.section), el.dataset.kind);
+      state.wbSet[k] = (el.dataset.kind === "vc" && el.dataset.set === "main") ? "" : el.dataset.set;
+      render();
+      break;
+    }
+    case "new-exercise-set":
+      openAddSectionExercise(el.dataset.topic, Number(el.dataset.section), { newSet: true });
+      break;
+    case "new-vocab-set":
+      openEditVocabulary(el.dataset.topic, Number(el.dataset.section), { newSet: true });
+      break;
+    case "rename-wb-set": {
+      const topicId = el.dataset.topic, si = Number(el.dataset.section);
+      if (el.dataset.kind === "ex"){
+        const s = getSection(topicId, si);
+        const st = s && (s.exercise_sets || []).find(x => String(x.id) === el.dataset.set);
+        if (!st) break;
+        const name = (prompt("Rename this set:", st.title) || "").trim();
+        if (!name) break;
+        st.title = name; saveLessons(); render();
+      } else {
+        const old = el.dataset.set;
+        const name = (prompt("Rename this set:", old) || "").trim();
+        if (!name || name === old) break;
+        if (vocabSetNames(topicId, si).some(n => n.toLowerCase() === name.toLowerCase()) || name.toLowerCase() === "main"){
+          toast("A set with that name already exists.", "err"); break;
+        }
+        getVocabularyFor(topicId).forEach(w => {
+          if (wordInSection(topicId, w, si) && String(w.set || "") === old) w.set = name;
+        });
+        saveVocabulary();
+        state.wbSet[wbSetKey(topicId, si, "vc")] = name;
+        render();
+      }
+      break;
+    }
+    case "delete-wb-set": {
+      const topicId = el.dataset.topic, si = Number(el.dataset.section);
+      if (el.dataset.kind === "ex"){
+        const s = getSection(topicId, si);
+        if (!s || !Array.isArray(s.exercise_sets)) break;
+        const st = s.exercise_sets.find(x => String(x.id) === el.dataset.set);
+        if (!st) break;
+        if (!confirm("Delete the set “" + st.title + "” and its " + (st.exercises || []).length + " exercise(s)?")) break;
+        s.exercise_sets = s.exercise_sets.filter(x => x !== st);
+        saveLessons();
+        state.wbSet[wbSetKey(topicId, si, "ex")] = "main";
+      } else {
+        const name = el.dataset.set;
+        if (!confirm("Delete the set “" + name + "” and its words?")) break;
+        const keep = getVocabularyFor(topicId).filter(w => !(wordInSection(topicId, w, si) && String(w.set || "") === name));
+        if (keep.length) state.vocabulary[topicId] = Object.assign({}, state.vocabulary[topicId], { words: keep });
+        else delete state.vocabulary[topicId];
+        saveVocabulary();
+        state.wbSet[wbSetKey(topicId, si, "vc")] = "";
+      }
+      render();
+      toast("Set deleted.");
+      break;
+    }
     case "add-section-text": {
       const topicId = el.dataset.topic;
       const si = Number(el.dataset.section);
@@ -7123,7 +7328,8 @@ document.addEventListener("click", (ev) => {
     /* ---------------- VOCABULARY BANK ---------------- */
     case "bank-add-all": {
       const topicId = el.dataset.topic;
-      const words = getSectionVocab(topicId, Number(el.dataset.section || 0)).map(x => x.w);
+      const _si = Number(el.dataset.section || 0);
+      const words = getSectionVocab(topicId, _si, activeVocabSet(topicId, _si)).map(x => x.w);
       if (!words.length){ toast("There is no vocabulary to add for this section.", "err"); break; }
       const r = addWordsToBank(words, topicId);
       updateNav();
@@ -7143,7 +7349,8 @@ document.addEventListener("click", (ev) => {
 
     case "bank-export-all": {
       const topicId = el.dataset.topic;
-      const words = getSectionVocab(topicId, Number(el.dataset.section || 0)).map(x => x.w);
+      const _si = Number(el.dataset.section || 0);
+      const words = getSectionVocab(topicId, _si, activeVocabSet(topicId, _si)).map(x => x.w);
       if (!words.length){ toast("There is no vocabulary to export for this section.", "err"); break; }
       downloadCSV(wordsToCSV(words), slugify(topicId) + "-vocabulary.csv");
       toast(`Exported ${words.length} word${words.length === 1 ? "" : "s"} as CSV.`);
@@ -7372,7 +7579,9 @@ document.addEventListener("click", (ev) => {
       if (!confirm(hasSec ? "Remove the vocabulary of this section?" : "Remove the imported vocabulary for this topic?")) return;
       if (hasSec){
         const si = Number(el.dataset.section);
-        const keep = getVocabularyFor(id).filter(w => !wordInSection(id, w, si));
+        const setName = el.dataset.set || "";
+        const keep = getVocabularyFor(id).filter(w => !(wordInSection(id, w, si) && String(w.set || "") === setName));
+        state.wbSet[wbSetKey(id, si, "vc")] = "";
         if (keep.length) state.vocabulary[id] = Object.assign({}, state.vocabulary[id], { words: keep });
         else delete state.vocabulary[id];
       } else {
@@ -7447,6 +7656,7 @@ document.addEventListener("click", (ev) => {
       state.activeSetIds = {};
       state.sectionExtrasOpen = {};
       state.subClosed = {};
+      state.wbSet = {};
       state.vocabulary = {};
       state.readings = {};
       state.vocabBank = [];
