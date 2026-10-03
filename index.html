@@ -1560,6 +1560,21 @@ html[data-theme="dark"] .bank-filter-select:focus{
     border-bottom-color:var(--rule);
   }
 }
+
+/* ---- final exam ---- */
+.exam-view .ex-actions{display:none;}
+.exam-q{margin-bottom:18px;}
+.exam-topic{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted,#8a8578);margin:0 0 4px;}
+.exam-q.exam-ok .exercise{border-left:3px solid #3f9d5b;}
+.exam-q.exam-bad .exercise{border-left:3px solid #c0463d;}
+.exam-submit{display:flex;justify-content:center;margin:26px 0 40px;}
+.exam-pool{border:1px solid var(--rule-strong);border-radius:8px;padding:6px 12px;margin-bottom:14px;}
+.exam-pool-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:.9rem;}
+.exam-pool-row.total{border-top:1px solid var(--rule-strong);font-weight:650;margin-top:4px;}
+.exam-score{text-align:center;margin-bottom:22px;}
+.exam-score-big{font-size:2rem;font-weight:700;margin-bottom:10px;}
+.exam-score-big span{font-size:1rem;font-weight:500;opacity:.7;}
+.exam-breakdown{max-width:420px;margin:0 auto;text-align:left;}
 </style>
 </head>
 <body>
@@ -1666,7 +1681,8 @@ const LS = {
   PROGRESS:        "egb:progress:v2",
   READER:          "egb:reader:v1",
   PREFS:           "egb:prefs:v1",
-  THEME:           "egb:theme:v1"
+  THEME:           "egb:theme:v1",
+  EXAMS:           "egb:exams:v1"
 };
 
 /* ---------------------------------------------------------------------------
@@ -1937,6 +1953,10 @@ const state = {
   /** Section extras open state: key = "topicId:sectionIndex" -> true when open. */
   sectionExtrasOpen: {},
   subClosed: {},
+
+  /** Final exams: current exam in progress + last results per section. */
+  exam: null,
+  examResults: (function(){ try { return JSON.parse(localStorage.getItem("egb:exams:v1")) || {}; } catch(e){ return {}; } })(),
 
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
@@ -3094,7 +3114,7 @@ function updateNav(){
     { id: "completed",   label: "Completed",       icon: "✓" },
     { id: "settings",    label: "Settings",        icon: "⚙" }
   ];
-  const active = (state.view === "lesson" || state.view === "book-detail") ? "book" : state.view;
+  const active = (state.view === "lesson" || state.view === "book-detail" || state.view === "exam") ? "book" : state.view;
 
   $("nav").innerHTML = items.map(it => {
     const badge = (it.id === "vocab-bank" && state.vocabBank.length)
@@ -3129,6 +3149,7 @@ function render(){
   else if (state.view === "book-detail")  view.innerHTML = bookDetailHTML();
   else if (state.view === "completed")    view.innerHTML = completedHTML();
   else if (state.view === "lesson")       view.innerHTML = lessonHTML(state.currentTopicId);
+  else if (state.view === "exam" && state.exam) view.innerHTML = examHTML();
   else                                    view.innerHTML = dashboardHTML();
 
   applyReader();
@@ -3466,6 +3487,8 @@ function sectionsHTML(items, includeEmptySections){
           <span class="sec-meta">${s.completed} / ${s.total} topics completed</span>
         </div>
         <div class="sec-tools">
+          ${examResultBadge(section)}
+          <button class="btn tiny" data-action="open-exam-setup" data-section="${esc(section.id)}" title="Gather the exercises of every topic in this section into one exam">📝 Create the final exam</button>
           <button class="icon-btn" data-action="add-topic" data-section="${esc(section.id)}" title="Add topic">＋</button>
           <button class="icon-btn" data-action="rename-section" data-section="${esc(section.id)}" title="Rename section">✎</button>
           <button class="icon-btn danger" data-action="delete-section" data-section="${esc(section.id)}" title="Delete section">✕</button>
@@ -4655,6 +4678,11 @@ function resolveExercise(card){
   const ctx = card.dataset.ctx || "";
   const topicId = state.currentTopicId;
 
+  if (ctx === "exam"){
+    const q = state.exam && state.exam.questions[i];
+    return q ? q.ex : null;
+  }
+
   if (ctx.indexOf("section:") === 0){
     const si = Number(ctx.slice(8));
     const list = sectionExercises(topicId, si);
@@ -4672,7 +4700,7 @@ function checkExercise(card){
   if (type === "multiple_choice"){
     const opts = [...card.querySelectorAll(".option")];
     const selected = opts.findIndex(o => o.classList.contains("selected"));
-    if (selected < 0){ feedback(card, "warn", "Choose an answer first."); return; }
+    if (selected < 0 && !card.closest(".exam-view")){ feedback(card, "warn", "Choose an answer first."); return; }
 
     let correct = ex.answer;
     if (typeof correct === "string"){
@@ -4738,6 +4766,204 @@ function checkExercise(card){
         : "✗ Some matches are wrong. Correct matches:<br>" + wrongList.join("<br>"));
     return;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   34b. FINAL EXAM — gathers the grammar exercises of every topic in a section
+   --------------------------------------------------------------------------- */
+function findSectionById(sectionId){
+  const b = currentBook();
+  return b && Array.isArray(b.sections) ? (b.sections.find(x => x.id === sectionId) || null) : null;
+}
+function examKey(section){ const b = currentBook(); return (b ? b.id : "") + ":" + section.id; }
+
+/** Attempts for a section, oldest first. Accepts the older single-result shape too. */
+function examAttempts(key){
+  const r = state.examResults[key];
+  if (!r) return [];
+  if (Array.isArray(r.attempts)) return r.attempts;
+  if (typeof r.score === "number") return [r];
+  return [];
+}
+function saveExamResults(){
+  try { localStorage.setItem(LS.EXAMS, JSON.stringify(state.examResults)); } catch (err){}
+}
+function examResultBadge(section){
+  const list = examAttempts(examKey(section));
+  if (!list.length) return "";
+  const last = list[list.length - 1];
+  const best = list.reduce((m, a) => a.pct > m.pct ? a : m, list[0]);
+  return `<span class="sec-meta" title="${list.length} attempt${list.length === 1 ? "" : "s"}">Last exam: ${last.score}/${last.total} (${last.pct}%) · Best: ${best.pct}%</span>`;
+}
+
+/** All grammar exercises of one topic: every grammar set + every section exercise. Duplicates removed. */
+function topicExamExercises(topicId){
+  const out = [], seen = new Set();
+  const add = (ex) => {
+    if (!ex || typeof ex !== "object") return;
+    const k = JSON.stringify(ex);
+    if (seen.has(k)) return;
+    seen.add(k); out.push(ex);
+  };
+  getExerciseSets(topicId, "grammar").forEach(set => (set.exercises || []).forEach(add));
+  const lesson = state.lessons[topicId];
+  if (lesson && Array.isArray(lesson.sections)){
+    lesson.sections.forEach(sec => (Array.isArray(sec && sec.exercises) ? sec.exercises : []).forEach(add));
+  }
+  return out;
+}
+
+function examPool(section){
+  return (section.topics || []).map(t => ({
+    topicId: t.id,
+    topicTitle: t.title || t.id,
+    list: topicExamExercises(t.id)
+  }));
+}
+
+function shuffleArr(a){
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function openExamSetup(sectionId){
+  const section = findSectionById(sectionId);
+  if (!section) return;
+  const pool = examPool(section);
+  const total = pool.reduce((n, p) => n + p.list.length, 0);
+  if (!total){
+    toast("No exercises found in the topics of this section yet.", "err");
+    return;
+  }
+  const def = Math.min(30, total);
+  openFormModal({
+    title: "Create the final exam",
+    sub: section.title + " — exercises from every topic are gathered and mixed.",
+    body: `
+      <div class="exam-pool">
+        ${pool.map(p => `<div class="exam-pool-row"><span>${esc(p.topicTitle)}</span><span class="muted">${p.list.length} exercise${p.list.length === 1 ? "" : "s"}</span></div>`).join("")}
+        <div class="exam-pool-row total"><span>Total available</span><span>${total}</span></div>
+      </div>
+      <div class="field">
+        <label for="examCount">Number of questions</label>
+        <input id="examCount" type="number" min="1" max="${total}" value="${def}">
+      </div>
+      <p class="muted">Questions are picked evenly from every topic that has exercises, then shuffled.
+        Answers are checked when you submit the exam.</p>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Start exam</button>
+      </div>`,
+    onSubmit: () => {
+      let n = parseInt(($("examCount") || {}).value, 10);
+      if (!n || n < 1){ toast("Enter how many questions you want.", "err"); return; }
+      n = Math.min(n, total);
+      startExam(section, n);
+    }
+  });
+}
+
+function startExam(section, n){
+  const pool = examPool(section).filter(p => p.list.length)
+    .map(p => ({ p, items: shuffleArr(p.list) }));
+  const picked = [];
+  /* round-robin across topics so every topic is represented */
+  let guard = 0;
+  while (picked.length < n && guard++ < 100000){
+    let added = false;
+    for (const g of shuffleArr(pool)){
+      if (picked.length >= n) break;
+      const ex = g.items.shift();
+      if (ex){ picked.push({ ex, topicId: g.p.topicId, topicTitle: g.p.topicTitle }); added = true; }
+    }
+    if (!added) break;
+  }
+  state.exam = {
+    id: Date.now().toString(36),
+    sectionId: section.id,
+    sectionTitle: section.title,
+    questions: shuffleArr(picked),
+    submitted: false,
+    result: null
+  };
+  closeFormModal();
+  go("exam");
+}
+
+function examHTML(){
+  const e = state.exam;
+  const qs = e.questions;
+  const lessonKey = "exam-" + e.id;
+  return `
+  <div class="exam-view">
+    <div class="page-head">
+      <button class="btn ghost tiny" data-action="exam-back">← Back to book</button>
+      <h2 class="page-title" style="margin-top:12px;">Final exam — ${esc(e.sectionTitle)}</h2>
+      <p class="page-sub">${qs.length} question${qs.length === 1 ? "" : "s"} from ${new Set(qs.map(q => q.topicId)).size} topic${new Set(qs.map(q => q.topicId)).size === 1 ? "" : "s"}.
+        Answer everything, then press <strong>Submit exam</strong>.</p>
+    </div>
+    <div id="examResult"></div>
+    <div class="exam-questions">
+      ${qs.map((q, i) => `<div class="exam-q">
+        <div class="exam-topic">${esc(q.topicTitle)}</div>
+        ${exerciseHTML(q.ex, i, lessonKey, "grammar", "exam")}
+      </div>`).join("")}
+    </div>
+    <div class="exam-submit">
+      <button class="btn primary" data-action="exam-submit" id="examSubmitBtn">Submit exam</button>
+    </div>
+  </div>`;
+}
+
+function submitExam(){
+  const e = state.exam;
+  if (!e || e.submitted) return;
+  const cards = [...document.querySelectorAll(".exam-view .exercise")];
+  const byTopic = new Map();
+  let score = 0;
+  cards.forEach(card => {
+    checkExercise(card);
+    const fb = card.querySelector(".ex-feedback");
+    const ok = !!(fb && fb.classList.contains("ok"));
+    const q = e.questions[Number(card.dataset.ex)];
+    if (!q) return;
+    if (!byTopic.has(q.topicId)) byTopic.set(q.topicId, { title: q.topicTitle, ok: 0, n: 0 });
+    const g = byTopic.get(q.topicId);
+    g.n++; if (ok){ g.ok++; score++; }
+    card.closest(".exam-q").classList.add(ok ? "exam-ok" : "exam-bad");
+  });
+  const total = cards.length;
+  const pct = total ? Math.round(score / total * 100) : 0;
+  e.submitted = true;
+  e.result = { score, total, pct };
+
+  const section = findSectionById(e.sectionId);
+  if (section){
+    const k = examKey(section);
+    const attempts = examAttempts(k).slice();
+    attempts.push({ score, total, pct, date: Date.now(),
+      topics: [...byTopic.values()].map(g => ({ title: g.title, ok: g.ok, n: g.n })) });
+    state.examResults[k] = { attempts };
+    saveExamResults();
+  }
+
+  $("examResult").innerHTML = `<div class="card exam-score">
+    <div class="exam-score-big">${score} / ${total} <span>(${pct}%)</span></div>
+    <div class="exam-breakdown">
+      ${[...byTopic.values()].map(g => `<div class="exam-pool-row"><span>${esc(g.title)}</span><span>${g.ok} / ${g.n}</span></div>`).join("")}
+    </div>
+    <div class="file-row" style="margin-top:14px;">
+      <button class="btn primary" data-action="exam-new" data-section="${esc(e.sectionId)}">New exam</button>
+      <button class="btn ghost" data-action="exam-back">Back to book</button>
+    </div>
+  </div>`;
+  const btn = $("examSubmitBtn");
+  if (btn) btn.disabled = true;
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 /* ---------------------------------------------------------------------------
@@ -6197,7 +6423,7 @@ function looksLikeLibrary(obj){
       "exercises" in obj || "vocabExercises" in obj ||
       "vocabulary" in obj || "readings" in obj ||
       "vocabBank" in obj ||
-      "progress" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
+      "progress" in obj || "examResults" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
   return false;
 }
 
@@ -6235,6 +6461,7 @@ function validateLibraryFile(obj){
   if (obj.readings       !== undefined && !isPlainObject(obj.readings))       errors.push("'readings' must be an object");
   if (obj.vocabBank      !== undefined && !Array.isArray(obj.vocabBank))      errors.push("'vocabBank' must be an array");
   if (obj.progress       !== undefined && !isPlainObject(obj.progress))       errors.push("'progress' must be an object");
+  if (obj.examResults    !== undefined && !isPlainObject(obj.examResults))    errors.push("'examResults' must be an object");
   if (obj.theme          !== undefined && typeof obj.theme !== "string")      errors.push("'theme' must be a string");
   if (obj.reader         !== undefined && !isPlainObject(obj.reader))         errors.push("'reader' must be an object");
   if (obj.prefs          !== undefined && !isPlainObject(obj.prefs))          errors.push("'prefs' must be an object");
@@ -6244,7 +6471,7 @@ function validateLibraryFile(obj){
     obj.exerciseSets === undefined && obj.exercises === undefined &&
     obj.vocabExercises === undefined && obj.vocabulary === undefined &&
     obj.readings === undefined && obj.vocabBank === undefined &&
-    obj.progress === undefined && obj.theme === undefined &&
+    obj.progress === undefined && obj.examResults === undefined && obj.theme === undefined &&
     obj.reader === undefined && obj.prefs === undefined;
 
   if (nothing) errors.push("no recognisable data found");
@@ -6257,7 +6484,7 @@ function applyLibrary(obj){
   if (!v.ok) return { ok: false, message: "Invalid library file — " + v.errors.join("; ") };
 
   let bookCount = 0, lessonCount = 0, setCount = 0, vocabCount = 0,
-      readingCount = 0, bankCount = 0, progressCount = 0;
+      readingCount = 0, bankCount = 0, progressCount = 0, examCount = 0;
   let themeApplied = false, readerApplied = false, prefsApplied = false;
 
   let incomingBooks = [];
@@ -6368,6 +6595,28 @@ function applyLibrary(obj){
     if (progressCount) saveProgress();
   }
 
+  if (obj && !Array.isArray(obj) && obj.examResults && typeof obj.examResults === "object"){
+    Object.keys(obj.examResults).forEach(k => {
+      const incoming = obj.examResults[k];
+      const inList = Array.isArray(incoming && incoming.attempts) ? incoming.attempts
+                   : (incoming && typeof incoming.score === "number") ? [incoming] : [];
+      if (!inList.length) return;
+      const have = examAttempts(k).slice();
+      let added = 0;
+      inList.forEach(a => {
+        if (!a || typeof a.score !== "number" || typeof a.total !== "number") return;
+        if (have.some(h => h.date === a.date && h.score === a.score && h.total === a.total)) return;
+        have.push(a); added++;
+      });
+      if (added){
+        have.sort((x, y) => (x.date || 0) - (y.date || 0));
+        state.examResults[k] = { attempts: have };
+        examCount += added;
+      }
+    });
+    if (examCount) saveExamResults();
+  }
+
   if (obj && !Array.isArray(obj) && typeof obj.theme === "string" &&
       THEMES.indexOf(obj.theme) !== -1){
     state.theme = obj.theme;
@@ -6420,6 +6669,7 @@ function applyLibrary(obj){
   if (readingCount)  parts.push(`${readingCount} reading bank${readingCount === 1 ? "" : "s"}`);
   if (bankCount)     parts.push(`${bankCount} new word${bankCount === 1 ? "" : "s"} in the Vocabulary Bank`);
   if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
+  if (examCount)     parts.push(`${examCount} final exam score${examCount === 1 ? "" : "s"}`);
   if (themeApplied)  parts.push("theme");
   if (readerApplied) parts.push("reading options");
   if (prefsApplied)  parts.push("display preferences");
@@ -6459,12 +6709,13 @@ function exportAllData(){
     readings: state.readings,
     vocabBank: state.vocabBank,
     progress: state.progress,
+    examResults: state.examResults,
     totals: progressStats()
   };
 
   const stamp = new Date().toISOString().slice(0,10);
   downloadJSON(data, `grammar-all-data-${stamp}.json`);
-  toast("All data exported — books, lessons, exercise sets, vocabulary, reading passages, the vocabulary bank, progress, theme, reading options and display preferences.");
+  toast("All data exported — books, lessons, exercise sets, vocabulary, reading passages, the vocabulary bank, progress, final exam scores, theme, reading options and display preferences.");
 }
 
 async function handleFiles(fileList){
@@ -6745,6 +6996,11 @@ document.addEventListener("click", (ev) => {
     }
     case "open-passage": openPassage(el.dataset.key); break;
     case "close-modal":  closeModal(); break;
+
+    case "open-exam-setup": openExamSetup(el.dataset.section); break;
+    case "exam-submit": submitExam(); break;
+    case "exam-new": { const sid = el.dataset.section; state.exam = null; go("book-detail"); openExamSetup(sid); break; }
+    case "exam-back": state.exam = null; go("book-detail"); break;
 
     case "check-exercise": {
       const card = el.closest(".exercise");
@@ -7127,14 +7383,15 @@ document.addEventListener("click", (ev) => {
         vocabulary: state.vocabulary,
         readings: state.readings,
         vocabBank: state.vocabBank,
-        progress: state.progress
+        progress: state.progress,
+        examResults: state.examResults
       }, "grammar-library.json");
-      toast("Library exported — books, lessons, exercise sets, vocabulary, reading passages, the vocabulary bank and progress.");
+      toast("Library exported — books, lessons, exercise sets, vocabulary, reading passages, the vocabulary bank, progress and final exam scores.");
       break;
     }
 
     case "clear-all": {
-      if (!confirm("Clear all data? This removes every book, all lessons, all exercise sets, vocabulary, vocabulary-bank and reading data and all progress. Theme, reading options and display preferences are kept.")) return;
+      if (!confirm("Clear all data? This removes every book, all lessons, all exercise sets, vocabulary, vocabulary-bank and reading data, all progress and all final exam scores. Theme, reading options and display preferences are kept.")) return;
       state.books = [];
       state.currentBookId = null;
       state.lessons = {};
@@ -7148,8 +7405,11 @@ document.addEventListener("click", (ev) => {
       state.vocabBankQuery = "";
       state.vocabBankFilters = { source: "", category: "" };
       state.progress = {};
+      state.examResults = {};
+      state.exam = null;
       state.currentTopicId = null;
       try {
+        localStorage.removeItem(LS.EXAMS);
         localStorage.removeItem(LS.BOOKS);
         localStorage.removeItem(LS.BOOK);
         localStorage.removeItem(LS.CURRENT);
