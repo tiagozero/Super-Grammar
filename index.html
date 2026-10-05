@@ -1031,6 +1031,7 @@ textarea.paste:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(47,1
 }
 .template-toggle:hover{text-decoration:underline;}
 .template-wrap[hidden]{display:none;}
+.ex-template{margin:4px 0 16px;}
 
 /* ============================================================
    READING OPTIONS
@@ -1972,6 +1973,39 @@ function lessonTemplateForTopic(topicId){
     tpl.title = topicId;
   }
   return tpl;
+}
+
+/** JSON template for one grammar exercise set (the file imported via "Add exercise set"). */
+function exerciseSetTemplateForTopic(topicId){
+  const found = findTopicAnywhere(topicId);
+  const title = found ? found.topic.title : String(topicId);
+  return {
+    title: title + " — Exercise set",
+    exercises: [
+      {
+        type: "multiple_choice",
+        question: "Choose the correct sentence.",
+        options: ["Option A — incorrect.", "Option B — correct.", "Option C — incorrect.", "Option D — incorrect."],
+        answer: 1,
+        explanation: "Explain why option B is correct and the others are wrong."
+      },
+      {
+        type: "fill_blank",
+        sentence: "She {{blank}} to school every day.",
+        answer: "walks",
+        explanation: "Third person singular takes -s in the present simple."
+      },
+      {
+        type: "matching_definition",
+        pairs: [
+          { term: "term 1", definition: "definition 1" },
+          { term: "term 2", definition: "definition 2" },
+          { term: "term 3", definition: "definition 3" }
+        ],
+        explanation: "Optional explanation."
+      }
+    ]
+  };
 }
 
 /* ---------------------------------------------------------------------------
@@ -4705,14 +4739,35 @@ function exercisesBlockHTML(topicId){
   const hidden = !!state.prefs.hideGrammarExercises;
   const bodyId = "ex-body-" + slugify(topicId);
 
+  const tplId = "exTpl-" + slugify(topicId);
+  const boxId = tplId + "-box";
+  const tplText = JSON.stringify(exerciseSetTemplateForTopic(topicId), null, 2);
+
   let html = `<section class="lesson-block" id="lesson-exercises">
     <h2 class="block-title">
       <span>Exercises</span>
       <span class="exercise-count">${sets.length} set${sets.length === 1 ? "" : "s"}${n ? " · " + n + " shown" : ""}</span>
+      <button class="btn ghost tiny" type="button" data-action="toggle-template" data-target="${esc(tplId)}"
+              data-label-show="{ } JSON template" data-label-hide="▾ Hide JSON template">{ } JSON template</button>
       <button class="btn ghost tiny block-toggle" data-action="toggle-block"
               data-block="grammar-exercises" data-target="${esc(bodyId)}"
               aria-expanded="${hidden ? "false" : "true"}">${hidden ? "▸ Show" : "▾ Hide"}</button>
     </h2>
+    <div class="template-wrap ex-template" id="${esc(tplId)}" hidden>
+      <p class="muted">
+        JSON template for an exercise set. Fill it in, save it as <code>.json</code> and add it with
+        <strong>＋ Add exercise set</strong>. Supported types: <code>multiple_choice</code>
+        (<code>options</code> + <code>answer</code> index), <code>fill_blank</code>
+        (<code>sentence</code> containing <code>{{blank}}</code> + <code>answer</code>) and
+        <code>matching_definition</code> (<code>pairs</code> of <code>term</code>/<code>definition</code>).
+        A plain array of exercises also works.
+      </p>
+      <div class="template-box" id="${esc(boxId)}">${esc(tplText)}</div>
+      <div class="file-row">
+        <button class="btn tiny" data-action="copy-template" data-target="${esc(boxId)}">Copy JSON</button>
+        <button class="btn tiny ghost" data-action="download-template" data-kind="exercise-set" data-id="${esc(topicId)}">Download</button>
+      </div>
+    </div>
     <div id="${esc(bodyId)}" ${hidden ? "hidden" : ""}>`;
 
   html += exerciseSetGridHTML(topicId, kind);
@@ -7467,6 +7522,9 @@ document.addEventListener("click", (ev) => {
       if (kind === "book"){
         downloadJSON(GRAMMAR_BOOK_TEMPLATE, "grammar-book.template.json");
         toast("Grammar book template downloaded.");
+      } else if (kind === "exercise-set"){
+        downloadJSON(exerciseSetTemplateForTopic(id), (id || "exercise-set") + ".exercise-set.template.json");
+        toast("Exercise set template downloaded.");
       } else if (kind === "lesson"){
         const tpl = id ? lessonTemplateForTopic(id) : ensureRequiredExercises(deepClone(LESSON_TEMPLATE));
         const filename = (id ? id : "lesson") + ".template.json";
