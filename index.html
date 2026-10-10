@@ -1582,6 +1582,52 @@ html[data-theme="dark"] .bank-filter-select:focus{
 .exam-score-big{font-size:2rem;font-weight:700;margin-bottom:10px;}
 .exam-score-big span{font-size:1rem;font-weight:500;opacity:.7;}
 .exam-breakdown{max-width:420px;margin:0 auto;text-align:left;}
+/* ============================================================
+   REVIEW / DUE DATES
+   ============================================================ */
+.field input[type="date"]{
+  width:100%;padding:9px 12px;font:inherit;font-size:.9rem;color:var(--ink);
+  border:1px solid var(--rule-strong);border-radius:6px;background:#fff;outline:none;
+}
+.review-panel{
+  margin-top:14px;padding:12px 14px;border:1px solid var(--rule);border-radius:var(--radius);
+  background:var(--card-soft);display:flex;flex-direction:column;gap:10px;
+}
+.rv-row{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;}
+.rv-title{font-weight:700;font-size:.88rem;}
+.rv-field{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--ink-soft);}
+.rv-field input[type="date"]{
+  font:inherit;font-size:.85rem;padding:5px 8px;color:var(--ink);background:var(--card);
+  border:1px solid var(--rule-strong);border-radius:6px;
+}
+.rv-check{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink-soft);cursor:pointer;}
+.rv-quick{display:flex;gap:6px;flex-wrap:wrap;}
+.rv-help{font-size:.76rem;margin:0;line-height:1.5;}
+.rv-chip{
+  display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;border-radius:99px;
+  border:1px solid transparent;white-space:nowrap;
+}
+.rv-chip.overdue{background:var(--err-soft);color:var(--err);border-color:#e9c4c0;}
+.rv-chip.today{background:var(--warn-soft);color:var(--warn);border-color:#f0dcb6;}
+.rv-chip.soon{background:var(--accent-soft);color:var(--accent);border-color:rgba(47,110,165,.25);}
+.rv-chip.later{background:#f2efe8;color:var(--muted);border-color:#e5e0d4;}
+.rv-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.rv-item{
+  display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 12px;
+  border:1px solid var(--rule);border-radius:6px;background:var(--card-soft);
+}
+.rv-item .rv-main{flex:1;min-width:180px;}
+.rv-item .rv-name{font-weight:650;font-size:.92rem;}
+.rv-item .rv-sec{font-size:.76rem;color:var(--muted);}
+.rv-rate{display:flex;gap:6px;flex-wrap:wrap;}
+.rv-group-title{font-family:var(--serif);font-size:1rem;font-weight:600;margin:18px 0 8px;}
+.rv-group-title:first-of-type{margin-top:0;}
+html[data-theme="dark"] input[type="date"]{color-scheme:dark;}
+html[data-theme="dark"] .field input[type="date"]{background:#1c1c21;border-color:#3a3a42;color:#e8e6e1;}
+html[data-theme="dark"] .rv-chip.later{background:#26262c;border-color:#3a3a42;}
+html[data-theme="dark"] .rv-chip.overdue{border-color:#6b2f2a;}
+html[data-theme="dark"] .rv-chip.today{border-color:#6b4f1a;}
+
 </style>
 </head>
 <body>
@@ -1689,7 +1735,8 @@ const LS = {
   READER:          "egb:reader:v1",
   PREFS:           "egb:prefs:v1",
   THEME:           "egb:theme:v1",
-  EXAMS:           "egb:exams:v1"
+  EXAMS:           "egb:exams:v1",
+  REVIEWS:         "egb:reviews:v1"
 };
 
 /* ---------------------------------------------------------------------------
@@ -1728,7 +1775,7 @@ const READER_MAX = 26;
 const THEMES = ["light", "dark", "system"];
 const DEFAULT_THEME = "light";
 
-const DEFAULT_PREFS = { hideGrammarExercises: false, hideVocabExercises: false };
+const DEFAULT_PREFS = { hideGrammarExercises: false, hideVocabExercises: false, autoSpaced: false };
 
 /* ---------------------------------------------------------------------------
    4. JSON TEMPLATES
@@ -2037,7 +2084,8 @@ const state = {
 
   reader: { fontId: DEFAULT_READER.fontId, size: DEFAULT_READER.size },
   readerOpen: false,
-  prefs: { hideGrammarExercises: false, hideVocabExercises: false },
+  prefs: { hideGrammarExercises: false, hideVocabExercises: false, autoSpaced: false },
+  reviews: {},
   theme: DEFAULT_THEME,
   view: "dashboard",
   currentTopicId: null,
@@ -2402,6 +2450,7 @@ function loadPrefs(){
     if (p && typeof p === "object"){
       state.prefs.hideGrammarExercises = !!p.hideGrammarExercises;
       state.prefs.hideVocabExercises   = !!p.hideVocabExercises;
+      state.prefs.autoSpaced           = !!p.autoSpaced;
     }
   } catch (e){}
 }
@@ -2447,6 +2496,10 @@ function loadState(){
 
   try { state.progress = JSON.parse(localStorage.getItem(LS.PROGRESS)) || {}; }
   catch (e) { state.progress = {}; }
+
+  try { state.reviews = JSON.parse(localStorage.getItem(LS.REVIEWS)) || {}; }
+  catch (e) { state.reviews = {}; }
+  if (!state.reviews || typeof state.reviews !== "object" || Array.isArray(state.reviews)) state.reviews = {};
 
   try { state.exerciseSets = JSON.parse(localStorage.getItem(LS.EXERCISE_SETS)) || {}; }
   catch (e) { state.exerciseSets = {}; }
@@ -2554,6 +2607,7 @@ function saveLessons(){ try{ localStorage.setItem(LS.LESSONS, JSON.stringify(sta
 function saveVocabulary(){ try{ localStorage.setItem(LS.VOCABULARY, JSON.stringify(state.vocabulary)); }catch(e){} }
 function saveReadings(){ try{ localStorage.setItem(LS.READING, JSON.stringify(state.readings)); }catch(e){} }
 function saveProgress(){ try{ localStorage.setItem(LS.PROGRESS, JSON.stringify(state.progress)); }catch(e){} }
+function saveReviews(){ try{ localStorage.setItem(LS.REVIEWS, JSON.stringify(state.reviews)); }catch(e){} }
 function saveVocabBank(){ try{ localStorage.setItem(LS.VOCAB_BANK, JSON.stringify(state.vocabBank)); }catch(e){} }
 function saveExerciseSets(){ try{ localStorage.setItem(LS.EXERCISE_SETS, JSON.stringify(state.exerciseSets)); }catch(e){} }
 function saveActiveSets(){ try{ localStorage.setItem(LS.ACTIVE_SETS, JSON.stringify(state.activeSetIds)); }catch(e){} }
@@ -3224,6 +3278,210 @@ function sectionStats(section){
 }
 
 /* ---------------------------------------------------------------------------
+   19b. DUE DATES + SPACED REVIEW
+   Data per topic (state.reviews[topicId]):
+     { due: "YYYY-MM-DD" | null, spaced: bool, step: n, reps: n, last: "YYYY-MM-DD" }
+   --------------------------------------------------------------------------- */
+const REVIEW_STEPS = [1, 3, 7, 14, 30, 60, 120, 240];   /* days between reviews */
+
+function isoDate(d){
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function todayISO(){ return isoDate(new Date()); }
+function parseISO(iso){ const p = String(iso).split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); }
+function addDaysISO(iso, n){ const d = parseISO(iso); d.setDate(d.getDate() + n); return isoDate(d); }
+function daysBetween(aIso, bIso){
+  const a = parseISO(aIso), b = parseISO(bIso);
+  return Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
+                     Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+}
+function fmtDate(iso){
+  const d = parseISO(iso);
+  const opts = { day: "numeric", month: "short" };
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = "numeric";
+  return d.toLocaleDateString(undefined, opts);
+}
+
+function reviewInfo(id){
+  const r = state.reviews[id];
+  if (!r || !r.due) return null;
+  const d = daysBetween(todayISO(), r.due);
+  let label, cls;
+  if (d < 0)       { label = "Overdue by " + (-d) + " day" + (d === -1 ? "" : "s"); cls = "overdue"; }
+  else if (d === 0){ label = "Due today"; cls = "today"; }
+  else if (d === 1){ label = "Due tomorrow"; cls = "soon"; }
+  else if (d <= 7) { label = "Due in " + d + " days"; cls = "soon"; }
+  else             { label = "Due " + fmtDate(r.due); cls = "later"; }
+  return { r, d, label, cls };
+}
+
+function setReviewDue(id, iso){
+  const r = state.reviews[id] || { step: 0, reps: 0, spaced: true };
+  r.due = iso || null;
+  if (!r.due && !r.reps) delete state.reviews[id];
+  else state.reviews[id] = r;
+  saveReviews();
+}
+
+function setReviewSpaced(id, on){
+  const r = state.reviews[id] || { step: 0, reps: 0, spaced: true };
+  r.spaced = !!on;
+  if (r.spaced && !r.due) r.due = addDaysISO(todayISO(), REVIEW_STEPS[Math.min(r.step || 0, REVIEW_STEPS.length - 1)]);
+  state.reviews[id] = r;
+  saveReviews();
+}
+
+function startSpacedReview(id){
+  const r = state.reviews[id] || { step: 0, reps: 0 };
+  r.spaced = true;
+  r.step = r.step || 0;
+  r.due = addDaysISO(todayISO(), REVIEW_STEPS[Math.min(r.step, REVIEW_STEPS.length - 1)]);
+  state.reviews[id] = r;
+  saveReviews();
+}
+
+function nextReviewPlan(r, rating){
+  const L = REVIEW_STEPS.length;
+  const step = Math.min((r && r.step) || 0, L - 1);
+  let ns;
+  if (rating === "again")     ns = 0;
+  else if (rating === "hard") ns = step;
+  else if (rating === "easy") ns = Math.min(step + 2, L - 1);
+  else                        ns = Math.min(step + 1, L - 1);
+  return { step: ns, days: REVIEW_STEPS[ns] };
+}
+
+function rateReview(id, rating){
+  const r = state.reviews[id] || { step: 0, reps: 0, spaced: true };
+  const plan = nextReviewPlan(r, rating);
+  r.reps = (r.reps || 0) + 1;
+  r.last = todayISO();
+  r.step = plan.step;
+  r.due = r.spaced === false ? null : addDaysISO(todayISO(), plan.days);
+  state.reviews[id] = r;
+  saveReviews();
+  return r;
+}
+
+function scheduledReviews(){
+  const out = [];
+  allTopics().forEach(({ topic, section }) => {
+    const info = reviewInfo(topic.id);
+    if (info) out.push({ topic, section, info });
+  });
+  out.sort((a, b) => a.info.d - b.info.d || String(a.topic.title).localeCompare(String(b.topic.title)));
+  return out;
+}
+function dueReviewCount(){ return scheduledReviews().filter(x => x.info.d <= 0).length; }
+
+function reviewChipHTML(id){
+  const info = reviewInfo(id);
+  return info ? `<span class="rv-chip ${info.cls}" title="Review due ${esc(info.r.due)}">⏰ ${esc(info.label)}</span>` : "";
+}
+
+function reviewRateButtonsHTML(id){
+  const r = state.reviews[id];
+  const spaced = !r || r.spaced !== false;
+  return ["again", "hard", "good", "easy"].map(k => {
+    const plan = nextReviewPlan(r, k);
+    const cap = k.charAt(0).toUpperCase() + k.slice(1);
+    const hint = spaced ? ` · ${plan.days}d` : "";
+    return `<button class="btn tiny ${k === "good" ? "primary" : ""}" data-action="review-rate" data-id="${esc(id)}" data-rating="${k}"
+      title="${spaced ? "Next review in " + plan.days + " day" + (plan.days === 1 ? "" : "s") : "Marks this review as done"}">${cap}${hint}</button>`;
+  }).join("");
+}
+
+function reviewPanelHTML(id){
+  const r = state.reviews[id] || null;
+  const info = reviewInfo(id);
+  const spaced = r ? r.spaced !== false : true;
+  const quick = [[1, "Tomorrow"], [3, "3 days"], [7, "1 week"], [14, "2 weeks"], [30, "1 month"]]
+    .map(q => `<button class="btn tiny ghost" data-action="review-quick" data-days="${q[0]}">${q[1]}</button>`).join("");
+  return `
+  <div class="review-panel" id="reviewPanel">
+    <div class="rv-row">
+      <span class="rv-title">⏰ Due date &amp; review</span>
+      ${info ? `<span class="rv-chip ${info.cls}">${esc(info.label)}</span>` : `<span class="muted">No due date set</span>`}
+      ${r && r.reps ? `<span class="muted">· reviewed ${r.reps}×${r.last ? ", last on " + esc(fmtDate(r.last)) : ""}</span>` : ""}
+    </div>
+    <div class="rv-row">
+      <label class="rv-field">Due date
+        <input type="date" id="reviewDue" value="${esc((r && r.due) || "")}"></label>
+      <label class="rv-check"><input type="checkbox" id="reviewSpaced" ${spaced ? "checked" : ""}> Spaced review</label>
+      <span class="rv-quick">${quick}</span>
+      ${info ? `<button class="btn tiny ghost" data-action="review-clear">Clear date</button>` : ""}
+    </div>
+    ${info ? `<div class="rv-row"><span class="muted">How did this review go?</span>
+      <span class="rv-rate">${reviewRateButtonsHTML(id)}</span></div>` : ""}
+    <p class="rv-help muted">${spaced
+      ? "Spaced review is on: after each review the next due date moves further out (" + REVIEW_STEPS.slice(0, 6).join(" → ") + " … days). “Again” brings it back to tomorrow."
+      : "Spaced review is off: this is a single due date. Rating a review simply clears it."}</p>
+  </div>`;
+}
+
+function refreshReviewPanel(id){
+  const panel = $("reviewPanel");
+  if (panel) panel.outerHTML = reviewPanelHTML(id);
+  updateNav();
+}
+
+function reviewRowHTML(x, withRating){
+  return `<li class="rv-item">
+    <div class="rv-main">
+      <div class="rv-name">${esc(x.topic.title)}</div>
+      <div class="rv-sec">${esc(x.section.title)}${x.info.r.reps ? " · reviewed " + x.info.r.reps + "×" : ""}${x.info.r.spaced === false ? " · one-off" : ""}</div>
+    </div>
+    <span class="rv-chip ${x.info.cls}">${esc(x.info.label)}</span>
+    ${withRating ? `<span class="rv-rate">${reviewRateButtonsHTML(x.topic.id)}</span>` : ""}
+    <button class="btn tiny ${withRating ? "ghost" : "primary"}" data-action="open-topic" data-id="${esc(x.topic.id)}">${withRating ? "Open" : "Review"}</button>
+  </li>`;
+}
+
+function reviewDashCardHTML(){
+  const items = scheduledReviews();
+  if (!items.length){
+    return `<section class="card">
+      <h3>Reviews</h3>
+      <p class="muted">Nothing scheduled. Open any lesson and set a <strong>due date</strong> (with optional spaced review),
+        or turn on automatic spaced review in Settings.</p>
+    </section>`;
+  }
+  const due = items.filter(x => x.info.d <= 0);
+  const upcoming = items.filter(x => x.info.d > 0).slice(0, 3);
+  const shown = due.slice(0, 6).concat(upcoming);
+  return `<section class="card">
+    <h3>Reviews ${due.length ? `<span class="nav-badge">${due.length} due</span>` : ""}</h3>
+    ${due.length ? "" : `<p class="muted">Nothing is due right now. Next up:</p>`}
+    <ul class="rv-list">${shown.map(x => reviewRowHTML(x, false)).join("")}</ul>
+    <div style="margin-top:12px;"><button class="btn ghost tiny" data-action="nav" data-view="reviews">All scheduled reviews →</button></div>
+  </section>`;
+}
+
+function reviewsHTML(){
+  const items = scheduledReviews();
+  const groups = [
+    ["Overdue",       x => x.info.d < 0],
+    ["Due today",     x => x.info.d === 0],
+    ["Next 7 days",   x => x.info.d > 0 && x.info.d <= 7],
+    ["Later",         x => x.info.d > 7]
+  ];
+  let body = "";
+  groups.forEach(([title, fn]) => {
+    const list = items.filter(fn);
+    if (list.length) body += `<h3 class="rv-group-title">${title} (${list.length})</h3>
+      <ul class="rv-list">${list.map(x => reviewRowHTML(x, true)).join("")}</ul>`;
+  });
+  return `
+  <div class="page-head">
+    <h2 class="page-title">Reviews</h2>
+    <p class="page-sub">Topics with a due date${currentBook() ? " in " + esc(bookTitle(currentBook())) : ""}. Rate a review to schedule the next one.</p>
+  </div>
+  ${items.length ? `<section class="card">${body}</section>` : `
+  <div class="empty"><h3>No reviews scheduled</h3>
+    <p>Open a lesson and pick a due date, or enable automatic spaced review in Settings.</p></div>`}`;
+}
+
+/* ---------------------------------------------------------------------------
    20. HEADER + NAV
    --------------------------------------------------------------------------- */
 function updateHeader(){
@@ -3242,15 +3500,20 @@ function updateNav(){
     { id: "dashboard",   label: "Dashboard",       icon: "▦" },
     { id: "book",        label: "Books",           icon: "▤" },
     { id: "vocab-bank",  label: "Vocabulary Bank", icon: "▥" },
+    { id: "reviews",     label: "Reviews",         icon: "⏰" },
     { id: "completed",   label: "Completed",       icon: "✓" },
     { id: "settings",    label: "Settings",        icon: "⚙" }
   ];
   const active = (state.view === "lesson" || state.view === "book-detail" || state.view === "exam") ? "book" : state.view;
 
   $("nav").innerHTML = items.map(it => {
-    const badge = (it.id === "vocab-bank" && state.vocabBank.length)
+    let badge = (it.id === "vocab-bank" && state.vocabBank.length)
       ? `<span class="nav-badge">${state.vocabBank.length}</span>`
       : "";
+    if (it.id === "reviews" && hasBooks()){
+      const n = dueReviewCount();
+      if (n) badge = `<span class="nav-badge">${n}</span>`;
+    }
     return `<button data-action="nav" data-view="${it.id}" class="${active === it.id ? "active" : ""}">
        <span class="ic">${it.icon}</span><span>${it.label}</span>${badge}
      </button>`;
@@ -3279,6 +3542,7 @@ function render(){
   else if (state.view === "book")         view.innerHTML = libraryHTML();
   else if (state.view === "book-detail")  view.innerHTML = bookDetailHTML();
   else if (state.view === "completed")    view.innerHTML = completedHTML();
+  else if (state.view === "reviews")      view.innerHTML = reviewsHTML();
   else if (state.view === "lesson")       view.innerHTML = lessonHTML(state.currentTopicId);
   else if (state.view === "exam" && state.exam) view.innerHTML = examHTML();
   else                                    view.innerHTML = dashboardHTML();
@@ -3324,6 +3588,7 @@ function noBookHTML(){
     <div class="sec-toolbar" style="justify-content:center;margin-top:18px;margin-bottom:0;">
       <button class="btn primary" data-action="add-book">＋ Create a book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn" data-action="paste-import">⌨ Paste JSON</button>
       <button class="btn" data-action="import-library">Import all data</button>
       <button class="btn ghost" data-action="nav" data-view="vocab-bank">Vocabulary Bank →</button>
       <button class="btn ghost" data-action="nav" data-view="settings">Go to Settings →</button>
@@ -3411,6 +3676,8 @@ function dashboardHTML(){
     <button class="btn primary" data-action="nav" data-view="book-detail">Open book →</button>
   </section>`}
 
+  ${reviewDashCardHTML()}
+
   <section class="card">
     <h3>Section progress</h3>
     <ul class="sec-progress-list">${sectionRows || '<li class="muted">No sections in this book.</li>'}</ul>
@@ -3439,6 +3706,7 @@ function libraryHTML(){
     <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
       <button class="btn primary" data-action="add-book">＋ New book</button>
       <button class="btn" data-action="import-book">Import book JSON</button>
+      <button class="btn" data-action="paste-import">⌨ Paste JSON</button>
       <button class="btn ghost" data-action="import-library">Import all data</button>
     </div>
   </div>
@@ -3507,6 +3775,7 @@ function bookDetailHTML(){
     </p>
     <div class="sec-toolbar" style="margin-top:16px;margin-bottom:0;">
       <button class="btn primary" data-action="add-section">＋ Add section</button>
+      <button class="btn" data-action="paste-import">⌨ Paste lessons</button>
       <button class="btn" data-action="edit-book" data-id="${esc(b.id)}">Edit book details</button>
       <button class="btn ghost" data-action="upload-cover" data-id="${esc(b.id)}">
         ${b.cover ? "Change cover" : "Upload cover"}
@@ -3670,6 +3939,7 @@ function topicCardHTML(topic, sectionId){
     <p class="topic-desc">${esc(topic.description || (lesson && lesson.description) || "")}</p>
     <div class="topic-foot">
       <span class="pill ${status}">${statusLabel(status)}</span>
+      ${reviewChipHTML(topic.id)}
       <span class="topic-flag">${flagText}</span>
     </div>
   </article>`;
@@ -3876,8 +4146,8 @@ function lessonHTML(id){
           ${hasTopicContent(id) ? "Replace from JSON" : "Import lesson JSON"}
           <input type="file" class="lesson-file-input" accept=".json,application/json" multiple hidden>
         </label>
-        <button class="btn ghost" data-action="toggle-paste" data-target="lesson-paste-wrap"
-                data-label-show="⌨ Paste JSON" data-label-hide="▾ Hide paste box">⌨ Paste JSON</button>
+        <button class="btn ${lesson ? "ghost" : "primary"}" data-action="toggle-paste" data-target="lesson-paste-wrap"
+                data-label-show="⌨ Paste JSON" data-label-hide="▾ Hide paste box">${lesson ? "⌨ Paste JSON" : "▾ Hide paste box"}</button>
         ${lesson ? `<button class="btn ghost" data-action="toggle-template" data-target="lessonTpl-head-${esc(slugify(id))}"
                 data-label-show="▸ Show lesson template" data-label-hide="▾ Hide lesson template">▸ Show lesson template</button>` : ""}
         ${hasTopicContent(id) ? `<button class="btn ghost" data-action="export-lesson" data-id="${esc(id)}">Export lesson JSON</button>` : ""}
@@ -3885,13 +4155,14 @@ function lessonHTML(id){
           Aa ${state.readerOpen ? "Hide options" : "Reading options"}
         </button>
       </div>
-      <div class="paste-wrap" id="lesson-paste-wrap" hidden>
+      ${reviewPanelHTML(id)}
+      <div class="paste-wrap" id="lesson-paste-wrap" ${lesson ? "hidden" : ""}>
         <textarea class="paste" id="lesson-paste"
                   placeholder='{ "id": "${esc(id)}", "title": "...", "lesson": { "sections": [ { "literary_examples": [ ... ], "exercises": [ ... ], "texts": [ ... ] } ], "exercises": [ ... ] }, "vocabulary": { "words": [], "exercises": [] }, "reading": { "passages": [] } }'></textarea>
         <div class="file-row">
           <button class="btn primary" data-action="import-lesson-paste"
                   data-topic="${esc(id)}" data-target="lesson-paste">Import pasted JSON</button>
-          <span class="muted"><code>id</code> and <code>title</code> are filled in automatically when missing.</span>
+          <span class="muted">Just paste — no file needed. <code>id</code> and <code>title</code> are filled in automatically when missing. You can also paste several lessons one after another.</span>
         </div>
       </div>
       ${lesson ? lessonTemplatePanelHTML(topic) : ""}
@@ -3981,7 +4252,8 @@ function noLessonHTML(topic, hasOther){
       ? "This topic has vocabulary, reading or exercises, but no <code>lesson.sections</code> yet."
       : "The book lists this topic, but its lesson JSON has not been imported yet."}
       One JSON file holds the lesson, exercises, vocabulary, vocabulary exercises and reading.</p>
-    <p class="muted">Expected file name: <code>${esc(topic.id)}.json</code></p>
+    <p class="muted">No file needed: paste the JSON straight into the box at the top of this page
+      (it fills in <code>id</code> <code>${esc(topic.id)}</code> for you), or import a file named <code>${esc(topic.id)}.json</code>.</p>
     <p class="muted">
       <strong>Mandatory:</strong> every section must include at least
       <strong>${LITERARY_EXAMPLE_REQUIRED} literary example</strong>
@@ -3989,8 +4261,9 @@ function noLessonHTML(topic, hasOther){
       Exercises and texts for a topic live <em>below</em> <code>literary_examples</code> inside the section.
     </p>
     <div class="file-row">
-      <label class="btn primary">
-        Import lesson JSON
+      <button class="btn primary" data-action="focus-paste">⌨ Paste lesson JSON</button>
+      <label class="btn">
+        Import lesson JSON file
         <input type="file" class="lesson-file-input" accept=".json,application/json" multiple hidden>
       </label>
       <button class="btn" data-action="toggle-template" data-target="${esc(tplId)}"
@@ -5519,6 +5792,10 @@ function editTopic(topicId){
         <textarea id="tfDesc">${esc(topic.description || "")}</textarea>
       </div>
       <div class="field">
+        <label for="tfDue">Review due date (optional)</label>
+        <input type="date" id="tfDue" value="${esc((state.reviews[topic.id] && state.reviews[topic.id].due) || "")}">
+      </div>
+      <div class="field">
         <label>Topic id (used by lesson, exercise, vocabulary &amp; reading files)</label>
         <div class="muted"><code>${esc(topic.id)}</code></div>
       </div>
@@ -5533,6 +5810,9 @@ function editTopic(topicId){
       const num = Number($("tfNumber") ? $("tfNumber").value : topic.number);
       if (isFinite(num) && num > 0) topic.number = num;
       topic.description = ($("tfDesc") ? $("tfDesc").value : "").trim();
+      const dueVal = $("tfDue") ? $("tfDue").value : "";
+      const curRv = state.reviews[topic.id];
+      if (dueVal !== ((curRv && curRv.due) || "")) setReviewDue(topic.id, dueVal || null);
       saveBooks();
       closeFormModal();
       render();
@@ -5573,6 +5853,116 @@ const TEXT_PLACEHOLDER = `{
   "glossary": [ { "term": "word", "definition": "meaning in this context" } ],
   "questions": [ { "question": "What does the writer describe first?", "answer": "A suggested answer." } ]
 }`;
+
+/* ---- Robust paste import: one lesson, several lessons, an array, or text inside ``` fences ---- */
+function jsonTryParse(t){
+  try { return { ok: true, v: JSON.parse(t) }; } catch (e){
+    try { return { ok: true, v: JSON.parse(t.replace(/,\s*$/, "").replace(/,(\s*[\]}])/g, "$1")) }; }
+    catch (e2){ return { ok: false, e }; }
+  }
+}
+
+/** Split text into top-level {...} / [...] chunks (string-aware), skipping any prose in between. */
+function splitTopLevelJSON(txt){
+  const out = [];
+  let depth = 0, start = -1, inStr = false, escaped = false;
+  for (let i = 0; i < txt.length; i++){
+    const c = txt[i];
+    if (inStr){
+      if (escaped) escaped = false;
+      else if (c === "\\") escaped = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"'){ if (depth > 0) inStr = true; continue; }
+    if (c === "{" || c === "["){ if (depth === 0) start = i; depth++; }
+    else if (c === "}" || c === "]"){
+      if (depth > 0){
+        depth--;
+        if (depth === 0 && start >= 0){ out.push(txt.slice(start, i + 1)); start = -1; }
+      }
+    }
+  }
+  if (depth > 0 && start >= 0) out.push(txt.slice(start));
+  return out;
+}
+
+function extractJSONValues(raw){
+  let txt = String(raw || "").replace(/^\uFEFF/, "").trim();
+  if (txt.indexOf("```") >= 0) txt = txt.replace(/```[a-zA-Z0-9_-]*[ \t]*\r?\n?/g, "").trim();
+  const whole = jsonTryParse(txt);
+  if (whole.ok) return { values: [whole.v] };
+  const chunks = splitTopLevelJSON(txt);
+  const values = [];
+  for (const ch of chunks){
+    const r = jsonTryParse(ch);
+    if (!r.ok) return { error: (r.e && r.e.message) || "could not parse" };
+    values.push(r.v);
+  }
+  if (!values.length) return { error: whole.e && whole.e.message ? whole.e.message : "could not parse" };
+  return { values };
+}
+
+/** Import pasted text. hintTopicId fills in a missing id/title when exactly one lesson is pasted. */
+function importPastedText(raw, hintTopicId){
+  const ex = extractJSONValues(raw);
+  if (ex.error) return { anyOk: false, messages: [{ type: "error", text: "Pasted text is not valid JSON — " + ex.error }] };
+
+  let items = [];
+  ex.values.forEach(v => {
+    if (Array.isArray(v) && v.length && v.every(isPlainObj) && v.every(o => isLessonBundle(o) || (o.id && o.title && !o.sections && !o.exercises))) items = items.concat(v);
+    else items.push(v);
+  });
+  items = items.filter(v => v && typeof v === "object");
+  if (!items.length) return { anyOk: false, messages: [{ type: "error", text: "Nothing to import." }] };
+
+  const messages = [];
+  let anyOk = false;
+  items.forEach((obj, i) => {
+    let res;
+    try {
+      if (hintTopicId && items.length === 1 && isPlainObj(obj) && !obj.book && !obj.topic_id &&
+          !("books" in obj) && !("lessons" in obj) && !("exerciseSets" in obj) &&
+          (Array.isArray(obj.sections) || isPlainObj(obj.lesson) || obj.vocabulary !== undefined || obj.reading !== undefined)){
+        const f = findTopicAnywhere(hintTopicId);
+        if (!obj.id)    obj.id = hintTopicId;
+        if (!obj.title) obj.title = (f && f.topic.title) || hintTopicId;
+      }
+      res = applyJSON(obj);
+    } catch (e){ res = { ok: false, message: "Import failed — " + e.message }; }
+    if (res.ok) anyOk = true;
+    messages.push({ type: res.ok ? "ok" : "error", text: (items.length > 1 ? "#" + (i + 1) + ": " : "") + res.message });
+  });
+  return { anyOk, messages };
+}
+
+function openPasteImport(){
+  openFormModal({
+    title: "Paste JSON to import",
+    sub: "Lessons, grammar books, vocabulary, reading, exercise sets or a full backup — the type is detected automatically.",
+    body: `
+      <div class="field">
+        <label for="pasteImportArea">JSON</label>
+        <textarea id="pasteImportArea" class="paste" style="min-height:280px" spellcheck="false"
+          placeholder='Paste one lesson, several lessons one after another, or an array of lessons. Each lesson needs an "id" that matches a topic. Markdown code fences are fine.'></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn ghost" data-action="close-form-modal">Cancel</button>
+        <button type="button" class="btn primary" data-action="form-submit">Import</button>
+      </div>`,
+    onSubmit: () => {
+      const raw = ($("pasteImportArea") ? $("pasteImportArea").value : "").trim();
+      if (!raw){ toast("Paste some JSON first.", "err"); return; }
+      const res = importPastedText(raw);
+      const text = res.messages.map(m => m.text).join(" | ");
+      if (!res.anyOk){ toast(text, "err"); return; }
+      closeFormModal();
+      state.importMessages = res.messages;
+      render();
+      toast(text);
+    }
+  });
+}
 
 /** Parse pasted JSON into a LIST of items. Accepts one object, an array,
     or {key:[...]}; repairs trailing commas and a missing closing ] or }. */
@@ -5953,6 +6343,20 @@ function settingsHTML(){
         <span class="theme-swatch theme-swatch-system" aria-hidden="true"></span>
         <span>System</span>
       </button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Due dates &amp; spaced review</h3>
+    <p class="muted">Every lesson has a <strong>due date</strong> panel. With <em>Spaced review</em> on, each review you rate
+      pushes the next due date further out (${REVIEW_STEPS.slice(0, 7).join(" → ")} days). Topics that are due show on the
+      Dashboard, on their topic card and in the <strong>Reviews</strong> list.</p>
+    <div class="file-row">
+      <label class="btn ${state.prefs.autoSpaced ? "primary" : ""}" style="cursor:pointer;">
+        <input type="checkbox" data-action="pref-toggle" data-pref="autoSpaced"
+               ${state.prefs.autoSpaced ? "checked" : ""} style="margin-right:8px;">
+        Start spaced review automatically when I mark a topic completed
+      </label>
     </div>
   </section>
 
@@ -6670,7 +7074,7 @@ function looksLikeLibrary(obj){
       "exercises" in obj || "vocabExercises" in obj ||
       "vocabulary" in obj || "readings" in obj ||
       "vocabBank" in obj ||
-      "progress" in obj || "examResults" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
+      "progress" in obj || "reviews" in obj || "examResults" in obj || "theme" in obj || "reader" in obj || "prefs" in obj) return true;
   return false;
 }
 
@@ -6708,6 +7112,7 @@ function validateLibraryFile(obj){
   if (obj.readings       !== undefined && !isPlainObject(obj.readings))       errors.push("'readings' must be an object");
   if (obj.vocabBank      !== undefined && !Array.isArray(obj.vocabBank))      errors.push("'vocabBank' must be an array");
   if (obj.progress       !== undefined && !isPlainObject(obj.progress))       errors.push("'progress' must be an object");
+  if (obj.reviews        !== undefined && !isPlainObject(obj.reviews))        errors.push("'reviews' must be an object");
   if (obj.examResults    !== undefined && !isPlainObject(obj.examResults))    errors.push("'examResults' must be an object");
   if (obj.theme          !== undefined && typeof obj.theme !== "string")      errors.push("'theme' must be a string");
   if (obj.reader         !== undefined && !isPlainObject(obj.reader))         errors.push("'reader' must be an object");
@@ -6842,6 +7247,15 @@ function applyLibrary(obj){
     if (progressCount) saveProgress();
   }
 
+  if (obj && !Array.isArray(obj) && obj.reviews && typeof obj.reviews === "object" && !Array.isArray(obj.reviews)){
+    var reviewCount = 0;
+    Object.keys(obj.reviews).forEach(id => {
+      const rv = obj.reviews[id];
+      if (rv && typeof rv === "object"){ state.reviews[id] = rv; reviewCount++; }
+    });
+    if (reviewCount) saveReviews();
+  }
+
   if (obj && !Array.isArray(obj) && obj.examResults && typeof obj.examResults === "object"){
     Object.keys(obj.examResults).forEach(k => {
       const incoming = obj.examResults[k];
@@ -6895,6 +7309,7 @@ function applyLibrary(obj){
         typeof obj.prefs.hideVocabExercises === "boolean"){
       state.prefs.hideGrammarExercises = !!obj.prefs.hideGrammarExercises;
       state.prefs.hideVocabExercises   = !!obj.prefs.hideVocabExercises;
+      if (typeof obj.prefs.autoSpaced === "boolean") state.prefs.autoSpaced = obj.prefs.autoSpaced;
       savePrefs();
       prefsApplied = true;
     }
@@ -6916,6 +7331,7 @@ function applyLibrary(obj){
   if (readingCount)  parts.push(`${readingCount} reading bank${readingCount === 1 ? "" : "s"}`);
   if (bankCount)     parts.push(`${bankCount} new word${bankCount === 1 ? "" : "s"} in the Vocabulary Bank`);
   if (progressCount) parts.push(`${progressCount} progress entr${progressCount === 1 ? "y" : "ies"}`);
+  if (typeof reviewCount !== "undefined" && reviewCount) parts.push(`${reviewCount} review schedule${reviewCount === 1 ? "" : "s"}`);
   if (examCount)     parts.push(`${examCount} final exam score${examCount === 1 ? "" : "s"}`);
   if (themeApplied)  parts.push("theme");
   if (readerApplied) parts.push("reading options");
@@ -6940,14 +7356,16 @@ function exportAllData(){
       reader: { fontId: state.reader.fontId, size: state.reader.size },
       prefs: {
         hideGrammarExercises: state.prefs.hideGrammarExercises,
-        hideVocabExercises: state.prefs.hideVocabExercises
+        hideVocabExercises: state.prefs.hideVocabExercises,
+        autoSpaced: state.prefs.autoSpaced
       }
     },
     theme: state.theme,
     reader: { fontId: state.reader.fontId, size: state.reader.size },
     prefs: {
       hideGrammarExercises: state.prefs.hideGrammarExercises,
-      hideVocabExercises: state.prefs.hideVocabExercises
+      hideVocabExercises: state.prefs.hideVocabExercises,
+        autoSpaced: state.prefs.autoSpaced
     },
     books: state.books,
     lessons: state.lessons,
@@ -6956,6 +7374,7 @@ function exportAllData(){
     readings: state.readings,
     vocabBank: state.vocabBank,
     progress: state.progress,
+    reviews: state.reviews,
     examResults: state.examResults,
     totals: progressStats()
   };
@@ -7275,6 +7694,10 @@ document.addEventListener("click", (ev) => {
       const id = el.dataset.id;
       const next = statusOf(id) === "completed" ? "not_started" : "completed";
       setStatus(id, next);
+      if (next === "completed" && state.prefs.autoSpaced){
+        const cur = state.reviews[id];
+        if (!cur || !cur.due){ startSpacedReview(id); refreshReviewPanel(id); }
+      }
 
       const pill = $("lessonPill");
       const btn = $("lessonCompleteBtn");
@@ -7567,21 +7990,48 @@ document.addEventListener("click", (ev) => {
         toast("Nothing to import — the text area is empty.", "err");
         break;
       }
-      let obj;
-      try { obj = JSON.parse(area.value); }
-      catch (e){
-        toast("Pasted text is not valid JSON — " + e.message, "err");
-        break;
-      }
-      if (isPlainObj(obj) && !obj.book && !obj.topic_id){
-        const f = findTopicAnywhere(topicId);
-        if (!obj.id)    obj.id = topicId;
-        if (!obj.title) obj.title = (f && f.topic.title) || topicId;
-      }
-      const result = applyJSON(obj);
-      if (result.ok) area.value = "";
-      toast(result.message, result.ok ? "" : "err");
-      render();
+      const res = importPastedText(area.value, topicId);
+      toast(res.messages.map(m => m.text).join(" | "), res.anyOk ? "" : "err");
+      if (res.anyOk){ area.value = ""; render(); }
+      break;
+    }
+
+    case "paste-import": openPasteImport(); break;
+
+    case "focus-paste": {
+      const wrap = $("lesson-paste-wrap");
+      if (!wrap) break;
+      wrap.hidden = false;
+      const area = wrap.querySelector("textarea");
+      wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (area) area.focus();
+      break;
+    }
+
+    case "review-quick": {
+      const id = state.currentTopicId;
+      if (!id) break;
+      setReviewDue(id, addDaysISO(todayISO(), Number(el.dataset.days) || 1));
+      refreshReviewPanel(id);
+      toast("Due date set.");
+      break;
+    }
+
+    case "review-clear": {
+      const id = state.currentTopicId;
+      if (!id) break;
+      setReviewDue(id, null);
+      refreshReviewPanel(id);
+      toast("Due date cleared.");
+      break;
+    }
+
+    case "review-rate": {
+      const id = el.dataset.id;
+      const r = rateReview(id, el.dataset.rating);
+      toast(r.due ? "Next review: " + fmtDate(r.due) + "." : "Review recorded.");
+      if (state.view === "lesson") refreshReviewPanel(id);
+      else { render(); }
       break;
     }
 
@@ -7664,23 +8114,20 @@ document.addEventListener("click", (ev) => {
     case "import-paste": {
       const area = $("pasteArea");
       if (!area || !area.value.trim()){ toast("Nothing to import — the text area is empty.", "err"); return; }
-      let obj;
-      try { obj = JSON.parse(area.value); }
-      catch (e){
-        state.importMessages = [{ type: "error", text: "Pasted text is not valid JSON — " + e.message }];
-        render();
-        return;
-      }
-      const result = applyJSON(obj);
-      state.importMessages = [{ type: result.ok ? "ok" : "error", text: result.message }];
+      const rawText = area.value;
+      const res = importPastedText(rawText);
+      state.importMessages = res.messages;
       render();
+      if (!res.anyOk && $("pasteArea")) $("pasteArea").value = rawText;
       break;
     }
 
     case "reset-progress": {
-      if (!confirm("Reset all progress? This cannot be undone.")) return;
+      if (!confirm("Reset all progress and review schedules? This cannot be undone.")) return;
       state.progress = {};
       saveProgress();
+      state.reviews = {};
+      saveReviews();
       state.importMessages = [{ type: "ok", text: "All progress has been reset." }];
       render();
       break;
@@ -7699,6 +8146,7 @@ document.addEventListener("click", (ev) => {
         readings: state.readings,
         vocabBank: state.vocabBank,
         progress: state.progress,
+    reviews: state.reviews,
         examResults: state.examResults
       }, "grammar-library.json");
       toast("Library exported — books, lessons, exercise sets, vocabulary, reading passages, the vocabulary bank, progress and final exam scores.");
@@ -7721,6 +8169,7 @@ document.addEventListener("click", (ev) => {
       state.vocabBankQuery = "";
       state.vocabBankFilters = { source: "", category: "" };
       state.progress = {};
+      state.reviews = {};
       state.examResults = {};
       state.exam = null;
       state.currentTopicId = null;
@@ -7738,6 +8187,7 @@ document.addEventListener("click", (ev) => {
         localStorage.removeItem(LS.READING);
         localStorage.removeItem(LS.VOCAB_BANK);
         localStorage.removeItem(LS.PROGRESS);
+        localStorage.removeItem(LS.REVIEWS);
       } catch (e){}
       state.importMessages = [{ type: "ok", text: "All data cleared. Create or import a book to begin." }];
       state.view = "settings";
@@ -7749,6 +8199,7 @@ document.addEventListener("click", (ev) => {
       const data = {
         exportedAt: new Date().toISOString(),
         progress: state.progress,
+    reviews: state.reviews,
         totals: progressStats()
       };
       downloadJSON(data, "grammar-progress.json");
@@ -7805,7 +8256,7 @@ document.addEventListener("change", (ev) => {
 
   if (t.dataset && t.dataset.action === "pref-toggle"){
     const pref = t.dataset.pref;
-    if (pref === "hideGrammarExercises" || pref === "hideVocabExercises"){
+    if (pref === "hideGrammarExercises" || pref === "hideVocabExercises" || pref === "autoSpaced"){
       state.prefs[pref] = !!t.checked;
       savePrefs();
       render();
@@ -7814,6 +8265,15 @@ document.addEventListener("change", (ev) => {
   }
 
   if (t.dataset && t.dataset.action === "vocab-select-all"){
+    return;
+  }
+
+  if (t.id === "reviewDue" || t.id === "reviewSpaced"){
+    const id = state.currentTopicId;
+    if (!id) return;
+    if (t.id === "reviewDue") setReviewDue(id, t.value || null);
+    else setReviewSpaced(id, t.checked);
+    refreshReviewPanel(id);
     return;
   }
 
